@@ -1,0 +1,5 @@
+project_id = "edital-certo"
+
+[functions.ingest-pncp]
+verify_jwt = false
+
