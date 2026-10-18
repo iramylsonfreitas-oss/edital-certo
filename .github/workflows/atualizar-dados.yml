@@ -1,0 +1,46 @@
+name: Atualizar dados do PNCP
+
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    name: Coletar e salvar oportunidades
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar o repositório
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Consultar o PNCP
+        id: collect
+        continue-on-error: true
+        run: node scripts/coletar-pncp.mjs
+
+      - name: Salvar dados se o arquivo mudou
+        if: always()
+        run: |
+          if git diff --quiet -- data/dados.json; then
+            echo "O arquivo data/dados.json não mudou; nenhum commit será criado."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/dados.json
+            git commit -m "Atualiza dados do PNCP"
+            git push
+          fi
+
+      - name: Marcar coleta incompleta como falha
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "A coleta do PNCP terminou com erro ou parcialmente. Consulte o log e o campo status em data/dados.json."
+          exit 1
