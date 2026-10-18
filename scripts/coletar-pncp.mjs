@@ -319,7 +319,6 @@ async function main() {
   });
 
   console.log(`Resumo PNCP: chamadas=${metrics.calls}; bem-sucedidas=${metrics.successfulCalls}; registros brutos=${collectedByModality.length}; registros novos de TI=${newRecords.length}; registros mesclados=${mergedRecords.length}; erros=${metrics.errors.length}; status=${status}.`);
-  if (hasPartialErrors) process.exitCode = 1;
 }
 
 main().catch(async (error) => {
