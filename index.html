@@ -79,6 +79,8 @@
     .snapshot { max-width: 390px; border: 1px solid var(--yellow-line); border-radius: 12px; background: var(--yellow-bg); color: var(--yellow); padding: 11px 14px; font-size: 12px; }
     .snapshot strong { display: block; margin-bottom: 2px; }
     .snapshot p { margin: 0; }
+    .snapshot .published-link { display: inline-flex; margin-top: 8px; border-radius: 7px; background: var(--brand); color: #fff; padding: 7px 10px; font-weight: 750; text-decoration: none; }
+    .snapshot .published-link:focus-visible { outline-color: var(--ink); }
     .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 17px 0; }
     .stat, .panel, .tender-card, .deadline-group, .chart-card { min-width: 0; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); box-shadow: var(--shadow); }
     .stat { padding: 14px 16px; }
@@ -1141,13 +1143,27 @@
         const body = await response.json();
         if (!isDataset(body)) throw new Error("O arquivo publicado está vazio ou fora do formato esperado.");
         applyDataset(body);
+        const publishedLink = byId("publishedSiteLink");
+        if (publishedLink) publishedLink.remove();
         renderAll();
         if (showMessages) showToast(`Dados atualizados: ${records.filter((record) => !record.outsideCurrent).length} oportunidades na coleta.`);
       } catch (error) {
         const message = error instanceof Error ? error.message : "Não foi possível carregar a coleta publicada.";
         renderAll();
         if (showMessages) showToast(`${message} Mantive os dados da última leitura salvos neste navegador.`);
-        byId("snapshotText").textContent = `${message} A página manteve a última leitura salva neste navegador. ${dataset.mensagem || ""}`;
+        const snapshotText = byId("snapshotText");
+        snapshotText.textContent = `${message} A página manteve a última leitura salva neste navegador. ${dataset.mensagem || ""}`;
+        if (window.location.hostname !== "iramylsonfreitas-oss.github.io") {
+          let publishedLink = byId("publishedSiteLink");
+          if (!publishedLink) {
+            publishedLink = document.createElement("a");
+            publishedLink.id = "publishedSiteLink";
+            publishedLink.className = "published-link";
+            publishedLink.href = "https://iramylsonfreitas-oss.github.io/edital-certo/";
+            publishedLink.textContent = "Abrir versão publicada com dados";
+            snapshotText.append(document.createElement("br"), publishedLink);
+          }
+        }
       } finally {
         button.disabled = false;
         button.removeAttribute("aria-busy");
