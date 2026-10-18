@@ -8,11 +8,14 @@ const DATA_FILE = resolve(PROJECT_DIRECTORY, 'data/dados.json');
 const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
 const PAGE_SIZE = 50;
 const REQUEST_TIMEOUT_MS = 30_000;
-const MINIMUM_PAUSE_MS = 2_000;
+const MINIMUM_PAUSE_MS = 5_000;
 const MAX_ATTEMPTS = 3;
 const MAX_CONSECUTIVE_FAILED_PAGES = 3;
 const MAX_PENDING_RETRY_AGE_MS = 24 * 60 * 60 * 1_000;
 const MAX_PENDING_RETRY_ATTEMPTS = 3;
+const RATE_LIMIT_RETRY_BASE_MS = 60_000;
+const SERVER_ERROR_RETRY_BASE_MS = 5_000;
+const MAX_EXPONENTIAL_RETRY_DELAY_MS = 5 * 60 * 1_000;
 const MODALITY_IDS = new Set([4, 6, 8]);
 
 // Lista editável: o texto do objeto é analisado sem diferenciar acentos ou caixa.
@@ -57,7 +60,7 @@ const SERVER_STRONG_PHRASES = [
   'servidor de dados', 'servidores de dados', 'servidor de rack', 'servidores de rack'
 ];
 const ABSOLUTE_EXCLUSIONS = [
-  'cirurg', 'transporte vertical', 'elevador', 'radiologia', 'raio-x', 'raio x',
+  'cirurg', 'transporte vertical', 'elevador', 'radiolog', 'raio-x', 'raio x',
   'raios-x', 'raios x', 'termodesinfectora', 'alimentação e hospedagem'
 ];
 const EXCLUDED_TERMS = [
@@ -88,7 +91,8 @@ const TI_CLASSIFICATION_TEST_CASES = [
   { expected: false, text: 'Levantamento e tratamento de dados cadastrais' },
   { expected: false, text: 'Compra de licença ambiental para funcionamento do estabelecimento' },
   { expected: false, text: 'Prestação de serviço de telefonia móvel com plano de voz e dados' },
-  { expected: false, text: 'Implantação de sistema de gestão de pessoas' }
+  { expected: false, text: 'Implantação de sistema de gestão de pessoas' },
+  { expected: false, text: 'Solução de prontuário em software, nuvem e imagens radiológicas para hospital' }
 ];
 const PENDING_EXPIRATION_TEST_CASES = [
   {
@@ -106,6 +110,13 @@ const PENDING_EXPIRATION_TEST_CASES = [
     page: { criadaEm: '2026-10-18T09:00:00.000Z', tentativasRetentativa: 2 },
     expectedExpired: false
   }
+];
+const RETRY_DELAY_TEST_CASES = [
+  { description: '429 respeita Retry-After em segundos', status: 429, retryAfter: '17', attempt: 1, expectedMs: 17_000 },
+  { description: '429 usa espera inicial de 60 segundos sem Retry-After', status: 429, retryAfter: null, attempt: 1, expectedMs: 60_000 },
+  { description: '429 aumenta a espera exponencialmente', status: 429, retryAfter: null, attempt: 3, expectedMs: 240_000 },
+  { description: 'erro 5xx usa espera exponencial mais curta', status: 503, retryAfter: null, attempt: 2, expectedMs: 10_000 },
+  { description: 'erro 4xx permanente não recebe espera de retentativa', status: 400, retryAfter: null, attempt: 1, expectedMs: 0 }
 ];
 const PLURAL_SUFFIXES = new Map([
   ['notebook', 's?'],
@@ -218,7 +229,18 @@ function runClassifierTests() {
     if (success) passed += 1;
     console.log(`Teste da fila ${success ? 'PASSOU' : 'FALHOU'}: ${testCase.description}.`);
   }
-  const totalTests = TI_CLASSIFICATION_TEST_CASES.length + PENDING_EXPIRATION_TEST_CASES.length;
+  for (const testCase of RETRY_DELAY_TEST_CASES) {
+    const actualDelay = getRetryDelay({
+      status: testCase.status,
+      headers: { get: () => testCase.retryAfter }
+    }, testCase.attempt);
+    const success = actualDelay === testCase.expectedMs;
+    if (success) passed += 1;
+    console.log(`Teste de retentativa ${success ? 'PASSOU' : 'FALHOU'}: ${testCase.description}.`);
+  }
+  const totalTests = TI_CLASSIFICATION_TEST_CASES.length
+    + PENDING_EXPIRATION_TEST_CASES.length
+    + RETRY_DELAY_TEST_CASES.length;
   console.log(`Testes locais: ${passed}/${totalTests} passaram.`);
   return passed === totalTests;
 }
@@ -279,13 +301,31 @@ async function waitBeforeRequest() {
 
 function getRetryDelay(response, attempt) {
   const retryAfter = response.headers.get('retry-after');
+  const seconds = Number(retryAfter);
+  if (retryAfter !== null && retryAfter.trim() !== '' && Number.isFinite(seconds) && seconds >= 0) {
+    return seconds * 1_000;
+  }
+
   if (retryAfter) {
-    const seconds = Number(retryAfter);
-    if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1_000;
     const retryAt = Date.parse(retryAfter);
     if (Number.isFinite(retryAt)) return Math.max(0, retryAt - Date.now());
   }
-  return 1_000 * 2 ** attempt;
+
+  if (response.status === 429) {
+    return Math.min(
+      RATE_LIMIT_RETRY_BASE_MS * 2 ** (attempt - 1),
+      MAX_EXPONENTIAL_RETRY_DELAY_MS
+    );
+  }
+
+  if (response.status >= 500) {
+    return Math.min(
+      SERVER_ERROR_RETRY_BASE_MS * 2 ** (attempt - 1),
+      MAX_EXPONENTIAL_RETRY_DELAY_MS
+    );
+  }
+
+  return 0;
 }
 
 async function requestPage(page, modalityId, dataInicial, dataFinal) {
