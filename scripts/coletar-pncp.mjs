@@ -22,6 +22,10 @@ const TI_KEYWORDS = [
   'desenvolvimento', 'hospedagem', 'nuvem', 'data center', 'link de internet',
   'telefonia', 'monitor', 'tablet'
 ];
+const PLURAL_KEYWORDS = new Set([
+  'notebook', 'computador', 'servidor', 'licença', 'sistema', 'rede',
+  'switch', 'firewall', 'nobreak', 'impressora', 'monitor', 'tablet'
+]);
 
 const metrics = { calls: 0, successfulCalls: 0, errors: [] };
 let lastRequestStartedAt = 0;
@@ -37,13 +41,24 @@ function normalizeText(value) {
     .toLocaleLowerCase('pt-BR');
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function keywordMatchesText(text, keyword) {
+  const normalizedKeyword = normalizeText(keyword);
+  const phrasePattern = normalizedKeyword
+    .split(/\s+/)
+    .map(escapeRegExp)
+    .join('\\s+');
+  const pluralSuffix = PLURAL_KEYWORDS.has(keyword) ? 's?' : '';
+  const pattern = new RegExp(`(^|[^a-z0-9])${phrasePattern}${pluralSuffix}(?=$|[^a-z0-9])`);
+  return pattern.test(text);
+}
+
 function hasTiKeyword(record) {
   const text = normalizeText(record?.objetoCompra);
-  return TI_KEYWORDS.some((keyword) => {
-    const normalizedKeyword = normalizeText(keyword);
-    if (normalizedKeyword === 'ti') return /(^|[^a-z0-9])ti([^a-z0-9]|$)/.test(text);
-    return text.includes(normalizedKeyword);
-  });
+  return TI_KEYWORDS.some((keyword) => keywordMatchesText(text, keyword));
 }
 
 function parsePncpDate(value) {
