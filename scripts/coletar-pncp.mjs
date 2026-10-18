@@ -8,10 +8,9 @@ const DATA_FILE = resolve(PROJECT_DIRECTORY, 'data/dados.json');
 const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
 const PAGE_SIZE = 50;
 const REQUEST_TIMEOUT_MS = 30_000;
-const MINIMUM_PAUSE_MS = 1_000;
+const MINIMUM_PAUSE_MS = 2_000;
 const MAX_ATTEMPTS = 3;
 const MAX_CONSECUTIVE_FAILED_PAGES = 3;
-const OPEN_DEADLINE_HORIZON_DAYS = 365;
 const MODALITY_IDS = new Set([4, 6, 8]);
 
 // Lista editável: o texto do objeto é analisado sem diferenciar acentos ou caixa.
@@ -19,19 +18,48 @@ const TI_KEYWORDS = [
   'notebook', 'computador', 'desktop', 'servidor', 'software', 'licença',
   'tecnologia da informação', 'tecnologia da informacao', 'tecnologia da informação e comunicação',
   'tecnologia da informacao e comunicacao', 'solução de tecnologia da informação',
-  'solucao de tecnologia da informacao', 'equipamento de informática', 'equipamento de informatica',
-  'equipamentos de informática', 'equipamentos de informatica', 'infraestrutura de rede',
-  'rede de computadores', 'rede de dados', 'rede corporativa', 'rede wi-fi', 'rede wifi',
-  'switch', 'firewall', 'nobreak', 'impressora', 'outsourcing de impressão',
-  'suporte técnico de informática', 'suporte técnico de informatica', 'suporte técnico de TI',
-  'desenvolvimento de software', 'desenvolvimento de sistema', 'sistema informatizado',
-  'sistema de informação', 'sistema de informacao', 'sistema web', 'sistema acadêmico',
-  'sistema academico', 'licenciamento de software', 'hospedagem', 'nuvem', 'data center',
-  'link de internet', 'telefonia', 'monitor de vídeo', 'monitor de video', 'tablet'
+  'solucao de tecnologia da informacao', 'informática', 'informática e comunicação',
+  'equipamento de informática', 'equipamento de informatica', 'equipamentos de informática',
+  'equipamentos de informatica', 'infraestrutura de rede', 'rede de computadores',
+  'rede de dados', 'rede corporativa', 'rede wi-fi', 'rede wifi', 'rede', 'sistema',
+  'switch', 'firewall', 'nobreak', 'impressora', 'outsourcing de impressão', 'suporte técnico de informática',
+  'suporte técnico de informatica', 'suporte técnico de TI', 'desenvolvimento de software',
+  'desenvolvimento de sistema', 'sistema informatizado', 'sistema de informação',
+  'sistema de informacao', 'sistema web', 'sistema acadêmico', 'sistema academico',
+  'licenciamento de software', 'hospedagem', 'nuvem', 'dados', 'data center',
+  'link de internet', 'telefonia', 'monitor', 'monitor de vídeo', 'monitor de video', 'tablet'
 ];
-const PLURAL_KEYWORDS = new Set([
-  'notebook', 'computador', 'servidor', 'licença', 'sistema', 'rede',
-  'switch', 'firewall', 'nobreak', 'impressora', 'monitor', 'tablet'
+const WEAK_TI_KEYWORDS = ['sistema', 'rede', 'hospedagem', 'monitor', 'impressora'];
+const STRONG_TI_KEYWORDS = [
+  'informática', 'informática e comunicação', 'software', 'licença', 'notebook',
+  'computador', 'desktop', 'servidor', 'TI', 'tecnologia da informação',
+  'tecnologia da informação e comunicação', 'nuvem', 'dados', 'data center',
+  'equipamento de informática', 'equipamentos de informática', 'switch', 'firewall',
+  'nobreak', 'outsourcing de impressão', 'suporte técnico de informática',
+  'suporte técnico de TI', 'desenvolvimento de software', 'licenciamento de software',
+  'rede de computadores', 'rede de dados',
+  'telefonia', 'link de internet', 'tablet'
+];
+const EXCLUDED_TERMS = [
+  'cirurg', 'raio-x', 'raio x', 'raios-x', 'raios x', 'radiologia',
+  'transporte vertical', 'elevador', 'viagem', 'viagens', 'alimentac',
+  'paciente', 'termodesinfectora', 'veículo', 'veiculo', 'obra'
+];
+const PLURAL_SUFFIXES = new Map([
+  ['notebook', 's?'],
+  ['computador', '(?:es)?'],
+  ['servidor', '(?:es)?'],
+  ['licenca', 's?'],
+  ['sistema', 's?'],
+  ['rede', 's?'],
+  ['switch', '(?:es)?'],
+  ['firewall', 's?'],
+  ['nobreak', 's?'],
+  ['impressora', 's?'],
+  ['monitor', '(?:es)?'],
+  ['tablet', 's?'],
+  ['dado', 's?'],
+  ['nuvem', 's?']
 ]);
 
 const metrics = { calls: 0, successfulCalls: 0, errors: [] };
@@ -52,20 +80,29 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function keywordMatchesText(text, keyword) {
+function keywordMatchesText(text, keyword, allowSuffix = false) {
   const normalizedKeyword = normalizeText(keyword);
   const phrasePattern = normalizedKeyword
     .split(/\s+/)
     .map(escapeRegExp)
     .join('\\s+');
-  const pluralSuffix = PLURAL_KEYWORDS.has(keyword) ? 's?' : '';
-  const pattern = new RegExp(`(^|[^a-z0-9])${phrasePattern}${pluralSuffix}(?=$|[^a-z0-9])`);
+  const suffix = allowSuffix ? '[a-z0-9]*' : PLURAL_SUFFIXES.get(normalizedKeyword) || '';
+  const pattern = new RegExp(`(^|[^a-z0-9])${phrasePattern}${suffix}(?=$|[^a-z0-9])`);
   return pattern.test(text);
+}
+
+function hasExcludedTerm(text) {
+  return EXCLUDED_TERMS.some((term) => keywordMatchesText(text, term, true));
 }
 
 function hasTiKeyword(record) {
   const text = normalizeText(record?.objetoCompra);
-  return TI_KEYWORDS.some((keyword) => keywordMatchesText(text, keyword));
+  if (hasExcludedTerm(text)) return false;
+  const hasAnyTiKeyword = TI_KEYWORDS.some((keyword) => keywordMatchesText(text, keyword));
+  if (!hasAnyTiKeyword) return false;
+  const hasWeakKeyword = WEAK_TI_KEYWORDS.some((keyword) => keywordMatchesText(text, keyword));
+  if (!hasWeakKeyword) return true;
+  return STRONG_TI_KEYWORDS.some((keyword) => keywordMatchesText(text, keyword));
 }
 
 function parsePncpDate(value) {
@@ -88,7 +125,7 @@ function formatDateInBrazil(date) {
 }
 
 function startOfRollingWindow(now) {
-  return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  return new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
 }
 
 function addDays(date, days) {
@@ -146,11 +183,14 @@ async function requestPage(page, modalityId, dataInicial, dataFinal) {
     lastRequestStartedAt = Date.now();
     metrics.calls += 1;
 
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    let retryDelayMs = 0;
     try {
       const response = await fetch(url, {
         method: 'GET',
         headers: { accept: 'application/json' },
-        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
+        signal: controller.signal
       });
       if (!response.ok) {
         const error = new Error(`HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`);
@@ -170,31 +210,43 @@ async function requestPage(page, modalityId, dataInicial, dataFinal) {
       metrics.errors.push({ page, modalityId, attempt, message });
       console.error(`Falha na modalidade ${modalityId}, página ${page}, tentativa ${attempt}/${MAX_ATTEMPTS}: ${message}`);
       if (attempt === MAX_ATTEMPTS) return null;
-      const retryDelayMs = Number(error?.retryDelayMs) || 0;
-      if (retryDelayMs > 0) await sleep(retryDelayMs);
+      retryDelayMs = Number(error?.retryDelayMs) || 0;
+    } finally {
+      clearTimeout(timeoutId);
     }
+    if (retryDelayMs > 0) await sleep(retryDelayMs);
   }
   return null;
 }
 
+function createPageReference(modalityId, page, dataInicial, dataFinal) {
+  return { modalidadeId: modalityId, pagina: page, dataInicial, dataFinal };
+}
+
 async function collectModality(modalityId, dataInicial, dataFinal) {
   const collected = [];
+  const failedPages = [];
   const firstPage = await requestPage(1, modalityId, dataInicial, dataFinal);
-  if (!firstPage) return { records: collected, pages: 0, failedPages: [1] };
+  if (!firstPage) {
+    failedPages.push(createPageReference(modalityId, 1, dataInicial, dataFinal));
+    return { records: collected, pages: 1, failedPages };
+  }
 
   const totalPagesValue = Number(firstPage.totalPaginas ?? 1);
   const totalPages = Number.isFinite(totalPagesValue) ? Math.max(1, totalPagesValue) : 1;
   collected.push(...firstPage.data);
-  const failedPages = [];
   let consecutiveFailedPages = 0;
 
   for (let page = 2; page <= totalPages; page += 1) {
     const result = await requestPage(page, modalityId, dataInicial, dataFinal);
     if (!result) {
-      failedPages.push(page);
+      failedPages.push(createPageReference(modalityId, page, dataInicial, dataFinal));
       consecutiveFailedPages += 1;
       if (consecutiveFailedPages >= MAX_CONSECUTIVE_FAILED_PAGES) {
         console.error(`Interrompida a modalidade ${modalityId} após ${consecutiveFailedPages} páginas consecutivas sem resposta.`);
+        for (let deferredPage = page + 1; deferredPage <= totalPages; deferredPage += 1) {
+          failedPages.push(createPageReference(modalityId, deferredPage, dataInicial, dataFinal));
+        }
         break;
       }
       continue;
@@ -204,6 +256,57 @@ async function collectModality(modalityId, dataInicial, dataFinal) {
   }
 
   return { records: collected, pages: totalPages, failedPages };
+}
+
+function normalizePendingPages(value) {
+  if (!Array.isArray(value)) return [];
+  const pendingPages = value.filter((page) => {
+    return page && MODALITY_IDS.has(Number(page.modalidadeId))
+      && Number.isInteger(Number(page.pagina)) && Number(page.pagina) > 0
+      && /^\d{8}$/.test(String(page.dataInicial))
+      && /^\d{8}$/.test(String(page.dataFinal));
+  }).map((page) => createPageReference(
+    Number(page.modalidadeId),
+    Number(page.pagina),
+    String(page.dataInicial),
+    String(page.dataFinal)
+  ));
+  return uniquePendingPages(pendingPages);
+}
+
+function uniquePendingPages(pages) {
+  const unique = new Map();
+  for (const page of pages) {
+    const key = `${page.modalidadeId}:${page.pagina}:${page.dataInicial}:${page.dataFinal}`;
+    unique.set(key, page);
+  }
+  return [...unique.values()];
+}
+
+async function retryPendingPages(pendingPages) {
+  const records = [];
+  const stillPending = [];
+  for (const pendingPage of pendingPages) {
+    const result = await requestPage(
+      pendingPage.pagina,
+      pendingPage.modalidadeId,
+      pendingPage.dataInicial,
+      pendingPage.dataFinal
+    );
+    if (!result) {
+      stillPending.push(pendingPage);
+      continue;
+    }
+    records.push(...result.data);
+  }
+  return { records, stillPending };
+}
+
+function previousRecordsExpiredByDeadline(records, cutoff) {
+  return uniqueByControlNumber(records).filter((record) => {
+    const closesAt = parsePncpDate(record.dataEncerramentoProposta);
+    return closesAt !== null && closesAt < cutoff;
+  });
 }
 
 function isInRecentPublicationWindow(record, start, now) {
@@ -242,85 +345,105 @@ async function main() {
   const publicationStart = startOfRollingWindow(now);
   const dataInicial = formatDateInBrazil(publicationStart);
   const dataFinalPublicacao = formatDateInBrazil(now);
-  const dataFinal = formatDateInBrazil(addDays(now, OPEN_DEADLINE_HORIZON_DAYS));
+  const retentionCutoff = addDays(now, -7);
   const previousData = await readPreviousData();
-  const collectedByModality = [];
-  const failedModalities = [];
+  const previousUniqueRecords = uniqueByControlNumber(previousData.registros);
+  const pendingFromPreviousRun = normalizePendingPages(previousData.parametros?.paginasPendentesRetentativa);
+  const retriedPages = await retryPendingPages(pendingFromPreviousRun);
+  const collectedByModality = [...retriedPages.records];
+  const failedPages = [...retriedPages.stillPending];
   const modalityPages = {};
 
   for (const modalityId of MODALITY_IDS) {
     const result = await collectModality(modalityId, dataInicial, dataFinalPublicacao);
     collectedByModality.push(...result.records);
     modalityPages[modalityId] = result.pages;
-    if (result.failedPages.length > 0) {
-      failedModalities.push({ modalityId, pages: result.failedPages });
-    }
+    failedPages.push(...result.failedPages);
   }
 
-  const successfulCalls = metrics.successfulCalls;
-  const allCallsFailed = successfulCalls === 0;
+  const pendingForNextRun = uniquePendingPages(failedPages);
   const parameters = {
     endpoint: API_URL,
-    criterio: 'Contratações publicadas nos últimos 7 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.',
+    criterio: 'Contratações publicadas nos últimos 3 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.',
     dataInicial,
     dataFinal: dataFinalPublicacao,
     tamanhoPagina: PAGE_SIZE,
-    modalidades: [4, 6, 8],
+    modalidades: [...MODALITY_IDS],
     paginasPorModalidade: modalityPages,
     tentativasPorChamada: MAX_ATTEMPTS,
     timeoutSegundos: REQUEST_TIMEOUT_MS / 1000,
     pausaMinimaEntreChamadasMs: MINIMUM_PAUSE_MS,
-    limitePaginasFalhasConsecutivas: MAX_CONSECUTIVE_FAILED_PAGES
+    limitePaginasFalhasConsecutivas: MAX_CONSECUTIVE_FAILED_PAGES,
+    paginasPendentesRetentativa: pendingForNextRun
   };
 
-  if (allCallsFailed) {
+  const successfulCalls = metrics.successfulCalls;
+  if (successfulCalls === 0) {
     const failureData = {
       ...previousData,
       atualizadoEm: now.toISOString(),
       status: 'erro',
-      mensagem: `O PNCP não respondeu com sucesso em nenhuma chamada. Os registros anteriores foram preservados. Erros: ${metrics.errors.length}.`,
-      parametros: parameters,
+      mensagem: `O PNCP não respondeu com sucesso em nenhuma chamada. Os registros anteriores foram preservados. ${pendingForNextRun.length} página(s) ficaram registradas para nova tentativa. Erros: ${metrics.errors.length}.`,
+      parametros: { ...parameters, contagens: previousData.parametros?.contagens ?? null },
       total: previousData.registros.length
     };
     await writeData(failureData);
-    console.error(`Coleta encerrada: 0 chamadas bem-sucedidas; ${metrics.calls} chamadas; ${previousData.registros.length} registros anteriores preservados; ${metrics.errors.length} erros.`);
+    console.error(`Coleta encerrada: 0 chamadas bem-sucedidas; ${metrics.calls} chamadas; ${previousData.registros.length} registros anteriores preservados; ${pendingForNextRun.length} páginas pendentes; ${metrics.errors.length} erros.`);
     process.exitCode = 1;
     return;
   }
 
-  const newRecords = collectedByModality
+  const collectedUniqueRecords = uniqueByControlNumber(collectedByModality);
+  const inWindowWithOpenProposal = collectedUniqueRecords
     .filter((record) => MODALITY_IDS.has(Number(record.modalidadeId)))
-    .filter((record) => hasTiKeyword(record))
     .filter((record) => isInRecentPublicationWindow(record, publicationStart, now))
     .filter((record) => {
       const deadline = parsePncpDate(record.dataEncerramentoProposta);
       return deadline !== null && deadline >= now;
     });
+  const tiRecords = inWindowWithOpenProposal.filter((record) => hasTiKeyword(record));
+  const ignoredByTiFilterCount = inWindowWithOpenProposal.length - tiRecords.length;
 
-  const retainedPreviousRecords = previousData.registros
+  const retainedPreviousRecords = previousUniqueRecords
     .filter((record) => MODALITY_IDS.has(Number(record.modalidadeId)))
     .filter((record) => hasTiKeyword(record))
-    .filter((record) => isOpenWithinRetentionWindow(record, addDays(now, -7)));
-
-  const mergedRecords = sortByDeadline(uniqueByControlNumber([...retainedPreviousRecords, ...newRecords]));
-  const hasPartialErrors = failedModalities.length > 0;
+    .filter((record) => {
+      const closesAt = parsePncpDate(record.dataEncerramentoProposta);
+      return closesAt === null || closesAt >= retentionCutoff;
+    });
+  const retainedPreviousIds = new Set(retainedPreviousRecords.map((record) => String(record.numeroControlePNCP)));
+  const mergedRecords = sortByDeadline(uniqueByControlNumber([...retainedPreviousRecords, ...tiRecords]));
+  const maintainedCount = mergedRecords.filter((record) => retainedPreviousIds.has(String(record.numeroControlePNCP))).length;
+  const newCount = mergedRecords.length - maintainedCount;
+  const mergedIds = new Set(mergedRecords.map((record) => String(record.numeroControlePNCP)));
+  const removedByDeadlineCount = previousRecordsExpiredByDeadline(previousUniqueRecords, retentionCutoff)
+    .filter((record) => !mergedIds.has(String(record.numeroControlePNCP))).length;
+  const hasPartialErrors = pendingForNextRun.length > 0;
   const status = hasPartialErrors ? 'parcial' : 'ok';
+  const counts = {
+    novas: newCount,
+    mantidas: maintainedCount,
+    removidasPorPrazoEncerrado: removedByDeadlineCount,
+    ignoradasPeloFiltro: ignoredByTiFilterCount,
+    totalFinal: mergedRecords.length,
+    paginasPendentesRetentativa: pendingForNextRun.length
+  };
+  const countText = `${counts.novas} novas, ${counts.mantidas} mantidas (${counts.totalFinal} no total), ${counts.removidasPorPrazoEncerrado} removidas por prazo encerrado e ${counts.ignoradasPeloFiltro} ignoradas pelo filtro de TI.`;
   const message = hasPartialErrors
-    ? `Coleta parcial: ${newRecords.length} oportunidades novas de TI e ${retainedPreviousRecords.length} registros anteriores ainda válidos. ${failedModalities.length} modalidade(s) tiveram páginas sem resposta; consulte o log da execução.`
-    : `Coleta concluída: ${newRecords.length} oportunidades novas de TI. Registros anteriores de TI ainda válidos foram mantidos quando a API não os retornou.`;
+    ? `Coleta parcial: ${countText} ${counts.paginasPendentesRetentativa} página(s) foram registradas para nova tentativa na próxima execução.`
+    : `Coleta concluída: ${countText}`;
 
   await writeData({
     atualizadoEm: now.toISOString(),
     status,
     mensagem: message,
-    parametros: parameters,
+    parametros: { ...parameters, contagens: counts },
     total: mergedRecords.length,
     registros: mergedRecords
   });
 
-  console.log(`Resumo PNCP: chamadas=${metrics.calls}; bem-sucedidas=${metrics.successfulCalls}; registros brutos=${collectedByModality.length}; registros novos de TI=${newRecords.length}; registros mesclados=${mergedRecords.length}; erros=${metrics.errors.length}; status=${status}.`);
+  console.log(`Resumo PNCP: chamadas=${metrics.calls}; bem-sucedidas=${metrics.successfulCalls}; páginas pendentes=${pendingForNextRun.length}; registros brutos=${collectedByModality.length}; novos=${counts.novas}; mantidos=${counts.mantidas}; removidos por prazo=${counts.removidasPorPrazoEncerrado}; ignorados pelo filtro=${counts.ignoradasPeloFiltro}; total=${counts.totalFinal}; erros=${metrics.errors.length}; status=${status}.`);
 }
-
 main().catch(async (error) => {
   const now = new Date();
   const previousData = await readPreviousData();
