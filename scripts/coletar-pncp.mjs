@@ -43,7 +43,8 @@ const STRONG_TI_KEYWORDS = [
 const EXCLUDED_TERMS = [
   'cirurg', 'raio-x', 'raio x', 'raios-x', 'raios x', 'radiologia',
   'transporte vertical', 'elevador', 'viagem', 'viagens', 'alimentac',
-  'paciente', 'termodesinfectora', 'veículo', 'veiculo', 'obra'
+  'paciente', 'termodesinfectora', 'veículo', 'veiculo', 'obra',
+  'servidor público', 'servidores públicos'
 ];
 const PLURAL_SUFFIXES = new Map([
   ['notebook', 's?'],
@@ -402,20 +403,33 @@ async function main() {
       return deadline !== null && deadline >= now;
     });
   const tiRecords = inWindowWithOpenProposal.filter((record) => hasTiKeyword(record));
-  const ignoredByTiFilterCount = inWindowWithOpenProposal.length - tiRecords.length;
+  const tiRecordIds = new Set(tiRecords.map((record) => String(record.numeroControlePNCP)));
 
-  const retainedPreviousRecords = previousUniqueRecords
-    .filter((record) => MODALITY_IDS.has(Number(record.modalidadeId)))
-    .filter((record) => hasTiKeyword(record))
+  const previousRecordsWithinRetention = previousUniqueRecords
     .filter((record) => {
       const closesAt = parsePncpDate(record.dataEncerramentoProposta);
       return closesAt === null || closesAt >= retentionCutoff;
     });
+  const retainedPreviousRecords = previousRecordsWithinRetention
+    .filter((record) => MODALITY_IDS.has(Number(record.modalidadeId)))
+    .filter((record) => hasTiKeyword(record));
   const retainedPreviousIds = new Set(retainedPreviousRecords.map((record) => String(record.numeroControlePNCP)));
   const mergedRecords = sortByDeadline(uniqueByControlNumber([...retainedPreviousRecords, ...tiRecords]));
   const maintainedCount = mergedRecords.filter((record) => retainedPreviousIds.has(String(record.numeroControlePNCP))).length;
-  const newCount = mergedRecords.length - maintainedCount;
   const mergedIds = new Set(mergedRecords.map((record) => String(record.numeroControlePNCP)));
+  const newCount = mergedRecords.length - maintainedCount;
+  const ignoredByTiFilterIds = new Set();
+  for (const record of inWindowWithOpenProposal) {
+    const id = String(record.numeroControlePNCP ?? '').trim();
+    if (id && !tiRecordIds.has(id)) ignoredByTiFilterIds.add(id);
+  }
+  for (const record of previousRecordsWithinRetention) {
+    const id = String(record.numeroControlePNCP ?? '').trim();
+    if (id && (!MODALITY_IDS.has(Number(record.modalidadeId)) || !hasTiKeyword(record))) {
+      ignoredByTiFilterIds.add(id);
+    }
+  }
+  const ignoredByTiFilterCount = ignoredByTiFilterIds.size;
   const removedByDeadlineCount = previousRecordsExpiredByDeadline(previousUniqueRecords, retentionCutoff)
     .filter((record) => !mergedIds.has(String(record.numeroControlePNCP))).length;
   const hasPartialErrors = pendingForNextRun.length > 0;
