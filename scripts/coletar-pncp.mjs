@@ -5,11 +5,12 @@ import { fileURLToPath } from 'node:url';
 const SCRIPT_DIRECTORY = dirname(fileURLToPath(import.meta.url));
 const PROJECT_DIRECTORY = resolve(SCRIPT_DIRECTORY, '..');
 const DATA_FILE = resolve(PROJECT_DIRECTORY, 'data/dados.json');
-const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/proposta';
+const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
 const PAGE_SIZE = 50;
 const REQUEST_TIMEOUT_MS = 30_000;
 const MINIMUM_PAUSE_MS = 1_000;
 const MAX_ATTEMPTS = 3;
+const MAX_CONSECUTIVE_FAILED_PAGES = 3;
 const OPEN_DEADLINE_HORIZON_DAYS = 365;
 const MODALITY_IDS = new Set([4, 6, 8]);
 
@@ -92,24 +93,34 @@ async function readPreviousData() {
   }
 }
 
-async function waitBeforeRequest(attempt) {
+async function waitBeforeRequest() {
   const elapsed = Date.now() - lastRequestStartedAt;
-  const backoff = attempt === 1 ? 0 : 1_000 * 2 ** (attempt - 2);
-  const requiredWait = MINIMUM_PAUSE_MS + backoff;
-  if (lastRequestStartedAt > 0 && elapsed < requiredWait) {
-    await sleep(requiredWait - elapsed);
+  if (lastRequestStartedAt > 0 && elapsed < MINIMUM_PAUSE_MS) {
+    await sleep(MINIMUM_PAUSE_MS - elapsed);
   }
 }
 
-async function requestPage(page, modalityId, dataFinal) {
+function getRetryDelay(response, attempt) {
+  const retryAfter = response.headers.get('retry-after');
+  if (retryAfter) {
+    const seconds = Number(retryAfter);
+    if (Number.isFinite(seconds) && seconds >= 0) return seconds * 1_000;
+    const retryAt = Date.parse(retryAfter);
+    if (Number.isFinite(retryAt)) return Math.max(0, retryAt - Date.now());
+  }
+  return 1_000 * 2 ** attempt;
+}
+
+async function requestPage(page, modalityId, dataInicial, dataFinal) {
   const url = new URL(API_URL);
+  url.searchParams.set('dataInicial', dataInicial);
   url.searchParams.set('dataFinal', dataFinal);
   url.searchParams.set('codigoModalidadeContratacao', String(modalityId));
   url.searchParams.set('pagina', String(page));
   url.searchParams.set('tamanhoPagina', String(PAGE_SIZE));
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt += 1) {
-    await waitBeforeRequest(attempt);
+    await waitBeforeRequest();
     lastRequestStartedAt = Date.now();
     metrics.calls += 1;
 
@@ -120,7 +131,11 @@ async function requestPage(page, modalityId, dataFinal) {
         signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS)
       });
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`);
+        const error = new Error(`HTTP ${response.status}${response.statusText ? ` ${response.statusText}` : ''}`);
+        error.retryDelayMs = response.status === 429 || response.status >= 500
+          ? getRetryDelay(response, attempt)
+          : 0;
+        throw error;
       }
       const body = await response.json();
       if (!body || !Array.isArray(body.data)) {
@@ -133,28 +148,37 @@ async function requestPage(page, modalityId, dataFinal) {
       metrics.errors.push({ page, modalityId, attempt, message });
       console.error(`Falha na modalidade ${modalityId}, página ${page}, tentativa ${attempt}/${MAX_ATTEMPTS}: ${message}`);
       if (attempt === MAX_ATTEMPTS) return null;
+      const retryDelayMs = Number(error?.retryDelayMs) || 0;
+      if (retryDelayMs > 0) await sleep(retryDelayMs);
     }
   }
   return null;
 }
 
-async function collectModality(modalityId, dataFinal) {
+async function collectModality(modalityId, dataInicial, dataFinal) {
   const collected = [];
-  const firstPage = await requestPage(1, modalityId, dataFinal);
+  const firstPage = await requestPage(1, modalityId, dataInicial, dataFinal);
   if (!firstPage) return { records: collected, pages: 0, failedPages: [1] };
 
   const totalPagesValue = Number(firstPage.totalPaginas ?? 1);
   const totalPages = Number.isFinite(totalPagesValue) ? Math.max(1, totalPagesValue) : 1;
   collected.push(...firstPage.data);
   const failedPages = [];
+  let consecutiveFailedPages = 0;
 
   for (let page = 2; page <= totalPages; page += 1) {
-    const result = await requestPage(page, modalityId, dataFinal);
+    const result = await requestPage(page, modalityId, dataInicial, dataFinal);
     if (!result) {
       failedPages.push(page);
+      consecutiveFailedPages += 1;
+      if (consecutiveFailedPages >= MAX_CONSECUTIVE_FAILED_PAGES) {
+        console.error(`Interrompida a modalidade ${modalityId} após ${consecutiveFailedPages} páginas consecutivas sem resposta.`);
+        break;
+      }
       continue;
     }
     collected.push(...result.data);
+    consecutiveFailedPages = 0;
   }
 
   return { records: collected, pages: totalPages, failedPages };
@@ -194,6 +218,8 @@ async function writeData(data) {
 async function main() {
   const now = new Date();
   const publicationStart = startOfRollingWindow(now);
+  const dataInicial = formatDateInBrazil(publicationStart);
+  const dataFinalPublicacao = formatDateInBrazil(now);
   const dataFinal = formatDateInBrazil(addDays(now, OPEN_DEADLINE_HORIZON_DAYS));
   const previousData = await readPreviousData();
   const collectedByModality = [];
@@ -201,7 +227,7 @@ async function main() {
   const modalityPages = {};
 
   for (const modalityId of MODALITY_IDS) {
-    const result = await collectModality(modalityId, dataFinal);
+    const result = await collectModality(modalityId, dataInicial, dataFinalPublicacao);
     collectedByModality.push(...result.records);
     modalityPages[modalityId] = result.pages;
     if (result.failedPages.length > 0) {
@@ -213,16 +239,16 @@ async function main() {
   const allCallsFailed = successfulCalls === 0;
   const parameters = {
     endpoint: API_URL,
-    criterio: 'Contratações publicadas nos últimos 7 dias, com propostas em aberto e modalidade entre os códigos 4, 6 e 8.',
-    dataPublicacaoDe: publicationStart.toISOString(),
-    dataPublicacaoAte: now.toISOString(),
-    dataFinal: `${dataFinal} (horizonte de encerramento de 365 dias, limite do filtro da API)`,
+    criterio: 'Contratações publicadas nos últimos 7 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.',
+    dataInicial,
+    dataFinal: dataFinalPublicacao,
     tamanhoPagina: PAGE_SIZE,
     modalidades: [4, 6, 8],
     paginasPorModalidade: modalityPages,
     tentativasPorChamada: MAX_ATTEMPTS,
     timeoutSegundos: REQUEST_TIMEOUT_MS / 1000,
-    pausaMinimaEntreChamadasMs: MINIMUM_PAUSE_MS
+    pausaMinimaEntreChamadasMs: MINIMUM_PAUSE_MS,
+    limitePaginasFalhasConsecutivas: MAX_CONSECUTIVE_FAILED_PAGES
   };
 
   if (allCallsFailed) {
