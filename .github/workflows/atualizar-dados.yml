@@ -15,13 +15,13 @@ concurrency:
 jobs:
   update-data:
     name: Coletar e salvar oportunidades
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Baixar o repositório
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7.0.1
 
       - name: Preparar Node.js 20
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7.1.0
         with:
           node-version: '20'
 
