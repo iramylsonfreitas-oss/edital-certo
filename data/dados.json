@@ -1,7 +1,7 @@
 {
   "atualizadoEm": "2026-10-18T20:13:53.803Z",
   "status": "parcial",
-  "mensagem": "Coleta parcial: 30 novas, 257 mantidas (287 no total), 0 removidas por prazo encerrado e 2378 ignoradas pelo filtro de TI. 14 página(s) foram registradas para nova tentativa na próxima execução. 0 pendência(s) expirada(s) foram removidas da fila.",
+  "mensagem": "Coleta parcial: 30 novas, 257 mantidas; 1 registro reclassificado e removido (286 no total), 0 removidas por prazo encerrado e 2379 ignoradas pelo filtro de TI. 14 página(s) foram registradas para nova tentativa na próxima execução. 0 pendência(s) expirada(s) foram removidas da fila.",
   "parametros": {
     "endpoint": "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
     "criterio": "Contratações publicadas nos últimos 3 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.",
@@ -143,13 +143,15 @@
       "novas": 30,
       "mantidas": 257,
       "removidasPorPrazoEncerrado": 0,
-      "ignoradasPeloFiltro": 2378,
-      "totalFinal": 287,
+      "ignoradasPeloFiltro": 2379,
+      "totalFinal": 286,
       "paginasPendentesRetentativa": 14,
-      "paginasPendentesExpiradas": 0
-    }
+      "paginasPendentesExpiradas": 0,
+      "removidasPorReclassificacao": 1
+    },
+    "reclassificadoEm": "2026-10-18T20:49:04.621Z"
   },
-  "total": 287,
+  "total": 286,
   "registros": [
     {
       "valorTotalHomologado": null,
@@ -14460,66 +14462,6 @@
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
       "usuarioNome": "Betha Sistemas"
-    },
-    {
-      "valorTotalHomologado": null,
-      "orgaoEntidade": {
-        "cnpj": "76995448000154",
-        "razaoSocial": "MUNICIPIO DE PATO BRANCO",
-        "poderId": "N",
-        "esferaId": "M"
-      },
-      "dataInclusao": "2026-10-16T15:09:28",
-      "dataAtualizacao": "2026-10-16T15:09:28",
-      "numeroControlePNCP": "76995448000154-1-000174/2026",
-      "anoCompra": 2026,
-      "srp": false,
-      "sequencialCompra": 174,
-      "emendaParlamentar": null,
-      "numeroCompra": "10",
-      "processo": "166",
-      "objetoCompra": "Contratação de empresa especializada para prestação de serviços de disponibilização de solução integrada para gerenciamento das etapas específicas do fluxo radiológico, arquivamento, comunicação, recuperação, visualização e disponibilização de imagens médicas e laudos, integrada ao sistema de prontuário eletrônico IDS Saúde, em modelo de serviço Software as a Service – SaaS, com armazenamento em ambiente de computação em nuvem, contemplando implantação e parametrização da solução, migração do acervo radiológico existente, integração com o IDS Saúde, treinamento inicial dos usuários, armazenamento escalável, suporte técnico continuado, manutenção, atualizações e demais serviços necessários à continuidade de sua operação, para atendimento das necessidades da Secretaria Municipal de Saúde.",
-      "informacaoComplementar": null,
-      "dataAberturaProposta": "2026-10-19T08:00:00",
-      "dataEncerramentoProposta": "2026-11-05T08:59:00",
-      "dataPublicacaoPncp": "2026-10-16T15:09:28",
-      "dataAtualizacaoGlobal": "2026-10-16T15:10:30",
-      "unidadeOrgao": {
-        "ufNome": "Paraná",
-        "ufSigla": "PR",
-        "municipioNome": "Pato Branco",
-        "nomeUnidade": "PREFEITURA MUNICIPAL DE PATO BRANCO - PR",
-        "codigoIbge": "4118501",
-        "codigoUnidade": "450996"
-      },
-      "orgaoSubRogado": null,
-      "unidadeSubRogada": null,
-      "amparoLegal": {
-        "nome": "Lei 14.133/2021, Art. 28, I",
-        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
-        "codigo": 1
-      },
-      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=45099605000102026",
-      "linkProcessoEletronico": "https://patobranco.pr.gov.br/",
-      "justificativaPresencial": null,
-      "valorTotalEstimado": 79959.01,
-      "modalidadeId": 6,
-      "modalidadeNome": "Pregão - Eletrônico",
-      "modoDisputaId": 3,
-      "modoDisputaNome": "Aberto-Fechado",
-      "tipoInstrumentoConvocatorioCodigo": 1,
-      "tipoInstrumentoConvocatorioNome": "Edital",
-      "fontesOrcamentarias": [
-        {
-          "codigo": 2,
-          "nome": "Municipal",
-          "descricao": "Recurso orçamentário municipal disponível e devidamente vinculado à despesa que será realizada.",
-          "dataInclusao": "2026-10-16T15:09:29"
-        }
-      ],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br"
     },
     {
       "valorTotalHomologado": null,
