@@ -17,10 +17,17 @@ const MODALITY_IDS = new Set([4, 6, 8]);
 // Lista editável: o texto do objeto é analisado sem diferenciar acentos ou caixa.
 const TI_KEYWORDS = [
   'notebook', 'computador', 'desktop', 'servidor', 'software', 'licença',
-  'sistema', 'tecnologia da informação', 'ti', 'rede', 'switch', 'firewall',
-  'nobreak', 'impressora', 'outsourcing de impressão', 'suporte técnico',
-  'desenvolvimento', 'hospedagem', 'nuvem', 'data center', 'link de internet',
-  'telefonia', 'monitor', 'tablet'
+  'tecnologia da informação', 'tecnologia da informacao', 'tecnologia da informação e comunicação',
+  'tecnologia da informacao e comunicacao', 'solução de tecnologia da informação',
+  'solucao de tecnologia da informacao', 'equipamento de informática', 'equipamento de informatica',
+  'equipamentos de informática', 'equipamentos de informatica', 'infraestrutura de rede',
+  'rede de computadores', 'rede de dados', 'rede corporativa', 'rede wi-fi', 'rede wifi',
+  'switch', 'firewall', 'nobreak', 'impressora', 'outsourcing de impressão',
+  'suporte técnico de informática', 'suporte técnico de informatica', 'suporte técnico de TI',
+  'desenvolvimento de software', 'desenvolvimento de sistema', 'sistema informatizado',
+  'sistema de informação', 'sistema de informacao', 'sistema web', 'sistema acadêmico',
+  'sistema academico', 'licenciamento de software', 'hospedagem', 'nuvem', 'data center',
+  'link de internet', 'telefonia', 'monitor de vídeo', 'monitor de video', 'tablet'
 ];
 const PLURAL_KEYWORDS = new Set([
   'notebook', 'computador', 'servidor', 'licença', 'sistema', 'rede',
