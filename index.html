@@ -1,0 +1,1232 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#10223f">
+  <title>Edital Certo | Oportunidades públicas de TI</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f3f6fb;
+      --panel: #ffffff;
+      --panel-soft: #f7f9fc;
+      --ink: #17253a;
+      --muted: #65758b;
+      --line: #dce4ef;
+      --brand: #155eef;
+      --brand-dark: #0d45b8;
+      --brand-soft: #eaf1ff;
+      --green: #087443;
+      --green-soft: #e7f7ee;
+      --yellow: #6d4b0d;
+      --yellow-bg: #fff8e8;
+      --yellow-line: #efc878;
+      --red: #b42318;
+      --red-soft: #fff0ee;
+      --gray-soft: #eef1f5;
+      --shadow: 0 12px 32px rgba(18, 38, 67, .07);
+      --navy: #10223f;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1522;
+        --panel: #152235;
+        --panel-soft: #111c2d;
+        --ink: #edf3fc;
+        --muted: #a8b7cb;
+        --line: #2a3a51;
+        --brand: #81aaff;
+        --brand-dark: #a8c3ff;
+        --brand-soft: #1c2d48;
+        --green: #76dfab;
+        --green-soft: #153829;
+        --yellow: #ffe0a0;
+        --yellow-bg: #352c19;
+        --yellow-line: #795f2b;
+        --red: #ff9c92;
+        --red-soft: #3a2224;
+        --gray-soft: #253246;
+        --shadow: 0 12px 32px rgba(0, 0, 0, .2);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; overflow-x: hidden; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    button, a, select { touch-action: manipulation; }
+    button { color: inherit; }
+    a { color: var(--brand-dark); }
+    :focus-visible { outline: 3px solid #80aaff; outline-offset: 2px; }
+    [hidden] { display: none !important; }
+    .topbar { background: var(--navy); color: #fff; padding: 12px max(18px, calc((100vw - 1240px) / 2)); display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 10px; min-width: max-content; font-size: 19px; font-weight: 850; letter-spacing: -.04em; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; background: #1d4ed8; font-size: 17px; }
+    .brand span { color: #a9c5ff; }
+    .desktop-nav { display: flex; align-items: center; gap: 5px; }
+    .nav-button { border: 0; border-radius: 9px; background: transparent; color: #d6e2f5; padding: 9px 12px; cursor: pointer; font-size: 13px; font-weight: 700; }
+    .nav-button[aria-current="page"] { background: #203b64; color: #fff; }
+    .header-actions { display: flex; gap: 8px; align-items: center; }
+    .header-actions .button { min-height: 36px; padding: 7px 10px; font-size: 12px; }
+    main { max-width: 1240px; margin: auto; padding: 26px 20px 56px; }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 0 0 18px; }
+    .eyebrow { color: var(--brand); font-size: 11px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { margin: 5px 0 0; font-size: clamp(25px, 4vw, 35px); line-height: 1.15; letter-spacing: -.045em; }
+    h2, h3, p { overflow-wrap: anywhere; }
+    .muted { color: var(--muted); }
+    .page-heading p { margin: 7px 0 0; color: var(--muted); font-size: 13px; }
+    .snapshot { max-width: 390px; border: 1px solid var(--yellow-line); border-radius: 12px; background: var(--yellow-bg); color: var(--yellow); padding: 11px 14px; font-size: 12px; }
+    .snapshot strong { display: block; margin-bottom: 2px; }
+    .snapshot p { margin: 0; }
+    .summary-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 17px 0; }
+    .stat, .panel, .tender-card, .deadline-group, .chart-card { min-width: 0; border: 1px solid var(--line); border-radius: 15px; background: var(--panel); box-shadow: var(--shadow); }
+    .stat { padding: 14px 16px; }
+    .stat small { display: block; color: var(--muted); font-size: 11px; }
+    .stat strong { display: block; margin-top: 3px; font-size: 22px; letter-spacing: -.035em; }
+    .layout { display: grid; grid-template-columns: 272px minmax(0, 1fr); gap: 16px; align-items: start; }
+    .panel { padding: 15px; }
+    .panel-title { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+    .panel-title h2, .section-title { margin: 0; font-size: 16px; }
+    .panel-title p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .filters { display: grid; gap: 9px; }
+    .field { display: grid; gap: 5px; }
+    .field label { color: var(--muted); font-size: 11px; font-weight: 750; }
+    input, select, textarea { width: 100%; min-height: 41px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-soft); color: var(--ink); padding: 9px 10px; }
+    textarea { min-height: 74px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: var(--muted); opacity: .8; }
+    .check-row { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 12px; }
+    .check-row input { width: 17px; min-height: 17px; height: 17px; margin: 0; accent-color: var(--brand); }
+    .button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 41px; border: 1px solid transparent; border-radius: 9px; background: var(--brand); color: #fff; padding: 9px 13px; cursor: pointer; font-size: 12px; font-weight: 780; text-decoration: none; }
+    .button:hover { filter: brightness(.96); }
+    .button.secondary { background: var(--brand-soft); color: var(--brand-dark); }
+    .button.ghost { border-color: var(--line); background: transparent; color: var(--ink); }
+    .button.danger { border-color: var(--line); background: var(--red-soft); color: var(--red); }
+    .button.small { min-height: 34px; padding: 6px 9px; font-size: 11px; }
+    .button.full { width: 100%; }
+    .filter-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 3px; }
+    .results-area { min-width: 0; }
+    .results-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0 0 10px; }
+    .results-count { color: var(--muted); font-size: 12px; }
+    .results-count strong { color: var(--ink); }
+    .sort-field { width: min(200px, 52%); }
+    .cards { display: grid; gap: 10px; }
+    .tender-card { padding: 15px; }
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+    .tender-title { display: -webkit-box; min-width: 0; margin: 0; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 3; font-size: 15px; font-weight: 780; line-height: 1.42; }
+    .score-badge, .pill, .deadline-badge { display: inline-flex; flex: none; align-items: center; gap: 4px; border: 1px solid transparent; border-radius: 999px; padding: 4px 8px; font-size: 10px; font-weight: 800; line-height: 1.35; }
+    .score-high { background: var(--green-soft); color: var(--green); }
+    .score-medium { background: var(--yellow-bg); color: var(--yellow); }
+    .score-low { background: var(--gray-soft); color: var(--muted); }
+    .pill { background: var(--brand-soft); color: var(--brand-dark); }
+    .pill.example { background: var(--yellow-bg); color: var(--yellow); }
+    .stale-badge { display: inline-flex; width: fit-content; margin-top: 8px; border-radius: 999px; background: var(--gray-soft); color: var(--muted); padding: 4px 8px; font-size: 10px; font-weight: 750; }
+    .deadline-urgent { background: var(--red-soft); color: var(--red); }
+    .deadline-soon { background: var(--yellow-bg); color: var(--yellow); }
+    .deadline-normal { background: var(--brand-soft); color: var(--brand-dark); }
+    .deadline-closed { background: var(--gray-soft); color: var(--muted); }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 9px 0; color: var(--muted); font-size: 11px; }
+    .object-preview { margin: 7px 0 0; color: var(--muted); font-size: 12px; }
+    .match-reasons { margin: 8px 0 0; color: var(--green); font-size: 11px; }
+    .card-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 12px; }
+    .card-actions .button { min-height: 33px; padding: 6px 9px; font-size: 10px; }
+    .card-actions .move-select { width: auto; min-height: 33px; padding: 4px 7px; font-size: 10px; }
+    .empty { border: 1px dashed var(--line); border-radius: 14px; background: var(--panel); padding: 27px 16px; color: var(--muted); text-align: center; }
+    .empty strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .view { min-width: 0; }
+    .view-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin: 0 0 15px; }
+    .view-heading p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .kanban-board { display: grid; grid-auto-columns: minmax(260px, 1fr); grid-auto-flow: column; gap: 10px; width: 100%; overflow-x: auto; padding: 2px 2px 14px; overscroll-behavior-x: contain; }
+    .kanban-column { min-width: 0; border: 1px solid var(--line); border-radius: 13px; background: var(--panel-soft); padding: 9px; }
+    .kanban-column.drop-target { outline: 2px dashed var(--brand); outline-offset: 2px; }
+    .column-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 9px; padding: 3px 2px; }
+    .column-heading h3 { margin: 0; font-size: 12px; }
+    .column-count { display: grid; place-items: center; min-width: 22px; height: 22px; border-radius: 999px; background: var(--brand-soft); color: var(--brand-dark); font-size: 10px; font-weight: 800; }
+    .column-cards { display: grid; gap: 8px; min-height: 90px; }
+    .pipeline-card { border: 1px solid var(--line); border-radius: 11px; background: var(--panel); padding: 10px; }
+    .pipeline-card[draggable="true"] { cursor: grab; }
+    .pipeline-card.dragging { opacity: .45; }
+    .pipeline-card h4 { margin: 0; font-size: 12px; line-height: 1.4; }
+    .pipeline-card .meta { margin: 6px 0; font-size: 10px; }
+    .pipeline-card .field { margin-top: 7px; }
+    .pipeline-card .field label { font-size: 10px; }
+    .pipeline-card input, .pipeline-card textarea, .pipeline-card select { min-height: 34px; padding: 6px 7px; font-size: 11px; }
+    .pipeline-card textarea { min-height: 54px; }
+    .checklist { display: grid; gap: 5px; margin: 8px 0; }
+    .check-item { display: flex; align-items: flex-start; gap: 6px; color: var(--muted); font-size: 10px; }
+    .check-item input { flex: none; width: 15px; height: 15px; min-height: 15px; margin: 1px 0 0; }
+    .check-add { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 5px; }
+    .deadline-groups { display: grid; gap: 12px; }
+    .deadline-group { padding: 14px; }
+    .deadline-group h2 { margin: 0 0 9px; font-size: 14px; }
+    .deadline-row { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 12px; border-top: 1px solid var(--line); padding: 10px 0; }
+    .deadline-row:first-of-type { border-top: 0; }
+    .deadline-row strong { display: block; font-size: 12px; line-height: 1.4; }
+    .deadline-row small { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; }
+    .dashboard-stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; }
+    .chart-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin-top: 12px; }
+    .chart-card { padding: 14px; overflow: hidden; }
+    .chart-card h2 { margin: 0 0 10px; font-size: 13px; }
+    .chart-card svg { display: block; width: 100%; height: auto; overflow: visible; }
+    .chart-label { fill: var(--muted); font: 10px system-ui, sans-serif; }
+    .chart-value { fill: var(--ink); font: 10px system-ui, sans-serif; }
+    .chart-bar-bg { fill: var(--gray-soft); }
+    .chart-bar { fill: var(--brand); }
+    .footer { margin: 24px 0 0; padding: 16px 0 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    .footer-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .notice-bar { position: fixed; z-index: 20; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom)); left: 14px; display: flex; align-items: center; justify-content: space-between; gap: 10px; max-width: 520px; margin: auto; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 10px 12px; box-shadow: var(--shadow); font-size: 12px; }
+    dialog { width: min(700px, calc(100% - 24px)); max-height: min(88vh, 900px); border: 1px solid var(--line); border-radius: 17px; background: var(--panel); color: var(--ink); padding: 0; box-shadow: 0 24px 70px #0005; }
+    dialog::backdrop { background: #091426bb; }
+    .dialog-body { padding: 19px; overflow-y: auto; max-height: inherit; }
+    .dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 13px; }
+    .dialog-head h2 { margin: 0; font-size: 19px; line-height: 1.35; }
+    .dialog-head p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .close-button { flex: none; width: 35px; height: 35px; border: 1px solid var(--line); border-radius: 9px; background: transparent; cursor: pointer; font-size: 19px; }
+    .profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-help { color: var(--muted); font-size: 10px; }
+    .detail-object { white-space: pre-wrap; color: var(--muted); font-size: 13px; }
+    .detail-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; border-top: 1px solid var(--line); padding-top: 13px; }
+    .detail-cell small { display: block; color: var(--muted); font-size: 10px; }
+    .detail-cell strong { display: block; margin-top: 2px; font-size: 12px; overflow-wrap: anywhere; }
+    .dialog-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
+    .status { min-height: 20px; margin: 9px 0 0; color: var(--muted); font-size: 11px; }
+    .onboarding-progress { display: flex; gap: 5px; margin: 2px 0 14px; }
+    .progress-dot { height: 4px; flex: 1; border-radius: 9px; background: var(--gray-soft); }
+    .progress-dot.active { background: var(--brand); }
+    .onboarding-step h2 { margin: 0 0 7px; font-size: 20px; }
+    .onboarding-step p { color: var(--muted); font-size: 13px; }
+    .onboarding-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 17px; }
+    .onboarding-actions .right { display: flex; gap: 8px; margin-left: auto; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .mobile-nav { display: none; }
+    @media (max-width: 920px) {
+      .topbar { flex-wrap: wrap; }
+      .desktop-nav { order: 3; width: 100%; justify-content: center; }
+      .layout { grid-template-columns: 240px minmax(0,1fr); gap: 12px; }
+      .summary-grid, .dashboard-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 680px) {
+      body { padding-bottom: calc(68px + env(safe-area-inset-bottom)); }
+      .topbar { padding: 11px 14px; }
+      .desktop-nav { display: none; }
+      .header-actions { margin-left: auto; }
+      .header-actions .button { width: 38px; min-width: 38px; padding: 7px; font-size: 0; }
+      .header-actions .button span { font-size: 15px; }
+      main { padding: 20px 13px 30px; }
+      .page-heading { display: block; }
+      .snapshot { margin-top: 14px; max-width: none; }
+      .summary-grid, .dashboard-stats { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
+      .stat { padding: 11px 12px; }
+      .stat strong { font-size: 19px; }
+      .layout { grid-template-columns: minmax(0,1fr); }
+      .filter-panel { order: 2; }
+      .results-area { order: 1; }
+      .filters { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .filters .search-field, .filters .filter-actions, .filters .check-row { grid-column: 1 / -1; }
+      .filter-actions { grid-template-columns: 1fr 1fr; }
+      .tender-card { padding: 13px; }
+      .card-top { display: block; }
+      .score-badge { margin-top: 7px; }
+      .card-actions .button { flex: 1 1 auto; }
+      .card-actions .move-select { flex: 1 1 100%; width: 100%; }
+      .kanban-board { grid-auto-columns: minmax(82vw, 310px); margin-right: -13px; padding-right: 13px; }
+      .chart-grid { grid-template-columns: 1fr; }
+      .deadline-row { grid-template-columns: minmax(0,1fr); }
+      .deadline-row .button { justify-self: start; }
+      .profile-grid, .detail-grid { grid-template-columns: minmax(0,1fr); }
+      .mobile-nav { position: fixed; z-index: 15; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(4,1fr); padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--panel); box-shadow: 0 -7px 18px rgba(18,38,67,.08); }
+      .mobile-nav .nav-button { display: grid; justify-items: center; gap: 1px; min-height: 49px; padding: 5px 2px; color: var(--muted); font-size: 9px; }
+      .mobile-nav .nav-button[aria-current="page"] { background: var(--brand-soft); color: var(--brand-dark); }
+      .nav-icon { font-size: 17px; line-height: 1.1; }
+      .notice-bar { bottom: calc(72px + env(safe-area-inset-bottom)); }
+    }
+    @media (max-width: 360px) {
+      .topbar { padding-right: 10px; padding-left: 10px; }
+      main { padding-right: 10px; padding-left: 10px; }
+      .filters { grid-template-columns: minmax(0,1fr); }
+      .filters .search-field, .filters .filter-actions, .filters .check-row { grid-column: auto; }
+      .brand { font-size: 17px; }
+      .summary-grid, .dashboard-stats { gap: 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">EC</span><span>Edital <span>Certo</span></span></div>
+    <nav class="desktop-nav" aria-label="Navegação principal">
+      <button class="nav-button" type="button" data-view="opportunities" aria-current="page">Oportunidades</button>
+      <button class="nav-button" type="button" data-view="pipeline">Pipeline</button>
+      <button class="nav-button" type="button" data-view="deadlines">Prazos</button>
+      <button class="nav-button" type="button" data-view="dashboard">Painel</button>
+    </nav>
+    <div class="header-actions">
+      <button class="button ghost" id="openProfile" type="button" aria-label="Editar perfil de interesse"><span aria-hidden="true">⚙</span>Perfil</button>
+      <button class="button secondary" id="liveSearch" type="button" aria-label="Atualizar dados da coleta"><span aria-hidden="true">↻</span><span id="refreshLabel">Atualizar</span></button>
+    </div>
+  </header>
+  <nav class="mobile-nav" aria-label="Navegação móvel">
+    <button class="nav-button" type="button" data-view="opportunities" aria-current="page"><span class="nav-icon" aria-hidden="true">⌕</span>Oportunidades</button>
+    <button class="nav-button" type="button" data-view="pipeline"><span class="nav-icon" aria-hidden="true">▤</span>Pipeline</button>
+    <button class="nav-button" type="button" data-view="deadlines"><span class="nav-icon" aria-hidden="true">◷</span>Prazos</button>
+    <button class="nav-button" type="button" data-view="dashboard"><span class="nav-icon" aria-hidden="true">▥</span>Painel</button>
+  </nav>
+  <main>
+    <section id="opportunitiesView" class="view" data-view-panel="opportunities" aria-labelledby="opportunitiesHeading">
+      <div class="page-heading">
+        <div><div class="eyebrow">Monitor de licitações · Tecnologia da informação</div><h1 id="opportunitiesHeading">Oportunidades para sua empresa</h1><p>Encontre editais compatíveis, avalie os prazos e escolha o que acompanhar.</p></div>
+        <aside class="snapshot" id="snapshotNotice" aria-label="Situação da coleta de dados"><strong id="snapshotTitle">Carregando dados do PNCP…</strong><p id="snapshotText" aria-live="polite">O site está tentando abrir a coleta publicada.</p></aside>
+      </div>
+      <section class="summary-grid" aria-label="Resumo da amostra">
+        <article class="stat"><small>Oportunidades na amostra</small><strong id="sampleTotal">0</strong></article>
+        <article class="stat"><small>Oportunidades compatíveis</small><strong id="compatibleTotal">0</strong></article>
+        <article class="stat"><small>Encerram em até 3 dias</small><strong id="urgentTotal">0</strong></article>
+        <article class="stat"><small>Favoritas</small><strong id="favoriteTotal">0</strong></article>
+      </section>
+      <div class="layout">
+        <aside class="panel filter-panel" aria-labelledby="filtersHeading">
+          <div class="panel-title"><div><h2 id="filtersHeading">Filtrar oportunidades</h2><p>Aplique critérios para refinar a lista.</p></div></div>
+          <div class="filters">
+            <div class="field search-field"><label for="searchInput">Busca textual</label><input id="searchInput" type="search" autocomplete="off" placeholder="Objeto, órgão ou palavra"></div>
+            <div class="field"><label for="ufFilter">UF</label><select id="ufFilter"><option value="">Todas as UFs</option></select></div>
+            <div class="field"><label for="modalityFilter">Modalidade</label><select id="modalityFilter"><option value="">Todas</option></select></div>
+            <div class="field"><label for="sphereFilter">Esfera</label><select id="sphereFilter"><option value="">Todas</option><option value="F">Federal</option><option value="E">Estadual</option><option value="M">Municipal</option></select></div>
+            <div class="field"><label for="valueFilter">Faixa de valor</label><select id="valueFilter"><option value="">Todas</option><option value="known">Valor informado</option><option value="under100">Até R$ 100 mil</option><option value="100to500">R$ 100 a 500 mil</option><option value="500to2m">R$ 500 mil a R$ 2 mi</option><option value="over2m">Acima de R$ 2 mi</option><option value="unknown">Sigiloso ou não informado</option></select></div>
+            <div class="field"><label for="listMode">Visualização</label><select id="listMode"><option value="all">Todas</option><option value="favorites">Favoritas</option><option value="discarded">Descartadas</option></select></div>
+            <label class="check-row"><input id="showClosed" type="checkbox">Mostrar encerradas</label>
+            <div class="filter-actions"><button class="button ghost" id="clearFilters" type="button">Limpar filtros</button><button class="button secondary" id="editProfileInline" type="button">Meu perfil</button></div>
+          </div>
+        </aside>
+        <section class="results-area" aria-label="Lista de oportunidades">
+          <div class="results-toolbar"><div class="results-count" id="resultCount" aria-live="polite"></div><div class="field sort-field"><label class="sr-only" for="sortBy">Ordenar por</label><select id="sortBy"><option value="score">Maior aderência</option><option value="deadline">Prazo mais próximo</option><option value="value">Maior valor estimado</option></select></div></div>
+          <div class="cards" id="tenderList" aria-live="polite" aria-busy="false"></div>
+        </section>
+      </div>
+    </section>
+    <section id="pipelineView" class="view" data-view-panel="pipeline" aria-labelledby="pipelineHeading" hidden>
+      <div class="view-heading"><div><div class="eyebrow">Acompanhamento comercial</div><h1 id="pipelineHeading">Pipeline de oportunidades</h1><p>Organize a análise até o resultado. No computador, arraste cards entre colunas; no celular, use “Mover para”.</p></div></div>
+      <div id="pipelineBoard" class="kanban-board" aria-label="Quadro Kanban"></div>
+    </section>
+    <section id="deadlinesView" class="view" data-view-panel="deadlines" aria-labelledby="deadlinesHeading" hidden>
+      <div class="view-heading"><div><div class="eyebrow">Agenda de propostas</div><h1 id="deadlinesHeading">Prazos acompanhados</h1><p>Favoritas e oportunidades do pipeline, em ordem cronológica.</p></div></div>
+      <div id="deadlineGroups" class="deadline-groups" aria-live="polite"></div>
+    </section>
+    <section id="dashboardView" class="view" data-view-panel="dashboard" aria-labelledby="dashboardHeading" hidden>
+      <div class="view-heading"><div><div class="eyebrow">Visão gerencial</div><h1 id="dashboardHeading">Painel da demonstração</h1><p>Indicadores calculados com a amostra real e seus registros locais.</p></div></div>
+      <div class="dashboard-stats">
+        <article class="stat"><small>Compatíveis com o perfil</small><strong id="dashboardCompatible">0</strong></article>
+        <article class="stat"><small>Valor estimado no pipeline</small><strong id="pipelineValue">R$ 0</strong></article>
+        <article class="stat"><small>Prazos nos próximos 7 dias</small><strong id="nextWeekDeadlines">0</strong></article>
+        <article class="stat"><small>Taxa de ganho</small><strong id="winRate">—</strong></article>
+      </div>
+      <div class="chart-grid"><article class="chart-card"><h2>Oportunidades compatíveis por UF</h2><div id="ufChart"></div></article><article class="chart-card"><h2>Valor estimado por etapa</h2><div id="stageChart"></div></article></div>
+    </section>
+    <footer class="footer"><div id="sourceFootnote"></div><div class="footer-actions"><button class="button ghost small" id="reviewIntro" type="button">Rever introdução</button><button class="button danger small" id="resetDemo" type="button">Reiniciar demonstração</button></div></footer>
+  </main>
+  <div id="toast" class="notice-bar" role="status" aria-live="polite" hidden><span id="toastText"></span><button id="undoAction" class="button secondary small" type="button" hidden>Desfazer</button><button id="closeToast" class="close-button" type="button" aria-label="Fechar aviso">×</button></div>
+  <dialog id="profileDialog" aria-labelledby="profileDialogTitle">
+    <form id="profileForm" class="dialog-body">
+      <div class="dialog-head"><div><h2 id="profileDialogTitle">Perfil de interesse</h2><p>O perfil é salvo apenas neste navegador.</p></div><button class="close-button" type="button" data-close-dialog="profileDialog" aria-label="Fechar">×</button></div>
+      <div class="profile-grid">
+        <div class="field"><label for="requiredKeywords">Palavras obrigatórias</label><input id="requiredKeywords" name="requiredKeywords" placeholder="deixe vazio ou separe por vírgulas"><span class="form-help">Todas precisam aparecer no objeto ou órgão.</span></div>
+        <div class="field"><label for="optionalKeywords">Palavras opcionais</label><input id="optionalKeywords" name="optionalKeywords" placeholder="notebook, servidor, software"><span class="form-help">Encontradas, aumentam o score proporcionalmente.</span></div>
+        <div class="field"><label for="excludedKeywords">Palavras excluídas</label><input id="excludedKeywords" name="excludedKeywords" placeholder="locação de veículos, obra"></div>
+        <div class="field"><label for="profileUfs">UFs de interesse</label><input id="profileUfs" name="ufs" placeholder="SP, AM, DF"><span class="form-help">Vazio considera todas as UFs.</span></div>
+      </div>
+      <div class="dialog-actions"><button class="button" type="submit">Salvar perfil</button><button class="button ghost" id="clearProfile" type="button">Limpar perfil</button></div><p id="profileStatus" class="status" aria-live="polite"></p>
+    </form>
+  </dialog>
+  <dialog id="detailDialog" aria-labelledby="detailTitle"><div class="dialog-body"><div class="dialog-head"><div><h2 id="detailTitle"></h2><p id="detailBadge"></p></div><button class="close-button" type="button" data-close-dialog="detailDialog" aria-label="Fechar detalhes">×</button></div><p id="detailObject" class="detail-object"></p><div id="detailGrid" class="detail-grid"></div><div class="dialog-actions"><a id="sourceLink" class="button secondary" target="_blank" rel="noopener noreferrer" hidden>Abrir fonte oficial</a><button id="detailFollow" class="button" type="button">Acompanhar</button></div></div></dialog>
+  <dialog id="onboardingDialog" aria-labelledby="onboardingTitle"><div class="dialog-body"><div class="dialog-head"><div><div class="eyebrow">Boas-vindas</div><p id="onboardingTitle">Comece em três passos</p></div><button class="close-button" id="closeIntro" type="button" aria-label="Fechar introdução">×</button></div><div class="onboarding-progress" aria-label="Progresso da introdução"><span class="progress-dot active"></span><span class="progress-dot"></span><span class="progress-dot"></span></div>
+    <section class="onboarding-step" data-step="0"><h2>Licitações compatíveis, em um só lugar.</h2><p>O site lê uma captura publicada do PNCP. Atualize para conferir a última coleta disponível e acompanhe os prazos importantes.</p><p id="onboardingSampleCount" class="status" aria-live="polite">Carregando oportunidades…</p><p>Configure um perfil para ver o score e os motivos de compatibilidade.</p><div class="onboarding-actions"><span></span><div class="right"><button class="button" type="button" data-next-step>Continuar</button></div></div></section>
+    <section class="onboarding-step" data-step="1" hidden><h2>Defina o que sua empresa vende.</h2><form id="onboardingProfileForm" class="profile-grid"><div class="field"><label for="onboardingRequired">Palavras obrigatórias</label><input id="onboardingRequired" name="requiredKeywords" placeholder="vazio ou termos separados por vírgula"></div><div class="field"><label for="onboardingOptional">Palavras opcionais</label><input id="onboardingOptional" name="optionalKeywords" placeholder="notebook, servidor, software"></div><div class="field"><label for="onboardingExcluded">Palavras excluídas</label><input id="onboardingExcluded" name="excludedKeywords" placeholder="locação de veículos, obra"></div><div class="field"><label for="onboardingUfs">UFs de interesse</label><input id="onboardingUfs" name="ufs" placeholder="SP, AM, DF ou vazio"></div><div class="field" style="grid-column:1/-1"><button id="exampleProfile" class="button secondary" type="button">Usar perfil de exemplo de TI</button></div></form><div class="onboarding-actions"><button class="button ghost" type="button" data-previous-step="0">Voltar</button><div class="right"><button class="button" id="saveOnboardingProfile" type="button">Salvar e continuar</button></div></div></section>
+    <section class="onboarding-step" data-step="2" hidden><h2>Perfil salvo. Hora de explorar.</h2><p id="onboardingSummary"></p><p>Você pode editar o perfil depois. Favoritos, descartes, pipeline e anotações ficam salvos neste navegador.</p><div class="onboarding-actions"><button class="button ghost" type="button" data-previous-step="1">Voltar</button><div class="right"><button class="button" id="finishIntro" type="button">Ver oportunidades</button></div></div></section>
+  </div></dialog>
+  <script>
+    let dataset = { atualizadoEm: null, status: "erro", mensagem: "Aguardando o primeiro carregamento.", parametros: {}, total: 0, registros: [] };
+    const DATA_CACHE_KEY = "edital-certo-data-cache-v1";
+    const STORAGE_KEYS = {
+      profile: "edital-certo-profile-v1",
+      favorites: "edital-certo-favorites-v1",
+      discarded: "edital-certo-discarded-v1",
+      pipeline: "edital-certo-pipeline-v1",
+      onboarding: "edital-certo-onboarding-v1"
+    };
+    const STAGES = [
+      { id: "triage", label: "Triagem" },
+      { id: "analysis", label: "Em análise" },
+      { id: "documentation", label: "Documentação" },
+      { id: "submitted", label: "Proposta enviada" },
+      { id: "won", label: "Ganha" },
+      { id: "lost", label: "Perdida" }
+    ];
+    const TI_TERMS = /notebook|computador|desktop|servidor|software|licen[çc]a|sistema|tecnologia da informa[çc][ãa]o|\bti\b|rede|switch|firewall|nobreak|impressora|outsourcing de impress[ãa]o|suporte t[ée]cnico|desenvolvimento|hospedagem|nuvem|data ?center|link de internet|telefonia|monitor|tablet/i;
+    const state = {
+      profile: { requiredKeywords: [], optionalKeywords: [], excludedKeywords: [], ufs: [] },
+      favorites: new Set(), discarded: new Set(), pipeline: {},
+      view: "opportunities", search: "", uf: "", modality: "", sphere: "", value: "", listMode: "all", showClosed: false, sort: "score"
+    };
+    let records = [];
+    let toastTimer = null;
+    let pendingUndo = null;
+    const byId = (id) => document.getElementById(id);
+    const isExample = (raw) => raw.exemplo === true;
+
+    function mapRecord(raw) {
+      const agency = raw.orgaoEntidade || {};
+      const unit = raw.unidadeOrgao || {};
+      const numericValue = typeof raw.valorTotalEstimado === "number" ? raw.valorTotalEstimado : Number(raw.valorTotalEstimado);
+      const value = raw.valorTotalEstimado == null || raw.valorTotalEstimado === "" || !Number.isFinite(numericValue) || numericValue <= 0 ? null : numericValue;
+      return {
+        raw,
+        id: String(raw.numeroControlePNCP ?? ""),
+        title: cleanTitle(raw.objetoCompra ?? "Objeto não informado"),
+        object: String(raw.objetoCompra ?? "Objeto não informado"),
+        agency: String(agency.razaoSocial ?? "Órgão não informado"),
+        uf: String(unit.ufSigla ?? "").toUpperCase(),
+        municipality: String(unit.municipioNome ?? ""),
+        municipalityCode: String(unit.codigoIbge ?? ""),
+        modalityId: String(raw.modalidadeId ?? ""),
+        modality: String(raw.modalidadeNome ?? "Modalidade não informada"),
+        sphere: String(agency.esferaId ?? "").toUpperCase(),
+        status: String(raw.situacaoCompraNome ?? "Situação não informada"),
+        value,
+        publishedAt: raw.dataPublicacaoPncp ?? null,
+        updatedAt: raw.dataAtualizacao ?? raw.dataAtualizacaoGlobal ?? null,
+        closesAt: raw.dataEncerramentoProposta ?? null,
+        opensAt: raw.dataAberturaProposta ?? null,
+        url: raw.linkSistemaOrigem ?? null,
+        example: isExample(raw),
+        outsideCurrent: false
+      };
+    }
+    function cleanTitle(value) {
+      return String(value ?? "").replace(/^\s*(?:\[[^\]]+\]\s*[-–—:]?\s*)+/, "").trim() || "Objeto não informado";
+    }
+    function storageRead(key, fallback) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+    function storageWrite(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    function storageRemove(key) {
+      try {
+        localStorage.removeItem(key);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+    function normalizeText(value) {
+      return String(value ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLocaleLowerCase("pt-BR");
+    }
+    function splitTerms(value) {
+      return String(value ?? "").split(",").map((term) => term.trim()).filter(Boolean);
+    }
+    function formatMoney(value) {
+      return value == null || value <= 0 ? "Sigiloso ou não informado" : new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(value);
+    }
+    function dateToInstant(value) {
+      if (!value) return null;
+      const text = String(value);
+      const normalized = /(?:Z|[+-]\d{2}:?\d{2})$/i.test(text) ? text : `${text}-03:00`;
+      const date = new Date(normalized);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+    function formatDate(value) {
+      const date = dateToInstant(value);
+      return date ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(date) : "Não informado";
+    }
+    function daysUntil(value) {
+      const date = dateToInstant(value);
+      if (!date) return null;
+      const nowParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
+      const targetParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+      const dateKey = (parts) => parts.filter((part) => ["year", "month", "day"].includes(part.type)).map((part) => part.value).join("-");
+      const today = new Date(`${dateKey(nowParts)}T00:00:00-03:00`);
+      const target = new Date(`${dateKey(targetParts)}T00:00:00-03:00`);
+      return Math.floor((target.getTime() - today.getTime()) / 86400000);
+    }
+    function deadlineInfo(record) {
+      const days = daysUntil(record.closesAt);
+      if (days == null) return { label: "Prazo não informado", className: "deadline-closed", closed: true };
+      if (days < 0 || (days === 0 && dateToInstant(record.closesAt).getTime() < Date.now())) return { label: "Encerrada", className: "deadline-closed", closed: true };
+      if (days === 0) return { label: "Encerra hoje", className: "deadline-urgent", closed: false };
+      if (days <= 3) return { label: `Faltam ${days} ${days === 1 ? "dia" : "dias"}`, className: "deadline-urgent", closed: false };
+      if (days <= 7) return { label: `Faltam ${days} dias`, className: "deadline-soon", closed: false };
+      return { label: `Faltam ${days} dias`, className: "deadline-normal", closed: false };
+    }
+    function safeHttpUrl(value) {
+      try {
+        const url = new URL(value);
+        return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
+      } catch {
+        return null;
+      }
+    }
+    function getMatch(record) {
+      const profile = state.profile;
+      const searchText = normalizeText(`${record.title} ${record.object} ${record.agency}`);
+      const excluded = profile.excludedKeywords.filter((term) => searchText.includes(normalizeText(term)));
+      if (excluded.length) return { matched: false, score: 0, reasons: [`Excluída por: ${excluded.join(", ")}`] };
+      const requiredMatches = profile.requiredKeywords.filter((term) => searchText.includes(normalizeText(term)));
+      if (profile.requiredKeywords.length && requiredMatches.length !== profile.requiredKeywords.length) {
+        return { matched: false, score: 0, reasons: ["Não atende todas as palavras obrigatórias"] };
+      }
+      const optionalMatches = profile.optionalKeywords.filter((term) => searchText.includes(normalizeText(term)));
+      const hasUFRule = profile.ufs.length > 0;
+      const ufMatches = hasUFRule && profile.ufs.includes(record.uf);
+      if (hasUFRule && !ufMatches) return { matched: false, score: 0, reasons: ["UF fora do perfil"] };
+      const criteria = [];
+      if (profile.requiredKeywords.length) criteria.push({ weight: 50, points: requiredMatches.length === profile.requiredKeywords.length ? 50 : 0 });
+      if (profile.optionalKeywords.length) criteria.push({ weight: 30, points: 30 * optionalMatches.length / profile.optionalKeywords.length });
+      if (hasUFRule) criteria.push({ weight: 20, points: ufMatches ? 20 : 0 });
+      const configuredWeight = criteria.reduce((total, item) => total + item.weight, 0);
+      const earned = criteria.reduce((total, item) => total + item.points, 0);
+      const score = configuredWeight ? Math.round((earned / configuredWeight) * 100) : null;
+      const reasons = [];
+      if (requiredMatches.length) reasons.push(`Obrigatórias: ${requiredMatches.join(", ")}`);
+      if (optionalMatches.length) reasons.push(`Opcionais: ${optionalMatches.join(", ")}`);
+      if (hasUFRule && ufMatches) reasons.push(`UF: ${record.uf}`);
+      return { matched: true, score, reasons };
+    }
+    function scoreBadge(match) {
+      const badge = createElement("span", "score-badge", match.score == null ? "Sem critério de score" : `${scoreBand(match.score).label} · ${match.score}/100`);
+      if (match.score != null) badge.classList.add(scoreBand(match.score).className);
+      return badge;
+    }
+    function scoreBand(score) {
+      if (score >= 80) return { label: "Alta", className: "score-high" };
+      if (score >= 50) return { label: "Média", className: "score-medium" };
+      return { label: "Baixa", className: "score-low" };
+    }
+    function createElement(tag, className, text) {
+      const element = document.createElement(tag);
+      if (className) element.className = className;
+      if (text !== undefined && text !== null) element.textContent = String(text);
+      return element;
+    }
+    function loadState() {
+      const profile = storageRead(STORAGE_KEYS.profile, null);
+      if (profile && typeof profile === "object" && !Array.isArray(profile)) {
+        state.profile = {
+          requiredKeywords: Array.isArray(profile.requiredKeywords) ? profile.requiredKeywords.filter((x) => typeof x === "string") : [],
+          optionalKeywords: Array.isArray(profile.optionalKeywords) ? profile.optionalKeywords.filter((x) => typeof x === "string") : [],
+          excludedKeywords: Array.isArray(profile.excludedKeywords) ? profile.excludedKeywords.filter((x) => typeof x === "string") : [],
+          ufs: Array.isArray(profile.ufs) ? profile.ufs.filter((x) => typeof x === "string").map((x) => x.toUpperCase()) : []
+        };
+      }
+      const favorites = storageRead(STORAGE_KEYS.favorites, []);
+      const discarded = storageRead(STORAGE_KEYS.discarded, []);
+      state.favorites = new Set(Array.isArray(favorites) ? favorites.filter((x) => typeof x === "string") : []);
+      state.discarded = new Set(Array.isArray(discarded) ? discarded.filter((x) => typeof x === "string") : []);
+      const pipeline = storageRead(STORAGE_KEYS.pipeline, {});
+      if (pipeline && typeof pipeline === "object" && !Array.isArray(pipeline)) {
+        for (const [id, card] of Object.entries(pipeline)) {
+          if (!card || typeof card !== "object") continue;
+          state.pipeline[id] = {
+            tenderId: id,
+            stage: STAGES.some((stage) => stage.id === card.stage) ? card.stage : "triage",
+            owner: typeof card.owner === "string" ? card.owner : "",
+            notes: typeof card.notes === "string" ? card.notes : "",
+            checklist: Array.isArray(card.checklist) ? card.checklist.filter((item) => item && typeof item.label === "string").map((item) => ({ label: item.label, done: item.done === true })) : []
+          };
+        }
+      }
+    }
+    function saveState() {
+      storageWrite(STORAGE_KEYS.profile, state.profile);
+      storageWrite(STORAGE_KEYS.favorites, [...state.favorites]);
+      storageWrite(STORAGE_KEYS.discarded, [...state.discarded]);
+      storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+    }
+    function formProfile(form) {
+      const read = (name) => form.elements.namedItem(name)?.value ?? "";
+      return {
+        requiredKeywords: splitTerms(read("requiredKeywords")),
+        optionalKeywords: splitTerms(read("optionalKeywords")),
+        excludedKeywords: splitTerms(read("excludedKeywords")),
+        ufs: splitTerms(read("ufs")).map((uf) => uf.trim().toUpperCase())
+      };
+    }
+    function fillProfileForm(form) {
+      form.elements.namedItem("requiredKeywords").value = state.profile.requiredKeywords.join(", ");
+      form.elements.namedItem("optionalKeywords").value = state.profile.optionalKeywords.join(", ");
+      form.elements.namedItem("excludedKeywords").value = state.profile.excludedKeywords.join(", ");
+      form.elements.namedItem("ufs").value = state.profile.ufs.join(", ");
+    }
+    function setProfile(profile) {
+      state.profile = profile;
+      saveState();
+      fillProfileForm(byId("profileForm"));
+      fillProfileForm(byId("onboardingProfileForm"));
+      renderAll();
+    }
+    function populateFilters() {
+      const states = [...new Set(records.map((record) => record.uf).filter(Boolean))].sort();
+      const modalities = [...new Map(records.map((record) => [record.modalityId, record.modality]).filter(([id]) => id)).entries()].sort((a, b) => a[1].localeCompare(b[1], "pt-BR"));
+      const ufFilter = byId("ufFilter");
+      const modalityFilter = byId("modalityFilter");
+      ufFilter.replaceChildren(createOption("", "Todas as UFs"));
+      modalityFilter.replaceChildren(createOption("", "Todas"));
+      for (const uf of states) ufFilter.append(createOption(uf, uf));
+      for (const [id, name] of modalities) modalityFilter.append(createOption(id, name));
+    }
+    function createOption(value, label) {
+      const option = document.createElement("option");
+      option.value = value;
+      option.textContent = label;
+      return option;
+    }
+    function valueMatches(value, mode) {
+      if (!mode) return true;
+      if (mode === "unknown") return value == null;
+      if (mode === "known") return value != null;
+      if (value == null) return false;
+      if (mode === "under100") return value <= 100000;
+      if (mode === "100to500") return value > 100000 && value <= 500000;
+      if (mode === "500to2m") return value > 500000 && value <= 2000000;
+      if (mode === "over2m") return value > 2000000;
+      return true;
+    }
+    function getFilteredRecords() {
+      const query = normalizeText(state.search);
+      return records.map((record) => ({ record, match: getMatch(record), deadline: deadlineInfo(record) }))
+        .filter(({ record }) => {
+          if (state.listMode === "discarded") return state.discarded.has(record.id);
+          if (state.discarded.has(record.id)) return false;
+          if (state.listMode === "favorites" && !state.favorites.has(record.id)) return false;
+          return true;
+        })
+        .filter(({ record, match }) => {
+          if (!state.showClosed && deadlineInfo(record).closed && !record.outsideCurrent) return false;
+          if (!match.matched) return false;
+          if (query && !normalizeText(`${record.title} ${record.agency} ${record.uf}`).includes(query)) return false;
+          if (state.uf && record.uf !== state.uf) return false;
+          if (state.modality && record.modalityId !== state.modality) return false;
+          if (state.sphere && record.sphere !== state.sphere) return false;
+          if (!valueMatches(record.value, state.value)) return false;
+          return true;
+        })
+        .sort((a, b) => {
+          if (state.sort === "deadline") return (dateToInstant(a.record.closesAt)?.getTime() ?? Infinity) - (dateToInstant(b.record.closesAt)?.getTime() ?? Infinity);
+          if (state.sort === "value") return (b.record.value ?? -1) - (a.record.value ?? -1);
+          return (b.match.score ?? -1) - (a.match.score ?? -1);
+        });
+    }
+    function renderOpportunities() {
+      const list = byId("tenderList");
+      list.setAttribute("aria-busy", "true");
+      const items = getFilteredRecords();
+      list.replaceChildren();
+      byId("resultCount").replaceChildren(createElement("strong", "", `${items.length} de ${records.length} oportunidades`), document.createTextNode(state.listMode === "discarded" ? " · descartadas" : " · após filtros"));
+      for (const item of items) list.append(renderTenderCard(item.record, item.match, item.deadline));
+      if (!items.length) {
+        const empty = createElement("div", "empty");
+        empty.append(createElement("strong", "", state.listMode === "discarded" ? "Nenhum descarte para mostrar" : "Nenhuma oportunidade encontrada"));
+        empty.append(createElement("span", "", `A coleta atual tem ${records.length} oportunidades. Ajuste os filtros, o perfil ou o período de encerramento.`));
+        if (state.listMode !== "discarded") {
+          const actions = createElement("div", "card-actions");
+          actions.append(makeButton("Mostrar todas, inclusive encerradas", "button secondary small", () => {
+            state.search = ""; state.uf = ""; state.modality = ""; state.sphere = ""; state.value = ""; state.listMode = "all"; state.showClosed = true;
+            byId("searchInput").value = ""; byId("ufFilter").value = ""; byId("modalityFilter").value = ""; byId("sphereFilter").value = ""; byId("valueFilter").value = ""; byId("listMode").value = "all"; byId("showClosed").checked = true;
+            renderAll();
+          }));
+          actions.append(makeButton("Limpar perfil", "button ghost small", () => setProfile({ requiredKeywords: [], optionalKeywords: [], excludedKeywords: [], ufs: [] })));
+          empty.append(actions);
+        }
+        list.append(empty);
+      }
+      list.setAttribute("aria-busy", "false");
+      byId("sampleTotal").textContent = String(records.length);
+      byId("compatibleTotal").textContent = String(records.filter((record) => getMatch(record).matched && !deadlineInfo(record).closed).length);
+      byId("urgentTotal").textContent = String(records.filter((record) => { const info = deadlineInfo(record); return !info.closed && daysUntil(record.closesAt) <= 3; }).length);
+      byId("favoriteTotal").textContent = String(state.favorites.size);
+    }
+    function renderTenderCard(record, match, deadline) {
+      const card = createElement("article", "tender-card");
+      const top = createElement("div", "card-top");
+      top.append(createElement("h2", "tender-title", record.title));
+      top.append(scoreBadge(match));
+      card.append(top);
+      if (record.outsideCurrent) card.append(createElement("span", "stale-badge", "Fora da coleta atual"));
+      const metadata = createElement("div", "meta");
+      metadata.append(createElement("span", "", `${record.uf || "UF não informada"}${record.municipality ? ` · ${record.municipality}` : ""}`));
+      metadata.append(createElement("span", "", record.modality));
+      metadata.append(createElement("span", "", record.sphere ? sphereName(record.sphere) : "Esfera não informada"));
+      metadata.append(createElement("span", "", formatMoney(record.value)));
+      const deadlineBadge = createElement("span", `deadline-badge ${deadline.className}`, deadline.label);
+      metadata.append(deadlineBadge);
+      if (record.example) metadata.append(createElement("span", "pill example", "Exemplo"));
+      card.append(metadata);
+      card.append(createElement("p", "object-preview", record.agency));
+      if (match.reasons.length) card.append(createElement("p", "match-reasons", `Compatibilidade: ${match.reasons.join(" · ")}`));
+      const actions = createElement("div", "card-actions");
+      const details = makeButton("Ver detalhes", "button secondary small", () => showDetails(record));
+      actions.append(details);
+      const favorite = makeButton(state.favorites.has(record.id) ? "★ Favorita" : "☆ Favoritar", "button ghost small", () => toggleSet(state.favorites, STORAGE_KEYS.favorites, record.id));
+      favorite.setAttribute("aria-pressed", String(state.favorites.has(record.id)));
+      actions.append(favorite);
+      if (state.listMode === "discarded") {
+        actions.append(makeButton("Restaurar", "button secondary small", () => restoreRecord(record.id)));
+      } else {
+        actions.append(makeButton("Descartar", "button ghost small", () => discardRecord(record.id)));
+      }
+      actions.append(makeButton(state.pipeline[record.id] ? "No pipeline" : "Acompanhar", "button small", () => addToPipeline(record)));
+      card.append(actions);
+      return card;
+    }
+    function makeButton(label, className, onClick) {
+      const button = createElement("button", className, label);
+      button.type = "button";
+      button.addEventListener("click", onClick);
+      return button;
+    }
+    function sphereName(sphere) {
+      return ({ F: "Federal", E: "Estadual", M: "Municipal" })[sphere] || "Esfera não informada";
+    }
+    function toggleSet(set, key, id) {
+      if (set.has(id)) set.delete(id); else set.add(id);
+      storageWrite(key, [...set]);
+      renderAll();
+    }
+    function discardRecord(id) {
+      state.discarded.add(id);
+      storageWrite(STORAGE_KEYS.discarded, [...state.discarded]);
+      showToast("Oportunidade descartada.", () => {
+        state.discarded.delete(id);
+        storageWrite(STORAGE_KEYS.discarded, [...state.discarded]);
+        renderAll();
+      });
+      renderAll();
+    }
+    function restoreRecord(id) {
+      state.discarded.delete(id);
+      storageWrite(STORAGE_KEYS.discarded, [...state.discarded]);
+      renderAll();
+      showToast("Oportunidade restaurada.");
+    }
+    function showToast(message, undo) {
+      clearTimeout(toastTimer);
+      pendingUndo = typeof undo === "function" ? undo : null;
+      byId("toastText").textContent = message;
+      byId("undoAction").hidden = !pendingUndo;
+      byId("toast").hidden = false;
+      toastTimer = setTimeout(() => { byId("toast").hidden = true; pendingUndo = null; }, 6500);
+    }
+    function detailCell(parent, label, value) {
+      const cell = createElement("div", "detail-cell");
+      cell.append(createElement("small", "", label), createElement("strong", "", value || "Não informado"));
+      parent.append(cell);
+    }
+    function showDetails(record) {
+      byId("detailTitle").textContent = record.title;
+      const recordLabels = [record.example ? "Exemplo fictício" : `Registro real do PNCP · ${record.id}`];
+      if (record.outsideCurrent) recordLabels.push("Fora da coleta atual");
+      byId("detailBadge").textContent = recordLabels.join(" · ");
+      byId("detailObject").textContent = record.object;
+      const grid = byId("detailGrid");
+      grid.replaceChildren();
+      detailCell(grid, "Órgão", record.agency);
+      detailCell(grid, "Local", [record.municipality, record.uf].filter(Boolean).join(" / "));
+      detailCell(grid, "Código IBGE", record.municipalityCode);
+      detailCell(grid, "Esfera", sphereName(record.sphere));
+      detailCell(grid, "Modalidade", record.modality);
+      detailCell(grid, "Situação", record.status);
+      detailCell(grid, "Valor estimado", formatMoney(record.value));
+      detailCell(grid, "Abertura de propostas", formatDate(record.opensAt));
+      detailCell(grid, "Encerramento de propostas", formatDate(record.closesAt));
+      detailCell(grid, "Publicação PNCP", formatDate(record.publishedAt));
+      detailCell(grid, "Última atualização da fonte", formatDate(record.updatedAt));
+      const sourceLink = byId("sourceLink");
+      const safeUrl = record.example ? null : safeHttpUrl(record.url);
+      sourceLink.hidden = !safeUrl;
+      if (safeUrl) sourceLink.href = safeUrl; else sourceLink.removeAttribute("href");
+      byId("detailFollow").textContent = state.pipeline[record.id] ? "Abrir no pipeline" : "Acompanhar";
+      byId("detailFollow").onclick = () => {
+        addToPipeline(record);
+        byId("detailDialog").close();
+      };
+      byId("detailDialog").showModal();
+    }
+    function addToPipeline(record) {
+      if (!state.pipeline[record.id]) {
+        state.pipeline[record.id] = {
+          tenderId: record.id,
+          stage: "triage",
+          owner: "",
+          notes: "",
+          checklist: [
+            { label: "Ler o edital", done: false },
+            { label: "Confirmar requisitos", done: false },
+            { label: "Preparar proposta", done: false }
+          ]
+        };
+        storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+        showToast("Oportunidade adicionada à Triagem.");
+      }
+      activateView("pipeline");
+      renderAll();
+    }
+    function movePipeline(id, stage) {
+      if (!state.pipeline[id] || !STAGES.some((item) => item.id === stage)) return;
+      state.pipeline[id].stage = stage;
+      storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+      renderAll();
+    }
+    function removeFromPipeline(id) {
+      delete state.pipeline[id];
+      storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+      renderAll();
+      showToast("Oportunidade removida do pipeline.");
+    }
+    function renderPipeline() {
+      const board = byId("pipelineBoard");
+      board.replaceChildren();
+      for (const stage of STAGES) {
+        const column = createElement("section", "kanban-column");
+        column.dataset.stage = stage.id;
+        const cards = Object.values(state.pipeline).filter((card) => card.stage === stage.id);
+        const heading = createElement("div", "column-heading");
+        heading.append(createElement("h3", "", stage.label), createElement("span", "column-count", String(cards.length)));
+        column.append(heading);
+        const cardList = createElement("div", "column-cards");
+        cardList.dataset.stage = stage.id;
+        for (const pipelineCard of cards) {
+          const record = records.find((item) => item.id === pipelineCard.tenderId);
+          if (record) cardList.append(renderPipelineCard(record, pipelineCard));
+        }
+        column.append(cardList);
+        column.addEventListener("dragover", (event) => { event.preventDefault(); column.classList.add("drop-target"); });
+        column.addEventListener("dragleave", (event) => { if (!column.contains(event.relatedTarget)) column.classList.remove("drop-target"); });
+        column.addEventListener("drop", (event) => {
+          event.preventDefault();
+          column.classList.remove("drop-target");
+          const id = event.dataTransfer?.getData("text/plain");
+          if (id) movePipeline(id, stage.id);
+        });
+        board.append(column);
+      }
+    }
+    function renderPipelineCard(record, pipelineCard) {
+      const card = createElement("article", "pipeline-card");
+      card.draggable = true;
+      card.dataset.tenderId = record.id;
+      card.addEventListener("dragstart", (event) => {
+        card.classList.add("dragging");
+        event.dataTransfer?.setData("text/plain", record.id);
+        if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
+      });
+      card.addEventListener("dragend", () => card.classList.remove("dragging"));
+      card.append(createElement("h4", "", record.title));
+      if (record.outsideCurrent) card.append(createElement("span", "stale-badge", "Fora da coleta atual"));
+      card.append(createElement("div", "meta", `${record.uf || "UF não informada"} · ${deadlineInfo(record).label}`));
+      const moveField = createElement("div", "field");
+      const moveLabel = createElement("label", "", "Mover para");
+      const moveSelect = document.createElement("select");
+      moveSelect.className = "move-select";
+      moveSelect.setAttribute("aria-label", `Mover ${record.title} para outra etapa`);
+      for (const stage of STAGES) moveSelect.append(createOption(stage.id, stage.label));
+      moveSelect.value = pipelineCard.stage;
+      moveSelect.addEventListener("change", () => movePipeline(record.id, moveSelect.value));
+      moveField.append(moveLabel, moveSelect);
+      card.append(moveField);
+      const ownerField = createElement("div", "field");
+      ownerField.append(createElement("label", "", "Responsável"));
+      const owner = document.createElement("input");
+      owner.value = pipelineCard.owner;
+      owner.placeholder = "Nome ou equipe";
+      owner.setAttribute("aria-label", `Responsável por ${record.title}`);
+      owner.addEventListener("change", () => updatePipelineField(record.id, "owner", owner.value));
+      ownerField.append(owner);
+      card.append(ownerField);
+      const notesField = createElement("div", "field");
+      notesField.append(createElement("label", "", "Anotações"));
+      const notes = document.createElement("textarea");
+      notes.value = pipelineCard.notes;
+      notes.setAttribute("aria-label", `Anotações sobre ${record.title}`);
+      notes.addEventListener("change", () => updatePipelineField(record.id, "notes", notes.value));
+      notesField.append(notes);
+      card.append(notesField);
+      const checklist = createElement("div", "checklist");
+      for (let index = 0; index < pipelineCard.checklist.length; index++) {
+        const item = pipelineCard.checklist[index];
+        const label = createElement("label", "check-item");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.checked = item.done;
+        checkbox.setAttribute("aria-label", `${item.label} · ${record.title}`);
+        checkbox.addEventListener("change", () => {
+          pipelineCard.checklist[index].done = checkbox.checked;
+          storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+        });
+        label.append(checkbox, createElement("span", "", item.label));
+        checklist.append(label);
+      }
+      card.append(checklist);
+      const addChecklist = createElement("div", "check-add");
+      const taskInput = document.createElement("input");
+      taskInput.placeholder = "Nova tarefa";
+      taskInput.setAttribute("aria-label", `Nova tarefa para ${record.title}`);
+      const addButton = makeButton("+", "button secondary small", () => {
+        const label = taskInput.value.trim();
+        if (!label) return;
+        pipelineCard.checklist.push({ label, done: false });
+        storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+        renderPipeline();
+      });
+      addButton.setAttribute("aria-label", `Adicionar tarefa para ${record.title}`);
+      addChecklist.append(taskInput, addButton);
+      card.append(addChecklist);
+      const actions = createElement("div", "card-actions");
+      actions.append(makeButton("Detalhes", "button ghost small", () => showDetails(record)));
+      actions.append(makeButton("Remover", "button danger small", () => removeFromPipeline(record.id)));
+      card.append(actions);
+      return card;
+    }
+    function updatePipelineField(id, field, value) {
+      if (!state.pipeline[id]) return;
+      state.pipeline[id][field] = value;
+      storageWrite(STORAGE_KEYS.pipeline, state.pipeline);
+      renderDashboard();
+    }
+    function trackedRecords() {
+      const ids = new Set([...state.favorites, ...Object.keys(state.pipeline)]);
+      return [...ids].map((id) => records.find((record) => record.id === id)).filter(Boolean).filter((record) => record.outsideCurrent || !deadlineInfo(record).closed).sort((a, b) => (dateToInstant(a.closesAt)?.getTime() ?? Infinity) - (dateToInstant(b.closesAt)?.getTime() ?? Infinity));
+    }
+    function renderDeadlines() {
+      const root = byId("deadlineGroups");
+      root.replaceChildren();
+      const tracked = trackedRecords();
+      const definitions = [
+        { title: "Esta semana", test: (days) => days >= 0 && days <= 7 },
+        { title: "Próxima semana", test: (days) => days >= 8 && days <= 14 },
+        { title: "Depois", test: (days) => days > 14 }
+      ];
+      for (const group of definitions) {
+        const items = tracked.filter((record) => group.test(daysUntil(record.closesAt)));
+        const panel = createElement("section", "deadline-group");
+        panel.append(createElement("h2", "", `${group.title} · ${items.length}`));
+        for (const record of items) panel.append(renderDeadlineRow(record));
+        if (!items.length) panel.append(createElement("p", "muted", "Nenhum prazo nesta faixa."));
+        root.append(panel);
+      }
+    }
+    function renderDeadlineRow(record) {
+      const row = createElement("article", "deadline-row");
+      const information = createElement("div");
+      information.append(createElement("strong", "", record.title));
+      information.append(createElement("small", "", `${record.agency} · ${record.uf || "UF não informada"} · ${formatDate(record.closesAt)}`));
+      const actions = createElement("div", "card-actions");
+      actions.append(makeButton("Detalhes", "button ghost small", () => showDetails(record)));
+      actions.append(makeButton("Exportar .ics", "button secondary small", () => exportIcs(record)));
+      row.append(information, actions);
+      return row;
+    }
+    function escapeIcs(value) {
+      return String(value ?? "").replace(/\\/g, "\\\\").replace(/\r?\n/g, "\\n").replace(/,/g, "\\,").replace(/;/g, "\\;");
+    }
+    function exportIcs(record) {
+      const start = dateToInstant(record.closesAt);
+      if (!start) { showToast("Esta oportunidade não tem um prazo válido para exportar."); return; }
+      const end = new Date(start.getTime() + 3600000);
+      const stamp = (date) => date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+      const uid = `${record.id.replace(/[^a-zA-Z0-9-]/g, "-")}@edital-certo.local`;
+      const content = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Edital Certo//Agenda de Licitacoes//PT-BR", "CALSCALE:GREGORIAN", "BEGIN:VEVENT", `UID:${uid}`, `DTSTAMP:${stamp(new Date())}`, `DTSTART:${stamp(start)}`, `DTEND:${stamp(end)}`, `SUMMARY:${escapeIcs(`Prazo de proposta: ${record.title}`)}`, `DESCRIPTION:${escapeIcs(`${record.agency} · ${record.uf} · Acompanhe no Edital Certo`)}`, "END:VEVENT", "END:VCALENDAR"].join("\r\n");
+      const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `prazo-${record.id.replace(/[^a-zA-Z0-9-]/g, "-")}.ics`;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast("Arquivo .ics preparado para o calendário.");
+    }
+    function renderDashboard() {
+      const compatible = records.filter((record) => getMatch(record).matched && !deadlineInfo(record).closed);
+      const pipelineCards = Object.values(state.pipeline);
+      const totalValue = pipelineCards.reduce((sum, card) => {
+        const record = records.find((item) => item.id === card.tenderId);
+        return sum + (record?.value ?? 0);
+      }, 0);
+      const nextWeek = trackedRecords().filter((record) => { const days = daysUntil(record.closesAt); return days >= 0 && days <= 7; }).length;
+      const wins = pipelineCards.filter((card) => card.stage === "won").length;
+      const losses = pipelineCards.filter((card) => card.stage === "lost").length;
+      const decided = wins + losses;
+      byId("dashboardCompatible").textContent = String(compatible.length);
+      byId("pipelineValue").textContent = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 2 }).format(totalValue);
+      byId("nextWeekDeadlines").textContent = String(nextWeek);
+      byId("winRate").textContent = decided ? `${Math.round((wins / decided) * 100)}%` : "—";
+      renderBarChart(byId("ufChart"), [...countBy(compatible, (record) => record.uf || "Sem UF").entries()].sort((a, b) => b[1] - a[1]).slice(0, 8), false);
+      const valueByStage = STAGES.map((stage) => [stage.label, pipelineCards.filter((card) => card.stage === stage.id).reduce((sum, card) => sum + (records.find((item) => item.id === card.tenderId)?.value ?? 0), 0)]);
+      renderBarChart(byId("stageChart"), valueByStage, true);
+    }
+    function countBy(items, keyFn) {
+      const counts = new Map();
+      for (const item of items) { const key = keyFn(item); counts.set(key, (counts.get(key) || 0) + 1); }
+      return counts;
+    }
+    function renderBarChart(container, entries, money) {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("viewBox", `0 0 420 ${Math.max(100, entries.length * 31 + 14)}`);
+      svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", money ? "Valor por etapa do pipeline" : "Quantidade de oportunidades por UF");
+      const maxValue = Math.max(1, ...entries.map(([, value]) => value));
+      entries.forEach(([label, value], index) => {
+        const y = 8 + index * 31;
+        const text = document.createElementNS(svg.namespaceURI, "text");
+        text.setAttribute("x", "0"); text.setAttribute("y", String(y + 13)); text.setAttribute("class", "chart-label"); text.textContent = String(label).slice(0, 20); svg.append(text);
+        const bg = document.createElementNS(svg.namespaceURI, "rect");
+        bg.setAttribute("x", "112"); bg.setAttribute("y", String(y)); bg.setAttribute("width", "222"); bg.setAttribute("height", "19"); bg.setAttribute("rx", "5"); bg.setAttribute("class", "chart-bar-bg"); svg.append(bg);
+        const bar = document.createElementNS(svg.namespaceURI, "rect");
+        bar.setAttribute("x", "112"); bar.setAttribute("y", String(y)); bar.setAttribute("width", String(Math.max(value > 0 ? 3 : 0, (value / maxValue) * 222))); bar.setAttribute("height", "19"); bar.setAttribute("rx", "5"); bar.setAttribute("class", "chart-bar"); svg.append(bar);
+        const amount = document.createElementNS(svg.namespaceURI, "text");
+        amount.setAttribute("x", "342"); amount.setAttribute("y", String(y + 13)); amount.setAttribute("class", "chart-value"); amount.textContent = money ? compactMoney(value) : String(value); svg.append(amount);
+      });
+      if (!entries.length) {
+        const message = document.createElementNS(svg.namespaceURI, "text"); message.setAttribute("x", "0"); message.setAttribute("y", "28"); message.setAttribute("class", "chart-label"); message.textContent = "Sem dados para exibir"; svg.append(message);
+      }
+      container.replaceChildren(svg);
+    }
+    function compactMoney(value) {
+      if (!value) return "R$ 0";
+      if (value >= 1000000) return `R$ ${(value / 1000000).toLocaleString("pt-BR", { maximumFractionDigits: 1 })} mi`;
+      if (value >= 1000) return `R$ ${(value / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 0 })} mil`;
+      return `R$ ${Math.round(value)}`;
+    }
+    function formatBrazilDate(value) {
+      if (!value) return "data não informada";
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return "data não informada";
+      return new Intl.DateTimeFormat("pt-BR", {
+        timeZone: "America/Sao_Paulo",
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit"
+      }).format(date);
+    }
+    function renderSnapshot() {
+      const statusLabels = { ok: "Coleta concluída", parcial: "Coleta parcial", erro: "Dados anteriores ou erro na coleta" };
+      const currentCount = records.filter((record) => !record.outsideCurrent).length;
+      const staleCount = records.length - currentCount;
+      byId("snapshotTitle").textContent = `Dados atualizados em ${formatBrazilDate(dataset.atualizadoEm)} · ${statusLabels[dataset.status] || "Status desconhecido"}`;
+      byId("snapshotText").textContent = `${dataset.mensagem || "Sem mensagem da coleta."} Exibindo ${currentCount} registros atuais e ${staleCount} registros acompanhados fora da coleta atual. Favoritos, perfil, descartes e pipeline são mantidos neste navegador.`;
+      byId("onboardingSampleCount").textContent = `${currentCount} oportunidades na coleta atual; ${staleCount} oportunidades acompanhadas fora dela.`;
+      byId("sourceFootnote").textContent = `Fonte: API oficial do PNCP. Esta página exibe a captura publicada no repositório e não consulta o PNCP diretamente. Última coleta informada: ${formatBrazilDate(dataset.atualizadoEm)}. Confira edital, anexos, prazo e condições na fonte oficial.`;
+    }
+    function renderAll() {
+      renderOpportunities();
+      renderPipeline();
+      renderDeadlines();
+      renderDashboard();
+      renderSnapshot();
+      updateNavigation();
+    }
+    function activateView(view) {
+      if (!["opportunities", "pipeline", "deadlines", "dashboard"].includes(view)) return;
+      state.view = view;
+      for (const section of document.querySelectorAll("[data-view-panel]")) section.hidden = section.dataset.viewPanel !== view;
+      updateNavigation();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    function updateNavigation() {
+      for (const button of document.querySelectorAll("[data-view]")) {
+        if (button.dataset.view === state.view) button.setAttribute("aria-current", "page"); else button.removeAttribute("aria-current");
+      }
+    }
+    function openProfile() {
+      fillProfileForm(byId("profileForm"));
+      byId("profileStatus").textContent = "";
+      byId("profileDialog").showModal();
+    }
+    function openIntro() {
+      setOnboardingStep(0);
+      fillProfileForm(byId("onboardingProfileForm"));
+      byId("onboardingDialog").showModal();
+    }
+    function setOnboardingStep(step) {
+      for (const section of document.querySelectorAll(".onboarding-step")) section.hidden = Number(section.dataset.step) !== step;
+      document.querySelectorAll(".progress-dot").forEach((dot, index) => dot.classList.toggle("active", index <= step));
+    }
+    function finishOnboarding() {
+      storageWrite(STORAGE_KEYS.onboarding, { complete: true });
+      byId("onboardingDialog").close();
+      activateView("opportunities");
+    }
+    function resetDemo() {
+      const confirmed = window.confirm("Reiniciar a demonstração neste navegador? Perfil, favoritos, descartes e pipeline serão apagados.");
+      if (!confirmed) return;
+      state.profile = { requiredKeywords: [], optionalKeywords: [], excludedKeywords: [], ufs: [] };
+      state.favorites.clear();
+      state.discarded.clear();
+      state.pipeline = {};
+      for (const key of Object.values(STORAGE_KEYS)) storageRemove(key);
+      state.search = ""; state.uf = ""; state.modality = ""; state.sphere = ""; state.value = ""; state.listMode = "all"; state.showClosed = false; state.sort = "score";
+      byId("searchInput").value = ""; byId("ufFilter").value = ""; byId("modalityFilter").value = ""; byId("sphereFilter").value = ""; byId("valueFilter").value = ""; byId("listMode").value = "all"; byId("showClosed").checked = false; byId("sortBy").value = "score";
+      fillProfileForm(byId("profileForm"));
+      fillProfileForm(byId("onboardingProfileForm"));
+      renderAll();
+      openIntro();
+    }
+    function dateKeyInBrazil(date) {
+      const parts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
+      const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+      return `${values.year}${values.month}${values.day}`;
+    }
+    function isDataset(value) {
+      return Boolean(value && typeof value === "object" && Array.isArray(value.registros)
+        && value.registros.every((record) => record && typeof record === "object" && String(record.numeroControlePNCP || "").trim()));
+    }
+    function applyDataset(nextDataset, useCachedStaleIds = false) {
+      if (!isDataset(nextDataset)) throw new Error("O arquivo recebido não contém uma lista válida de registros PNCP.");
+      const previousById = new Map(records.map((record) => [record.id, record]));
+      const currentRecords = nextDataset.registros.map(mapRecord).filter((record) => record.id);
+      const currentIds = new Set(currentRecords.map((record) => record.id));
+      const trackedIds = new Set([...state.favorites, ...Object.keys(state.pipeline)]);
+      const staleRecords = [];
+      for (const id of trackedIds) {
+        if (currentIds.has(id)) continue;
+        const previous = previousById.get(id);
+        if (previous) staleRecords.push({ ...previous, outsideCurrent: true });
+      }
+      const cachedStaleIds = new Set(Array.isArray(nextDataset.foraDaColetaAtual) ? nextDataset.foraDaColetaAtual : []);
+      records = [...currentRecords, ...staleRecords];
+      if (useCachedStaleIds) {
+        records = records.map((record) => cachedStaleIds.has(record.id) ? { ...record, outsideCurrent: true } : record);
+      }
+      dataset = {
+        atualizadoEm: typeof nextDataset.atualizadoEm === "string" ? nextDataset.atualizadoEm : null,
+        status: typeof nextDataset.status === "string" ? nextDataset.status : "erro",
+        mensagem: typeof nextDataset.mensagem === "string" ? nextDataset.mensagem : "Sem mensagem da coleta.",
+        parametros: nextDataset.parametros && typeof nextDataset.parametros === "object" ? nextDataset.parametros : {},
+        total: Number.isFinite(Number(nextDataset.total)) ? Number(nextDataset.total) : currentRecords.length,
+        registros: currentRecords.map((record) => record.raw)
+      };
+      const cacheValue = {
+        ...dataset,
+        total: currentRecords.length,
+        registros: records.map((record) => record.raw),
+        foraDaColetaAtual: records.filter((record) => record.outsideCurrent).map((record) => record.id)
+      };
+      storageWrite(DATA_CACHE_KEY, cacheValue);
+      populateFilters();
+    }
+    async function refreshDataFile(showMessages = true) {
+      const button = byId("liveSearch");
+      const label = byId("refreshLabel");
+      const list = byId("tenderList");
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+      list.setAttribute("aria-busy", "true");
+      label.textContent = "Atualizando…";
+      try {
+        const response = await fetch(`./data/dados.json?t=${Date.now()}`, {
+          method: "GET",
+          cache: "no-store",
+          headers: { accept: "application/json" },
+          signal: AbortSignal.timeout(30_000)
+        });
+        if (!response.ok) throw new Error(`Não foi possível abrir os dados publicados (HTTP ${response.status}).`);
+        const body = await response.json();
+        if (!isDataset(body)) throw new Error("O arquivo publicado está vazio ou fora do formato esperado.");
+        applyDataset(body);
+        renderAll();
+        if (showMessages) showToast(`Dados atualizados: ${records.filter((record) => !record.outsideCurrent).length} oportunidades na coleta.`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "Não foi possível carregar a coleta publicada.";
+        renderAll();
+        if (showMessages) showToast(`${message} Mantive os dados da última leitura salvos neste navegador.`);
+        byId("snapshotText").textContent = `${message} A página manteve a última leitura salva neste navegador. ${dataset.mensagem || ""}`;
+      } finally {
+        button.disabled = false;
+        button.removeAttribute("aria-busy");
+        label.textContent = "Atualizar";
+        list.setAttribute("aria-busy", "false");
+      }
+    }
+    function wireEvents() {
+      for (const button of document.querySelectorAll("[data-view]")) button.addEventListener("click", () => activateView(button.dataset.view));
+      byId("openProfile").addEventListener("click", openProfile);
+      byId("editProfileInline").addEventListener("click", openProfile);
+      byId("liveSearch").addEventListener("click", () => refreshDataFile(true));
+      byId("profileForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        setProfile(formProfile(event.currentTarget));
+        byId("profileStatus").textContent = "Perfil salvo neste navegador.";
+        showToast("Perfil atualizado.");
+      });
+      byId("clearProfile").addEventListener("click", () => {
+        setProfile({ requiredKeywords: [], optionalKeywords: [], excludedKeywords: [], ufs: [] });
+        byId("profileStatus").textContent = "Perfil limpo.";
+      });
+      byId("searchInput").addEventListener("input", (event) => { state.search = event.currentTarget.value; renderOpportunities(); });
+      byId("ufFilter").addEventListener("change", (event) => { state.uf = event.currentTarget.value; renderOpportunities(); });
+      byId("modalityFilter").addEventListener("change", (event) => { state.modality = event.currentTarget.value; renderOpportunities(); });
+      byId("sphereFilter").addEventListener("change", (event) => { state.sphere = event.currentTarget.value; renderOpportunities(); });
+      byId("valueFilter").addEventListener("change", (event) => { state.value = event.currentTarget.value; renderOpportunities(); });
+      byId("listMode").addEventListener("change", (event) => { state.listMode = event.currentTarget.value; renderOpportunities(); });
+      byId("showClosed").addEventListener("change", (event) => { state.showClosed = event.currentTarget.checked; renderAll(); });
+      byId("sortBy").addEventListener("change", (event) => { state.sort = event.currentTarget.value; renderOpportunities(); });
+      byId("clearFilters").addEventListener("click", () => {
+        state.search = ""; state.uf = ""; state.modality = ""; state.sphere = ""; state.value = ""; state.listMode = "all"; state.showClosed = false;
+        byId("searchInput").value = ""; byId("ufFilter").value = ""; byId("modalityFilter").value = ""; byId("sphereFilter").value = ""; byId("valueFilter").value = ""; byId("listMode").value = "all"; byId("showClosed").checked = false;
+        renderAll();
+      });
+      byId("undoAction").addEventListener("click", () => {
+        if (pendingUndo) pendingUndo();
+        pendingUndo = null;
+        byId("toast").hidden = true;
+        clearTimeout(toastTimer);
+      });
+      byId("closeToast").addEventListener("click", () => { byId("toast").hidden = true; pendingUndo = null; clearTimeout(toastTimer); });
+      byId("reviewIntro").addEventListener("click", openIntro);
+      byId("resetDemo").addEventListener("click", resetDemo);
+      byId("exampleProfile").addEventListener("click", () => {
+        const form = byId("onboardingProfileForm");
+        form.elements.namedItem("requiredKeywords").value = "";
+        form.elements.namedItem("optionalKeywords").value = "notebook, servidor, software, licença, suporte, rede";
+        form.elements.namedItem("excludedKeywords").value = "locação de veículos, obra";
+        form.elements.namedItem("ufs").value = "";
+      });
+      byId("saveOnboardingProfile").addEventListener("click", () => {
+        setProfile(formProfile(byId("onboardingProfileForm")));
+        const terms = state.profile.optionalKeywords.length ? state.profile.optionalKeywords.join(", ") : "nenhuma palavra opcional";
+        byId("onboardingSummary").textContent = `Palavras opcionais: ${terms}. UFs: ${state.profile.ufs.length ? state.profile.ufs.join(", ") : "todas"}. A lista mostrará os registros que atendem às palavras obrigatórias e exclusões.`;
+        setOnboardingStep(2);
+      });
+      for (const button of document.querySelectorAll("[data-next-step]")) button.addEventListener("click", () => setOnboardingStep(1));
+      for (const button of document.querySelectorAll("[data-previous-step]")) button.addEventListener("click", () => setOnboardingStep(Number(button.dataset.previousStep)));
+      byId("finishIntro").addEventListener("click", finishOnboarding);
+      byId("closeIntro").addEventListener("click", finishOnboarding);
+      for (const button of document.querySelectorAll("[data-close-dialog]")) button.addEventListener("click", () => byId(button.dataset.closeDialog).close());
+    }
+    function start() {
+      loadState();
+      const cachedData = storageRead(DATA_CACHE_KEY, null);
+      if (isDataset(cachedData)) {
+        try { applyDataset(cachedData, true); } catch { /* A leitura inválida será substituída pela tentativa de rede. */ }
+      }
+      populateFilters();
+      fillProfileForm(byId("profileForm"));
+      fillProfileForm(byId("onboardingProfileForm"));
+      wireEvents();
+      renderAll();
+      const onboarding = storageRead(STORAGE_KEYS.onboarding, null);
+      if (!onboarding || onboarding.complete !== true) openIntro();
+      refreshDataFile(false);
+    }
+    start();
+  </script>
+</body>
+</html>
