@@ -224,7 +224,8 @@
       .summary-grid, .dashboard-stats { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
       .stat { padding: 11px 12px; }
       .stat strong { font-size: 19px; }
-      .layout { grid-template-columns: minmax(0,1fr); }
+      .layout { display: flex; flex-direction: column; gap: 12px; }
+      .filter-panel, .results-area { width: 100%; }
       .filter-panel > .panel-title { display: none; }
       .search-toolbar { grid-template-columns: minmax(0,1fr) auto; align-items: end; gap: 8px; margin-bottom: 0; }
       .search-toolbar .search-field label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
