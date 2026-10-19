@@ -5,7 +5,9 @@ import { fetchPublicPncpCatalog, filterPublicPncpRecords, parsePncpDate, type Pu
 import { toSafeHttpUrl } from "@/lib/security/safe-url";
 import { AppNavigation } from "@/components/app-navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { scoreTender, type InterestProfile } from "@/lib/matching/score";
 import { addTenderToPipelineAction, updateTenderFeedbackAction } from "./actions";
+import { SearchFilters } from "./search-filters";
 
 export const dynamic = "force-dynamic";
 
@@ -15,12 +17,21 @@ type TenderSearchRow = { tender_id: string; search_rank: number; total_count: nu
 type DatabaseTender = {
   id: string;
   title: string;
+  object: string;
   uf: string | null;
   municipality_name: string | null;
+  municipality_code: string | null;
   estimated_value: number | null;
+  modality_code: string | null;
   proposal_close_at: string | null;
   modality_name: string | null;
-  agencies: { name: string }[] | { name: string } | null;
+  exclusive_me_epp: boolean | null;
+  agencies: { name: string; sphere: string | null }[] | { name: string; sphere: string | null } | null;
+};
+type ProfileRow = {
+  required_keywords: string[]; optional_keywords: string[]; excluded_keywords: string[]; ufs: string[];
+  municipality_codes: string[]; modality_codes: string[]; agency_terms: string[]; spheres: string[];
+  minimum_value: number | null; maximum_value: number | null; exclusive_me_epp: boolean | null; cnae_codes: string[];
 };
 
 function parameter(value: string | string[] | undefined): string | undefined {
@@ -35,7 +46,7 @@ function parseOptionalNumber(value: string | undefined): number | null {
 
 function pageHref(params: Record<string, string | string[] | undefined>, page: number): string {
   const search = new URLSearchParams();
-  for (const key of ["q", "uf", "modality", "minimumValue", "maximumValue", "closesBefore", "sort", "view"]) {
+  for (const key of ["q", "uf", "modality", "sphere", "minimumValue", "maximumValue", "closesBefore", "sort", "view", "showClosed"]) {
     const value = parameter(params[key]);
     if (value) search.set(key, value);
   }
@@ -58,6 +69,45 @@ function publicRecordUrl(record: PublicPncpRecord): string | null {
   return toSafeHttpUrl(record.linkSistemaOrigem);
 }
 
+function profileForScoring(profile: ProfileRow): InterestProfile {
+  return {
+    requiredKeywords: profile.required_keywords ?? [], optionalKeywords: profile.optional_keywords ?? [], excludedKeywords: profile.excluded_keywords ?? [],
+    ufs: profile.ufs ?? [], municipalityCodes: profile.municipality_codes ?? [], modalityCodes: profile.modality_codes ?? [],
+    agencyTerms: profile.agency_terms ?? [], spheres: profile.spheres ?? [], minimumValue: profile.minimum_value,
+    maximumValue: profile.maximum_value, exclusiveMeEpp: profile.exclusive_me_epp, cnaeCodes: profile.cnae_codes ?? []
+  };
+}
+
+function scoreForTender(tender: DatabaseTender, profiles: InterestProfile[]) {
+  const agency = Array.isArray(tender.agencies) ? tender.agencies[0] : tender.agencies;
+  const configuredProfiles = profiles.filter((profile) => profile.requiredKeywords.length + profile.optionalKeywords.length + profile.excludedKeywords.length + profile.ufs.length + profile.municipalityCodes.length + profile.modalityCodes.length + profile.agencyTerms.length + profile.spheres.length + profile.cnaeCodes.length > 0 || profile.minimumValue !== null || profile.maximumValue !== null || profile.exclusiveMeEpp !== null);
+  if (!configuredProfiles.length) return null;
+  return configuredProfiles.map((profile) => scoreTender(profile, {
+    title: tender.title, object: tender.object, uf: tender.uf, municipalityCode: tender.municipality_code, modalityCode: tender.modality_code,
+    agencyName: agency?.name ?? null, sphere: agency?.sphere ?? null, estimatedValue: tender.estimated_value,
+    exclusiveMeEpp: tender.exclusive_me_epp, cnaeCodes: []
+  })).sort((first, second) => Number(second.matched) - Number(first.matched) || second.score - first.score)[0] ?? null;
+}
+
+function scoreStyle(score: number): string {
+  if (score >= 80) return "bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-200";
+  if (score >= 50) return "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200";
+  return "bg-slate-200 text-slate-800 dark:bg-slate-700 dark:text-slate-200";
+}
+
+function deadlineBadge(value: string | null): { text: string; style: string } | null {
+  if (!value) return null;
+  const remainingDays = Math.ceil((new Date(value).getTime() - new Date().getTime()) / 86_400_000);
+  if (remainingDays < 0) return { text: "Encerrada", style: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200" };
+  if (remainingDays === 0) return { text: "Encerra hoje", style: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200" };
+  const style = remainingDays <= 3
+    ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
+    : remainingDays <= 7
+      ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
+      : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200";
+  return { text: `Faltam ${remainingDays} dias`, style };
+}
+
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const supabase = await createSupabaseServerClient();
@@ -72,6 +122,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const ufValue = parameter(params.uf)?.trim().toUpperCase() ?? "";
   const uf = /^[A-Z]{2}$/.test(ufValue) ? ufValue : null;
   const modality = parameter(params.modality)?.trim().slice(0, 20) || null;
+  const sphereValue = parameter(params.sphere);
+  const sphere = sphereValue === "F" || sphereValue === "E" || sphereValue === "M" ? sphereValue : null;
+  const showClosed = parameter(params.showClosed) === "true";
   const requestedView = parameter(params.view);
   const view = requestedView === "favorites" || requestedView === "discarded" ? requestedView : "all";
   const minimumValue = parseOptionalNumber(parameter(params.minimumValue));
@@ -86,7 +139,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const page = Number.isInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, 100_000) : 1;
   const pageSize = 50;
 
-  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }] = await Promise.all([
+  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }, { count: sampleCount }, { count: favoriteCount }, { data: rawProfiles }] = await Promise.all([
     supabase.rpc("search_tenders_for_list", {
       p_query: queryValue,
       p_uf: uf,
@@ -98,7 +151,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       p_page: page,
       p_page_size: pageSize,
       p_organization_id: organizationId,
-      p_list_mode: view
+      p_list_mode: view,
+      p_sphere: sphere,
+      p_show_closed: showClosed
     }),
     supabase
       .from("source_status")
@@ -106,21 +161,31 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       .eq("source_key", "pncp")
       .order("started_at", { ascending: false })
       .limit(1)
-      .maybeSingle()
+      .maybeSingle(),
+    supabase.from("tenders").select("id", { count: "exact", head: true }),
+    supabase.from("tender_feedback").select("tender_id", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite"),
+    supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true)
   ]);
 
   const searchRows = (rawSearchRows ?? []) as TenderSearchRow[];
+  const urgentLimit = new Date(new Date().getTime() + 3 * 86_400_000).toISOString();
+  const { data: urgentRows } = await supabase.rpc("search_tenders_for_list", {
+    p_query: queryValue, p_uf: uf, p_modality_code: modality, p_minimum_value: minimumValue, p_maximum_value: maximumValue,
+    p_closes_before: urgentLimit, p_sort: "deadline", p_page: 1, p_page_size: 1, p_organization_id: organizationId,
+    p_list_mode: view, p_sphere: sphere, p_show_closed: false
+  });
   const searchOrder = new Map<string, number>();
   searchRows.forEach((row, index) => searchOrder.set(row.tender_id, index));
   const tenderIds = [...searchOrder.keys()];
   const { data: rawTenderRows } = tenderIds.length
     ? await supabase
       .from("tenders")
-      .select("id,title,uf,municipality_name,estimated_value,proposal_close_at,modality_name,agencies(name)")
+      .select("id,title,object,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
       .in("id", tenderIds)
     : { data: [] };
   const databaseTenders = ((rawTenderRows ?? []) as DatabaseTender[])
     .sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
+  const scoringProfiles = ((rawProfiles ?? []) as ProfileRow[]).map(profileForScoring);
   const currentTenderIds = databaseTenders.map((tender) => tender.id);
   const [{ data: feedbackRows }, { data: pipelineRows }] = currentTenderIds.length
     ? await Promise.all([
@@ -145,10 +210,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       query: queryValue,
       uf,
       modality,
+      sphere,
       minimumValue,
       maximumValue,
       closesBefore: closesBeforeValue && /^\d{4}-\d{2}-\d{2}$/.test(closesBeforeValue) ? closesBeforeValue : null,
-      sort
+      sort,
+      showClosed
     })
     : [];
   const usePublicCatalog = databaseTenders.length === 0 && filteredPublicRecords.length > 0;
@@ -157,6 +224,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const publicCount = usePublicCatalog ? filteredPublicRecords.length : 0;
   const totalCount = usePublicCatalog ? publicCount : (searchRows[0]?.total_count ?? 0);
   const pageCount = usePublicCatalog ? publicPageCount : Math.ceil(Number(totalCount) / pageSize);
+  const activeFilterCount = [uf, modality, sphere, minimumValue, maximumValue, closesBefore, view !== "all" ? view : null, showClosed ? "closed" : null].filter((item) => item !== null).length;
+  const filterValues = {
+    query: queryValue ?? "", uf: uf ?? "", modality: modality ?? "", sphere: sphere ?? "",
+    minimumValue: minimumValue == null ? "" : String(minimumValue), maximumValue: maximumValue == null ? "" : String(maximumValue),
+    closesBefore: closesBeforeValue ?? "", sort, view, showClosed
+  };
+  const urgentCount = usePublicCatalog
+    ? filteredPublicRecords.filter((record) => {
+      const closeDate = parsePncpDate(record.dataEncerramentoProposta);
+      return closeDate !== null && closeDate >= new Date() && closeDate <= new Date(urgentLimit);
+    }).length
+    : (urgentRows?.[0]?.total_count ?? 0);
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 pb-28 sm:px-6 md:pb-8">
@@ -166,7 +245,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <h1 className="mt-2 text-2xl font-bold">Oportunidades</h1>
         </div>
         <AppNavigation active="/dashboard" />
-        <nav className="flex flex-wrap gap-3 text-sm font-medium">
+        <nav className="hidden flex-wrap gap-3 text-sm font-medium md:flex">
           <Link href="/profiles">Perfis</Link>
           <Link href="/alerts">Alertas</Link>
           <Link href="/settings/privacy">Privacidade</Link>
@@ -184,40 +263,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       {parameter(params.notice) === "saved" ? <p aria-live="polite" className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">Alteração salva.</p> : null}
       {parameter(params.notice) === "save-error" || parameter(params.notice) === "invalid-action" ? <p role="alert" className="mt-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">Não foi possível concluir essa ação. Atualize a página e tente novamente.</p> : null}
 
-      <form action="/dashboard" className="mt-6 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="text-sm font-medium">Visualização
-          <select className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={view} name="view">
-            <option value="all">Todas</option><option value="favorites">Favoritas</option><option value="discarded">Descartadas</option>
-          </select>
-        </label>
-        <label className="text-sm font-medium lg:col-span-2">Palavras ou expressão
-          <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={queryValue ?? ""} maxLength={200} name="q" placeholder="notebook, suporte técnico..." />
-        </label>
-        <label className="text-sm font-medium">UF
-          <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 uppercase text-slate-900" defaultValue={uf ?? ""} maxLength={2} name="uf" placeholder="SP" />
-        </label>
-        <label className="text-sm font-medium">Código da modalidade
-          <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={modality ?? ""} name="modality" inputMode="numeric" />
-        </label>
-        <label className="text-sm font-medium">Valor mínimo (R$)
-          <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={minimumValue ?? ""} min="0" name="minimumValue" type="number" />
-        </label>
-        <label className="text-sm font-medium">Valor máximo (R$)
-          <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={maximumValue ?? ""} min="0" name="maximumValue" type="number" />
-        </label>
-        <label className="text-sm font-medium">Encerramento até
-          <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={closesBeforeValue ?? ""} name="closesBefore" type="date" />
-        </label>
-        <label className="text-sm font-medium">Ordenar por
-          <select className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={sort} name="sort">
-            <option value="relevance">Relevância</option><option value="deadline">Prazo</option><option value="value">Maior valor</option>
-          </select>
-        </label>
-        <div className="flex items-end gap-3">
-          <button className="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white" type="submit">Buscar</button>
-          <Link className="rounded-lg border border-slate-300 px-4 py-2 font-semibold" href="/dashboard">Limpar</Link>
-        </div>
-      </form>
+      <section aria-label="Resumo das oportunidades" className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {[
+          { label: "Oportunidades na amostra", value: (sampleCount ?? catalog?.registros.length ?? 0).toLocaleString("pt-BR") },
+          { label: "Resultados dos filtros", value: Number(totalCount).toLocaleString("pt-BR") },
+          { label: "Encerram em até 3 dias", value: Number(urgentCount).toLocaleString("pt-BR") },
+          { label: "Favoritas", value: (favoriteCount ?? 0).toLocaleString("pt-BR") }
+        ].map((metric) => <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={metric.label}><p className="text-xs text-slate-600 dark:text-slate-300 sm:text-sm">{metric.label}</p><p className="mt-2 text-2xl font-bold">{metric.value}</p></article>)}
+      </section>
+
+      <div className="mt-6 grid items-start gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
+        <aside aria-label="Filtros das oportunidades" className="md:sticky md:top-4"><SearchFilters activeCount={activeFilterCount} values={filterValues} /></aside>
+        <div className="min-w-0">
 
       {usePublicCatalog ? (
         <>
@@ -260,14 +317,21 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <>
           <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">{Number(totalCount).toLocaleString("pt-BR")} oportunidade(s) encontradas · página {page} de {Math.max(1, pageCount)}</p>
           <section className="mt-3 grid gap-3">
-            {databaseTenders.map((tender) => (
-              <article className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800" key={tender.id}>
+            {databaseTenders.map((tender) => {
+              const bestMatch = scoreForTender(tender, scoringProfiles);
+              const deadline = deadlineBadge(tender.proposal_close_at);
+              return <article className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800" key={tender.id}>
                 <div className="flex flex-wrap justify-between gap-3">
                   <h2 className="max-w-3xl font-semibold"><Link className="hover:text-blue-700" href={`/tenders/${tender.id}`}>{tender.title}</Link></h2>
                   <span className="text-sm text-slate-600 dark:text-slate-300">{tender.uf ?? "UF não informada"}</span>
                 </div>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
                 <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {bestMatch ? <span className={`rounded-full px-3 py-1 text-xs font-bold ${scoreStyle(bestMatch.score)}`}>{bestMatch.score >= 80 ? "Alta" : bestMatch.score >= 50 ? "Média" : "Baixa"} aderência · {bestMatch.score}/100</span> : null}
+                  {deadline ? <span className={`rounded-full px-3 py-1 text-xs font-semibold ${deadline.style}`}>{deadline.text}</span> : null}
+                </div>
+                {bestMatch?.explanation.length ? <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{bestMatch.explanation.slice(0, 2).join(" · ")}</p> : null}
                 <div className="mt-4 flex flex-wrap gap-2">
                   <form action={updateTenderFeedbackAction}>
                     <input name="tenderId" type="hidden" value={tender.id} />
@@ -299,8 +363,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     </button>
                   </form>
                 </div>
-              </article>
-            ))}
+              </article>;
+            })}
           </section>
           <nav aria-label="Paginação" className="mt-6 flex justify-between">
             {page > 1 ? <Link className="font-semibold text-blue-700" href={pageHref(params, page - 1)}>← Anterior</Link> : <span />}
@@ -316,7 +380,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               : "Confira os filtros ou aguarde a próxima atualização do catálogo público do PNCP."}
           </p>
         </section>
-      )}
+        )}
+        </div>
+      </div>
     </main>
   );
 }
