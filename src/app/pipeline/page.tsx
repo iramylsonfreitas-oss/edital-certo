@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppNavigation } from "@/components/app-navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { updatePipelineCardAction } from "./actions";
+import { PipelineCardEditor } from "./pipeline-card-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -90,26 +90,14 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
                         <Link className="font-semibold hover:text-blue-700" href={`/tenders/${tender.id}`}>{tender.title}</Link>
                         <p className="mt-2 text-xs text-slate-500">{agencyOf(tender)} · {tender.uf ?? "UF não informada"}</p>
                         <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo ${new Date(tender.proposal_close_at).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
-                        <form action={updatePipelineCardAction} className="mt-4 grid gap-3">
-                          <input name="cardId" type="hidden" value={card.id} />
-                          <input name="checklistJson" type="hidden" value={JSON.stringify(checklist)} />
-                          <label className="text-xs font-semibold">Mover para…
-                            <select className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm text-slate-900" defaultValue={stage.id} name="status">
-                              {stages.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}
-                            </select>
-                          </label>
-                          <label className="text-xs font-semibold">Responsável
-                            <input className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm text-slate-900" defaultValue={card.responsible_name ?? ""} maxLength={120} name="responsibleName" placeholder="Nome da pessoa" />
-                          </label>
-                          <label className="text-xs font-semibold">Anotações
-                            <textarea className="mt-1 min-h-20 w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm text-slate-900" defaultValue={card.notes} maxLength={10000} name="notes" placeholder="Próxima ação, contexto ou observações" />
-                          </label>
-                          {checklist.length ? <fieldset className="grid gap-2"><legend className="mb-1 text-xs font-semibold">Checklist</legend>{checklist.map((item, index) => <label className="flex items-start gap-2 text-sm" key={`${index}-${item.text}`}><input className="mt-1" defaultChecked={item.done} name={`check_${index}`} type="checkbox" /><span>{item.text}</span></label>)}</fieldset> : null}
-                          <label className="text-xs font-semibold">Adicionar ao checklist
-                            <input className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-2 py-2 text-sm text-slate-900" maxLength={180} name="checklistItem" placeholder="Ex.: Confirmar documentos" />
-                          </label>
-                          <button className="rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800" type="submit">Salvar cartão</button>
-                        </form>
+                        <PipelineCardEditor
+                          cardId={card.id}
+                          organizationId={organization.id}
+                          initialStatus={stage.id}
+                          initialResponsible={card.responsible_name ?? ""}
+                          initialNotes={card.notes ?? ""}
+                          initialChecklist={checklist}
+                        />
                       </article>
                     );
                   })}
