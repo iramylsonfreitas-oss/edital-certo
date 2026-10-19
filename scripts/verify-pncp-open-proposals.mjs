@@ -1,10 +1,13 @@
 const allowedModalities = new Set([4, 6, 8]);
-const configuredModalities = (process.env.PNCP_MODALITY_CODES ?? "4,6,8")
+const rawModalities = (process.env.PNCP_MODALITY_CODES ?? "4,6,8")
   .split(",")
-  .map((value) => Number(value.trim()))
-  .filter(Number.isInteger);
-const invalidModalities = configuredModalities.filter((code) => !allowedModalities.has(code));
-if (configuredModalities.length === 0 || invalidModalities.length > 0) {
+  .map((value) => value.trim())
+  .filter(Boolean);
+const configuredModalities = rawModalities.map(Number);
+if (
+  configuredModalities.length === 0 ||
+  configuredModalities.some((code) => !Number.isInteger(code) || !allowedModalities.has(code))
+) {
   throw new Error("PNCP_MODALITY_CODES deve conter apenas os códigos validados 4, 6 e 8.");
 }
 
@@ -80,6 +83,7 @@ async function fetchPage(url, modalityCode, pageNumber) {
       }
     } catch (error) {
       lastError = error instanceof Error ? error : new Error(String(error));
+      if (lastError.message.startsWith("PNCP respondeu HTTP 4")) throw lastError;
       if (attempt < maximumAttempts) await delay(Math.min(2_000 * (2 ** (attempt - 1)), 10_000));
     } finally {
       clearTimeout(timeoutId);
