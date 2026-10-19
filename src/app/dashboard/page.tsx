@@ -3,7 +3,9 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { fetchPublicPncpCatalog, filterPublicPncpRecords, parsePncpDate, type PublicPncpRecord } from "@/lib/pncp/public-catalog";
 import { toSafeHttpUrl } from "@/lib/security/safe-url";
+import { AppNavigation } from "@/components/app-navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { addTenderToPipelineAction, updateTenderFeedbackAction } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +35,7 @@ function parseOptionalNumber(value: string | undefined): number | null {
 
 function pageHref(params: Record<string, string | string[] | undefined>, page: number): string {
   const search = new URLSearchParams();
-  for (const key of ["q", "uf", "modality", "minimumValue", "maximumValue", "closesBefore", "sort"]) {
+  for (const key of ["q", "uf", "modality", "minimumValue", "maximumValue", "closesBefore", "sort", "view"]) {
     const value = parameter(params[key]);
     if (value) search.set(key, value);
   }
@@ -62,13 +64,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const { data: authData } = await supabase.auth.getUser();
   if (!authData.user) redirect("/login");
 
-  const { data: organizations } = await supabase.from("organizations").select("id").limit(1);
+  const { data: organizations } = await supabase.from("organizations").select("id").order("created_at", { ascending: true }).limit(1);
   if (!organizations?.length) redirect("/onboarding");
+  const organizationId = organizations[0].id;
 
   const queryValue = parameter(params.q)?.trim().slice(0, 200) || null;
   const ufValue = parameter(params.uf)?.trim().toUpperCase() ?? "";
   const uf = /^[A-Z]{2}$/.test(ufValue) ? ufValue : null;
   const modality = parameter(params.modality)?.trim().slice(0, 20) || null;
+  const requestedView = parameter(params.view);
+  const view = requestedView === "favorites" || requestedView === "discarded" ? requestedView : "all";
   const minimumValue = parseOptionalNumber(parameter(params.minimumValue));
   const maximumValue = parseOptionalNumber(parameter(params.maximumValue));
   const closesBeforeValue = parameter(params.closesBefore);
@@ -82,7 +87,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const pageSize = 50;
 
   const [{ data: rawSearchRows, error: searchError }, { data: latestRun }] = await Promise.all([
-    supabase.rpc("search_tenders", {
+    supabase.rpc("search_tenders_for_list", {
       p_query: queryValue,
       p_uf: uf,
       p_modality_code: modality,
@@ -91,7 +96,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       p_closes_before: closesBefore,
       p_sort: sort,
       p_page: page,
-      p_page_size: pageSize
+      p_page_size: pageSize,
+      p_organization_id: organizationId,
+      p_list_mode: view
     }),
     supabase
       .from("source_status")
@@ -114,9 +121,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     : { data: [] };
   const databaseTenders = ((rawTenderRows ?? []) as DatabaseTender[])
     .sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
+  const currentTenderIds = databaseTenders.map((tender) => tender.id);
+  const [{ data: feedbackRows }, { data: pipelineRows }] = currentTenderIds.length
+    ? await Promise.all([
+      supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", currentTenderIds),
+      supabase.from("pipeline_cards").select("tender_id").eq("organization_id", organizationId).in("tender_id", currentTenderIds)
+    ])
+    : [{ data: [] }, { data: [] }];
+  const feedbackByTender = new Map((feedbackRows ?? []).map((item) => [item.tender_id, item.state]));
+  const pipelineTenderIds = new Set((pipelineRows ?? []).map((item) => item.tender_id));
 
   let catalog = null;
-  if (searchError || databaseTenders.length === 0) {
+  if (view === "all" && (searchError || databaseTenders.length === 0)) {
     try {
       catalog = await fetchPublicPncpCatalog();
     } catch {
@@ -143,13 +159,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const pageCount = usePublicCatalog ? publicPageCount : Math.ceil(Number(totalCount) / pageSize);
 
   return (
-    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 sm:px-6">
+    <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 pb-28 sm:px-6 md:pb-8">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-700">
         <div>
           <Link className="text-sm font-semibold text-blue-700" href="/">Edital Certo</Link>
           <h1 className="mt-2 text-2xl font-bold">Oportunidades</h1>
         </div>
-        <nav className="flex flex-wrap gap-4 text-sm font-medium">
+        <AppNavigation active="/dashboard" />
+        <nav className="flex flex-wrap gap-3 text-sm font-medium">
           <Link href="/profiles">Perfis</Link>
           <Link href="/alerts">Alertas</Link>
           <Link href="/settings/privacy">Privacidade</Link>
@@ -164,8 +181,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             ? `Catálogo atualizado em ${new Date(catalog.atualizadoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })} · ${catalog.registros.length} registros · ${catalog.status === "ok" ? "coleta concluída" : catalog.status === "parcial" ? "coleta parcial" : "última coleta com erro"}`
             : "Catálogo PNCP indisponível no momento"}
       </aside>
+      {parameter(params.notice) === "saved" ? <p aria-live="polite" className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">Alteração salva.</p> : null}
+      {parameter(params.notice) === "save-error" || parameter(params.notice) === "invalid-action" ? <p role="alert" className="mt-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">Não foi possível concluir essa ação. Atualize a página e tente novamente.</p> : null}
 
       <form action="/dashboard" className="mt-6 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800 sm:grid-cols-2 lg:grid-cols-4">
+        <label className="text-sm font-medium">Visualização
+          <select className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={view} name="view">
+            <option value="all">Todas</option><option value="favorites">Favoritas</option><option value="discarded">Descartadas</option>
+          </select>
+        </label>
         <label className="text-sm font-medium lg:col-span-2">Palavras ou expressão
           <input className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={queryValue ?? ""} maxLength={200} name="q" placeholder="notebook, suporte técnico..." />
         </label>
@@ -237,14 +261,45 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">{Number(totalCount).toLocaleString("pt-BR")} oportunidade(s) encontradas · página {page} de {Math.max(1, pageCount)}</p>
           <section className="mt-3 grid gap-3">
             {databaseTenders.map((tender) => (
-              <Link className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800" href={`/tenders/${tender.id}`} key={tender.id}>
+              <article className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800" key={tender.id}>
                 <div className="flex flex-wrap justify-between gap-3">
-                  <h2 className="max-w-3xl font-semibold">{tender.title}</h2>
+                  <h2 className="max-w-3xl font-semibold"><Link className="hover:text-blue-700" href={`/tenders/${tender.id}`}>{tender.title}</Link></h2>
                   <span className="text-sm text-slate-600 dark:text-slate-300">{tender.uf ?? "UF não informada"}</span>
                 </div>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
                 <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
-              </Link>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <form action={updateTenderFeedbackAction}>
+                    <input name="tenderId" type="hidden" value={tender.id} />
+                    <input name="listMode" type="hidden" value={view} />
+                    <input name="state" type="hidden" value={feedbackByTender.get(tender.id) === "favorite" ? "clear" : "favorite"} />
+                    <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700" type="submit">
+                      {feedbackByTender.get(tender.id) === "favorite" ? "★ Favorita · remover" : "☆ Favoritar"}
+                    </button>
+                  </form>
+                  {view === "discarded" ? (
+                    <form action={updateTenderFeedbackAction}>
+                      <input name="tenderId" type="hidden" value={tender.id} />
+                      <input name="listMode" type="hidden" value="discarded" />
+                      <input name="state" type="hidden" value="clear" />
+                      <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700" type="submit">Restaurar</button>
+                    </form>
+                  ) : (
+                    <form action={updateTenderFeedbackAction}>
+                      <input name="tenderId" type="hidden" value={tender.id} />
+                      <input name="listMode" type="hidden" value={view} />
+                      <input name="state" type="hidden" value="discarded" />
+                      <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:border-slate-600 dark:text-rose-300 dark:hover:bg-rose-950" type="submit">Descartar</button>
+                    </form>
+                  )}
+                  <form action={addTenderToPipelineAction}>
+                    <input name="tenderId" type="hidden" value={tender.id} />
+                    <button className="rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800" type="submit">
+                      {pipelineTenderIds.has(tender.id) ? "Abrir no pipeline" : "Acompanhar"}
+                    </button>
+                  </form>
+                </div>
+              </article>
             ))}
           </section>
           <nav aria-label="Paginação" className="mt-6 flex justify-between">
