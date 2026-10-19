@@ -1,0 +1,129 @@
+{
+  "capturedAt": "2026-10-18T11:37:22.728Z",
+  "source": "PNCP",
+  "request": {
+    "path": "/api/consulta/v1/contratacoes/publicacao",
+    "query": {
+      "dataInicial": "20261018",
+      "dataFinal": "20261018",
+      "codigoModalidadeContratacao": "6",
+      "pagina": "1",
+      "tamanhoPagina": "10"
+    }
+  },
+  "response": {
+    "data": [
+      {
+        "valorTotalHomologado": null,
+        "orgaoEntidade": {
+          "cnpj": "08184434000109",
+          "razaoSocial": "MUNICIPIO DE MACAU",
+          "poderId": "N",
+          "esferaId": "M"
+        },
+        "dataInclusao": "2026-10-18T08:07:38",
+        "dataAtualizacao": "2026-10-18T08:08:20",
+        "dataEncerramentoProposta": "2026-10-29T09:00:00",
+        "dataPublicacaoPncp": "2026-10-18T08:07:38",
+        "dataAtualizacaoGlobal": "2026-10-18T08:08:20",
+        "unidadeOrgao": {
+          "ufNome": "Rio Grande do Norte",
+          "ufSigla": "RN",
+          "municipioNome": "Macau",
+          "codigoIbge": "2407203",
+          "codigoUnidade": "3035",
+          "nomeUnidade": "Prefeitura Municipal de Macau"
+        },
+        "orgaoSubRogado": null,
+        "unidadeSubRogada": null,
+        "amparoLegal": {
+          "nome": "Lei 14.133/2021, Art. 28, I",
+          "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+          "codigo": 1
+        },
+        "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/RN/Prefeitura-Municipal-de-Macau-1789/RPE-40-2026-2026-513351",
+        "linkProcessoEletronico": null,
+        "justificativaPresencial": "",
+        "numeroControlePNCP": "08184434000109-1-000340/2026",
+        "anoCompra": 2026,
+        "srp": true,
+        "sequencialCompra": 340,
+        "emendaParlamentar": null,
+        "numeroCompra": "40",
+        "processo": "218",
+        "objetoCompra": "[Portal de Compras Públicas] - Aquisição de equipamentos e materiais permanentes correspondentes aos itens declarados fracassados no Pregão Eletrônico nº 028/2026, destinados a atender às necessidades do Hospital Antônio Ferraz de Macau/RN, com recursos oriundos da Emenda Parlamentar  Proposta nº 11243234000124002.",
+        "informacaoComplementar": "",
+        "dataAberturaProposta": "2026-10-19T09:00:00",
+        "valorTotalEstimado": 0,
+        "modalidadeId": 6,
+        "modalidadeNome": "Pregão - Eletrônico",
+        "modoDisputaId": 1,
+        "modoDisputaNome": "Aberto",
+        "tipoInstrumentoConvocatorioCodigo": 1,
+        "tipoInstrumentoConvocatorioNome": "Edital",
+        "fontesOrcamentarias": [],
+        "situacaoCompraId": 1,
+        "situacaoCompraNome": "Divulgada no PNCP",
+        "usuarioNome": "ECustomize Consultoria em Software S.A"
+      },
+      {
+        "valorTotalHomologado": null,
+        "orgaoEntidade": {
+          "cnpj": "08309536000103",
+          "razaoSocial": "MUNICIPIO DE JOAO CAMARA",
+          "poderId": "N",
+          "esferaId": "M"
+        },
+        "dataInclusao": "2026-10-18T08:32:13",
+        "dataAtualizacao": "2026-10-18T08:34:06",
+        "dataEncerramentoProposta": "2026-11-03T09:00:00",
+        "dataPublicacaoPncp": "2026-10-18T08:32:13",
+        "dataAtualizacaoGlobal": "2026-10-18T08:34:06",
+        "unidadeOrgao": {
+          "ufNome": "Rio Grande do Norte",
+          "ufSigla": "RN",
+          "municipioNome": "João Câmara",
+          "codigoIbge": "2405801",
+          "codigoUnidade": "59550-000",
+          "nomeUnidade": "Prefeitura Municipal de João Câmara"
+        },
+        "orgaoSubRogado": null,
+        "unidadeSubRogada": null,
+        "amparoLegal": {
+          "nome": "Lei 14.133/2021, Art. 28, I",
+          "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+          "codigo": 1
+        },
+        "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/RN/Prefeitura-Municipal-de-Joao-Camara-1102/RPE-016-2026-2026-503226",
+        "linkProcessoEletronico": null,
+        "justificativaPresencial": "",
+        "numeroControlePNCP": "08309536000103-1-000077/2026",
+        "anoCompra": 2026,
+        "srp": true,
+        "sequencialCompra": 77,
+        "emendaParlamentar": null,
+        "numeroCompra": "016",
+        "processo": "14080001",
+        "objetoCompra": "[Portal de Compras Públicas] - Obtenção de registro de preços para futura e eventual contratação de empresa para aquisição de medicamentos  e suplementos, para atender as necessidades da Secretaria Municipal de Saúde do município de João Câmara/RN.",
+        "informacaoComplementar": "",
+        "dataAberturaProposta": "2026-10-21T09:00:00",
+        "valorTotalEstimado": 2812772.9,
+        "modalidadeId": 6,
+        "modalidadeNome": "Pregão - Eletrônico",
+        "modoDisputaId": 1,
+        "modoDisputaNome": "Aberto",
+        "tipoInstrumentoConvocatorioCodigo": 1,
+        "tipoInstrumentoConvocatorioNome": "Edital",
+        "fontesOrcamentarias": [],
+        "situacaoCompraId": 1,
+        "situacaoCompraNome": "Divulgada no PNCP",
+        "usuarioNome": "ECustomize Consultoria em Software S.A"
+      }
+    ],
+    "totalRegistros": 2,
+    "totalPaginas": 1,
+    "numeroPagina": 1,
+    "paginasRestantes": 0,
+    "empty": false
+  }
+}

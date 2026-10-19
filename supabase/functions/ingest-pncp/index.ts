@@ -1,0 +1,371 @@
+import { createClient } from "npm:@supabase/supabase-js@2.118.0";
+
+type JsonObject = Record<string, unknown>;
+
+interface PncpPage {
+  data: JsonObject[];
+  totalPaginas: number;
+  numeroPagina: number;
+  paginasRestantes: number;
+}
+
+interface Checkpoint {
+  fromDate: string;
+  toDate: string;
+  modalityIndex: number;
+  page: number;
+}
+
+const sourceKey = "pncp";
+const pageSize = 50;
+const maximumPagesPerRun = 20;
+
+function requiredEnvironment(name: string): string {
+  const value = Deno.env.get(name);
+  if (!value) throw new Error(`Variável de ambiente obrigatória ausente: ${name}`);
+  return value;
+}
+
+function parsePositiveInteger(value: string | undefined, fallback: number): number {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function formatDate(date: Date): string {
+  return date.toISOString().slice(0, 10).replaceAll("-", "");
+}
+
+function parseCheckpoint(value: unknown): Checkpoint | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const row = value as Record<string, unknown>;
+  if (
+    typeof row.fromDate !== "string" ||
+    typeof row.toDate !== "string" ||
+    typeof row.modalityIndex !== "number" ||
+    typeof row.page !== "number"
+  ) return null;
+  return {
+    fromDate: row.fromDate,
+    toDate: row.toDate,
+    modalityIndex: row.modalityIndex,
+    page: row.page
+  };
+}
+
+function isObject(value: unknown): value is JsonObject {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function parsePage(value: unknown): PncpPage {
+  if (!isObject(value) || !Array.isArray(value.data)) {
+    throw new Error("Envelope de resposta PNCP não reconhecido; compare com o Swagger atual.");
+  }
+  const { totalPaginas, numeroPagina, paginasRestantes } = value;
+  if (
+    typeof totalPaginas !== "number" ||
+    typeof numeroPagina !== "number" ||
+    typeof paginasRestantes !== "number"
+  ) {
+    throw new Error("Campos de paginação PNCP ausentes; compare com o Swagger atual.");
+  }
+  const records = value.data.filter(isObject);
+  if (records.length !== value.data.length) {
+    throw new Error("A página PNCP contém registros que não são objetos JSON.");
+  }
+  return { data: records, totalPaginas, numeroPagina, paginasRestantes };
+}
+
+function asNullableString(value: unknown): string | null {
+  if (typeof value === "string" || typeof value === "number") return String(value);
+  return null;
+}
+
+function asNullableNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() && Number.isFinite(Number(value))) return Number(value);
+  return null;
+}
+
+function asBrazilianTimestamp(value: unknown): string | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)) {
+    const instant = new Date(value);
+    return Number.isNaN(instant.getTime()) ? null : instant.toISOString();
+  }
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2})(?::(\d{2})(?:\.(\d{1,9}))?)?)?$/.exec(value);
+  if (!match) return null;
+  const [, year, month, day, hour = "00", minute = "00", second = "00", fraction = "0"] = match;
+  const wallClock = Date.UTC(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second), Math.trunc(Number(`0.${fraction}`) * 1000));
+  const getOffset = (instant: Date) => {
+    const offset = new Intl.DateTimeFormat("en-US", {
+      timeZone: "America/Sao_Paulo",
+      timeZoneName: "longOffset",
+      hour: "2-digit"
+    }).formatToParts(instant).find((part) => part.type === "timeZoneName")?.value;
+    const offsetMatch = /^GMT([+-])(\d{2}):(\d{2})$/.exec(offset ?? "");
+    if (!offsetMatch) throw new Error("Não foi possível interpretar o fuso horário de Brasília.");
+    const sign = offsetMatch[1] === "+" ? 1 : -1;
+    return sign * (Number(offsetMatch[2]) * 60 + Number(offsetMatch[3]));
+  };
+  let offsetMinutes = getOffset(new Date(wallClock));
+  let instant = wallClock - offsetMinutes * 60_000;
+  offsetMinutes = getOffset(new Date(instant));
+  instant = wallClock - offsetMinutes * 60_000;
+  return new Date(instant).toISOString();
+}
+
+function mapTender(raw: JsonObject) {
+  const controlNumber = asNullableString(raw.numeroControlePNCP);
+  const objectText = asNullableString(raw.objetoCompra);
+  if (!controlNumber || !objectText) {
+    throw new Error("Campos numeroControlePNCP ou objetoCompra ausentes na resposta PNCP.");
+  }
+
+  const agency = isObject(raw.orgaoEntidade) ? raw.orgaoEntidade : null;
+  const unit = isObject(raw.unidadeOrgao) ? raw.unidadeOrgao : null;
+  const agencyName = asNullableString(agency?.razaoSocial);
+  const agencyCnpj = asNullableString(agency?.cnpj);
+
+  return {
+    source_key: sourceKey,
+    source_id: controlNumber,
+    control_number: controlNumber,
+    title: objectText.trim().slice(0, 512) || controlNumber,
+    object: objectText,
+    modality_code: asNullableString(raw.modalidadeId),
+    modality_name: asNullableString(raw.modalidadeNome),
+    status: asNullableString(raw.situacaoCompraNome),
+    uf: asNullableString(unit?.ufSigla)?.toUpperCase(),
+    municipality_code: asNullableString(unit?.codigoIbge ?? unit?.municipioId),
+    municipality_name: asNullableString(unit?.municipioNome),
+    estimated_value: asNullableNumber(raw.valorTotalEstimado),
+    published_at: asBrazilianTimestamp(raw.dataPublicacaoPncp),
+    proposal_open_at: asBrazilianTimestamp(raw.dataAberturaProposta),
+    proposal_close_at: asBrazilianTimestamp(raw.dataEncerramentoProposta),
+    source_updated_at: asBrazilianTimestamp(raw.dataAtualizacao),
+    official_url: asNullableString(raw.linkSistemaOrigem),
+    raw_data: raw,
+    agency: agencyName
+      ? {
+          source_key: sourceKey,
+          source_agency_id: agencyCnpj ?? agencyName,
+          cnpj: agencyCnpj,
+          name: agencyName,
+          sphere: asNullableString(agency?.esferaId),
+          uf: asNullableString(unit?.ufSigla)?.toUpperCase(),
+          municipality_code: asNullableString(unit?.codigoIbge ?? unit?.municipioId),
+          municipality_name: asNullableString(unit?.municipioNome)
+        }
+      : null
+  };
+}
+
+function delay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, milliseconds));
+}
+
+async function fetchWithRetry(url: URL): Promise<Response> {
+  let lastError: unknown;
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      const response = await fetch(url, {
+        headers: { accept: "application/json" },
+        signal: AbortSignal.timeout(20_000)
+      });
+      if (response.ok) return response;
+      if (response.status !== 429 && response.status < 500) {
+        throw new Error(`PNCP respondeu HTTP ${response.status}.`);
+      }
+      lastError = new Error(`PNCP respondeu HTTP ${response.status}.`);
+      const retryAfterSeconds = Number(response.headers.get("retry-after"));
+      const retryDelay = Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+        ? retryAfterSeconds * 1000
+        : Math.min(500 * (2 ** attempt), 8_000);
+      await delay(retryDelay);
+    } catch (error) {
+      lastError = error;
+      if (error instanceof Error && error.message.startsWith("PNCP respondeu HTTP 4")) throw error;
+      await delay(Math.min(500 * (2 ** attempt), 8_000));
+    }
+  }
+  throw lastError instanceof Error ? lastError : new Error("Falha de rede no PNCP após novas tentativas.");
+}
+
+function makePageUrl(baseUrl: string, fromDate: string, toDate: string, modalityCode: number, page: number): URL {
+  const url = new URL("v1/contratacoes/publicacao", `${baseUrl.replace(/\/$/, "")}/`);
+  url.searchParams.set("dataInicial", fromDate);
+  url.searchParams.set("dataFinal", toDate);
+  url.searchParams.set("codigoModalidadeContratacao", String(modalityCode));
+  url.searchParams.set("pagina", String(page));
+  url.searchParams.set("tamanhoPagina", String(pageSize));
+  return url;
+}
+
+async function saveTender(supabase: ReturnType<typeof createClient>, raw: JsonObject) {
+  const tender = mapTender(raw);
+  let agencyId: string | null = null;
+
+  if (tender.agency) {
+    const { data: agency, error: agencyError } = await supabase
+      .from("agencies")
+      .upsert(tender.agency, { onConflict: "source_key,source_agency_id" })
+      .select("id")
+      .single();
+    if (agencyError) throw agencyError;
+    agencyId = agency.id;
+  }
+
+  const tenderRow: Record<string, unknown> = { ...tender, agency_id: agencyId };
+  delete tenderRow.agency;
+  const { data: previous, error: lookupError } = await supabase
+    .from("tenders")
+    .select("id")
+    .eq("source_key", sourceKey)
+    .eq("source_id", tender.source_id)
+    .maybeSingle();
+  if (lookupError) throw lookupError;
+
+  const { error } = await supabase
+    .from("tenders")
+    .upsert(tenderRow, { onConflict: "source_key,source_id" });
+  if (error) throw error;
+  return previous ? "updated" : "inserted";
+}
+
+function buildInitialCheckpoint(lookbackDays: number): Checkpoint {
+  const end = new Date();
+  const start = new Date(end.getTime() - lookbackDays * 24 * 60 * 60 * 1000);
+  return {
+    fromDate: formatDate(start),
+    toDate: formatDate(end),
+    modalityIndex: 0,
+    page: 1
+  };
+}
+
+Deno.serve(async (request) => {
+  if (request.method !== "POST") {
+    return new Response("Método não permitido.", { status: 405 });
+  }
+
+  const token = requiredEnvironment("INGESTION_JOB_TOKEN");
+  if (request.headers.get("x-ingestion-token") !== token) {
+    return new Response("Não autorizado.", { status: 401 });
+  }
+
+  const modalityCodes = (requiredEnvironment("PNCP_MODALITY_CODES"))
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map(Number)
+    .filter((value) => Number.isInteger(value) && value >= 0);
+  if (modalityCodes.length === 0) {
+    return new Response("Nenhum código de modalidade foi configurado.", { status: 500 });
+  }
+
+  const supabaseUrl = requiredEnvironment("SUPABASE_URL");
+  const serviceRoleKey = requiredEnvironment("SUPABASE_SERVICE_ROLE_KEY");
+  const pncpBaseUrl = Deno.env.get("PNCP_BASE_URL") ?? "https://pncp.gov.br/api/consulta";
+  const lookbackDays = parsePositiveInteger(Deno.env.get("PNCP_LOOKBACK_DAYS"), 2);
+  const maxPages = parsePositiveInteger(Deno.env.get("PNCP_MAX_PAGES_PER_RUN"), maximumPagesPerRun);
+  const supabase = createClient(supabaseUrl, serviceRoleKey, {
+    auth: { persistSession: false, autoRefreshToken: false }
+  });
+
+  const { data: previousRuns } = await supabase
+    .from("ingestion_runs")
+    .select("status,checkpoint")
+    .eq("source_key", sourceKey)
+    .in("status", ["partial", "failed"])
+    .order("started_at", { ascending: false })
+    .limit(1);
+  const checkpoint = parseCheckpoint(previousRuns?.[0]?.checkpoint) ?? buildInitialCheckpoint(lookbackDays);
+
+  const { data: run, error: runError } = await supabase
+    .from("ingestion_runs")
+    .insert({
+      source_key: sourceKey,
+      status: "running",
+      checkpoint: checkpoint as unknown as JsonObject
+    })
+    .select("id")
+    .single();
+  if (runError) return new Response(runError.message, { status: 500 });
+
+  let current = { ...checkpoint };
+  let pagesFetched = 0;
+  let recordsSeen = 0;
+  let recordsInserted = 0;
+  let recordsUpdated = 0;
+
+  try {
+    while (current.modalityIndex < modalityCodes.length && pagesFetched < maxPages) {
+      const modalityCode = modalityCodes[current.modalityIndex];
+      if (modalityCode === undefined) break;
+
+      const pageUrl = makePageUrl(pncpBaseUrl, current.fromDate, current.toDate, modalityCode, current.page);
+      const response = await fetchWithRetry(pageUrl);
+      const page = parsePage(await response.json());
+
+      for (const record of page.data) {
+        const outcome = await saveTender(supabase, record);
+        recordsSeen += 1;
+        if (outcome === "inserted") recordsInserted += 1;
+        else recordsUpdated += 1;
+      }
+      pagesFetched += 1;
+
+      if (current.page < page.totalPaginas) {
+        current.page += 1;
+      } else {
+        current.modalityIndex += 1;
+        current.page = 1;
+      }
+    }
+
+    const complete = current.modalityIndex >= modalityCodes.length;
+    const finalStatus = complete ? "succeeded" : "partial";
+    const { error: updateError } = await supabase
+      .from("ingestion_runs")
+      .update({
+        status: finalStatus,
+        finished_at: new Date().toISOString(),
+        pages_fetched: pagesFetched,
+        records_seen: recordsSeen,
+        records_inserted: recordsInserted,
+        records_updated: recordsUpdated,
+        checkpoint: current as unknown as JsonObject
+      })
+      .eq("id", run.id);
+    if (updateError) throw updateError;
+
+    return Response.json({
+      runId: run.id,
+      status: finalStatus,
+      pagesFetched,
+      recordsSeen,
+      recordsInserted,
+      recordsUpdated,
+      checkpoint: current
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await supabase
+      .from("ingestion_runs")
+      .update({
+        status: "failed",
+        finished_at: new Date().toISOString(),
+        pages_fetched: pagesFetched,
+        records_seen: recordsSeen,
+        records_inserted: recordsInserted,
+        records_updated: recordsUpdated,
+        checkpoint: current as unknown as JsonObject,
+        error_message: message.slice(0, 2000)
+      })
+      .eq("id", run.id);
+
+    console.error(JSON.stringify({ event: "pncp_ingestion_failed", runId: run.id, message }));
+    return Response.json({ runId: run.id, status: "failed", error: message }, { status: 502 });
+  }
+});
+

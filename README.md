@@ -1,24 +1,109 @@
 # Edital Certo
 
-Protótipo estático para acompanhar oportunidades de licitações públicas de TI. O site é publicado gratuitamente pelo GitHub Pages e lê `data/dados.json` do mesmo repositório. Perfil, favoritos, descartes e pipeline ficam somente no armazenamento local do navegador.
+SaaS B2B para descobrir e acompanhar licitações públicas brasileiras, começando por tecnologia da informação. O catálogo foi pensado para receber dados nacionais e os perfis permitem priorizar UFs, municípios, modalidade e segmento.
 
-## Fonte dos dados
+## O que está incluído
 
-A coleta usa a API oficial de consulta do PNCP, na rota de contratações com período de recebimento de propostas em aberto (`/api/consulta/v1/contratacoes/proposta`). O robô mantém registros publicados nos últimos sete dias, filtra palavras de TI e modalidades com códigos 4, 6 e 8, e mantém por até sete dias registros anteriores cujo prazo acabou recentemente.
+- Next.js App Router e TypeScript com páginas de apresentação, cadastro, login, onboarding, painel, detalhe da oportunidade, perfis e preferências de alerta.
+- Supabase Auth SSR e migration PostgreSQL com RLS multiempresa, papéis, planos, cotas iniciais, catálogo, perfil de interesse, alertas, pipeline, auditoria e consentimento registrado.
+- Conector PNCP paginado, normalizador, job Edge Function com retry, checkpoint, upsert idempotente e registro de `ingestion_runs`.
+- Matching determinístico e busca SQL parametrizada com paginação e ordenação controlada.
+- Testes unitários, testes Playwright, CI GitHub Actions, verificação de endpoint e captura explícita de fixture real.
 
-A API de propostas abertas aceita `dataFinal`, mas não oferece `dataInicial` nessa consulta. Para limitar o volume, o script pede contratações com encerramento nos próximos 365 dias e depois seleciona publicações da última semana. Isso significa que prazos que terminem depois desse horizonte não entram nesta coleta. O limite máximo documentado para `tamanhoPagina` é 50; chamadas têm pausa de um segundo, timeout de 30 segundos e até três tentativas. Uma execução pode levar vários minutos; erro parcial fica indicado em `status` e no log do GitHub Actions.
+O painel não insere oportunidades de demonstração. Em 18/10/2026, a consulta real do PNCP para modalidade 6 respondeu com dois registros; essa resposta foi salva em `fixtures/pncp/real-response.json` e incluída nos testes do normalizador.
 
-Os códigos de modalidade usados foram conferidos em respostas reais do PNCP: 4 (Concorrência Eletrônica), 6 (Pregão Eletrônico) e 8 (Dispensa). ⚠️ A API pode mudar seus campos, limites ou comportamento. Confira o Swagger oficial e os logs de `data/dados.json` periodicamente.
+## Requisitos e início local
 
-## Atualização manual
+- Node.js 20.9 ou superior.
+- npm.
+- Projeto Supabase para login e persistência.
 
-1. Abra o repositório no GitHub.
-2. Toque em **Actions** e escolha **Atualizar dados do PNCP** na lista à esquerda.
-3. Toque em **Run workflow**, confirme o branch `main` e rode.
-4. Abra a execução. Verde indica que todas as páginas foram coletadas e salvas; vermelho indica erro ou coleta parcial. Em ambos os casos, abra o log e veja `data/dados.json` para a mensagem e o status.
+```bash
+cp .env.example .env.local
+npm ci
+npm run dev
+```
 
-O agendamento usa UTC (`0 */3 * * *`), ou seja, roda às 00h, 03h, 06h e assim por diante em UTC. O GitHub pode desativar agendas em repositórios públicos sem atividade por 60 dias. Para evitar isso, abra o repositório e use **Actions → Atualizar dados do PNCP → Enable workflow** se a agenda tiver sido desativada; também faça uma atualização manual de tempos em tempos.
+Preencha `.env.local` com os valores do projeto Supabase. Configure também a URL `http://localhost:3000/auth/callback` entre os redirects permitidos no Supabase Auth. Nunca envie valores secretos ao Git.
 
-## Publicação
+## Versão HTML independente
 
-Depois de criar o repositório público `edital-certo`, escolha **Settings → Pages → Deploy from a branch → main → /(root)**. O endereço costuma ser `https://SEU-USUARIO.github.io/edital-certo/`. O workflow de dados usa somente o `GITHUB_TOKEN` automático do GitHub Actions e a permissão `contents: write`; não coloque senha, chave ou token nos arquivos.
+Para abrir uma demonstração funcional sem configurar Supabase, gere o arquivo local com:
+
+```bash
+npm run build:html
+```
+
+O comando cria `Edital_Certo.html`, que pode ser aberto diretamente no navegador. Ele incorpora 50 contratações reais da fixture `fixtures/pncp/ti-interview-sample.json`: 32 classificadas como TI, 21 UFs e Concorrência Eletrônica. A coleta foi parcial por limite de requisições do PNCP; não há dados fictícios na amostra. Busca, filtros, perfil, favoritos, descartes, pipeline, prazos, exportação `.ics` e painel funcionam localmente. O botão de busca ao vivo tenta chamar o endpoint público no navegador. Perfil e ações ficam no `localStorage` desse navegador. Não há login, colaboração entre usuários, alertas enviados ou persistência em servidor nessa versão independente.
+
+Para produção:
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+## Supabase
+
+1. Aplique em ordem as migrations `supabase/migrations/20261018071000_initial_schema.sql` e `supabase/migrations/20261018143000_harden_tenant_access.sql` em um projeto de desenvolvimento.
+2. Verifique RLS com duas contas de teste em organizações distintas antes de carregar dados de clientes.
+3. Configure Supabase Auth para senha e magic link.
+4. Leia [`docs/operations.md`](docs/operations.md) para publicar o job de ingestão e configurar seu agendamento seguro.
+
+⚠️ **SEGURANÇA:** a chave `SUPABASE_SERVICE_ROLE_KEY`, o token do job, tokens de e-mail, mensageria e cobrança devem ficar apenas em ambiente de servidor. Nunca os exponha no navegador nem em variável `NEXT_PUBLIC_`.
+
+## PNCP
+
+A consulta de novas publicações usa a API oficial de consultas. A rota `/api/consulta/v1/contratacoes/publicacao`, os parâmetros de página e o envelope foram confirmados com resposta real. Os códigos de modalidade restantes ainda devem ser configurados a partir do domínio oficial; a captura de teste usou o código 6 para Pregão - Eletrônico. Datas sem offset são convertidas usando o fuso de Brasília documentado pelo PNCP.
+
+Configure códigos já confirmados no ambiente que tenha conectividade com o PNCP e execute:
+
+```bash
+PNCP_MODALITY_CODES="$PNCP_MODALITY_CODES" npm run pncp:verify
+```
+
+Para guardar uma resposta recebida de verdade:
+
+```bash
+PNCP_FIXTURE_START_DATE="$PNCP_FIXTURE_START_DATE" \
+PNCP_FIXTURE_END_DATE="$PNCP_FIXTURE_END_DATE" \
+PNCP_FIXTURE_MODALITY_CODE="$PNCP_FIXTURE_MODALITY_CODE" \
+npm run pncp:capture-fixture
+```
+
+O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura. Rode o comando novamente para atualizar a amostra; não substitua a fixture por objetos sintéticos. A rota de consulta por ID permanece desabilitada até ser confirmada no Swagger atual.
+
+## Variáveis de ambiente
+
+| Nome | Finalidade |
+|---|---|
+| `NEXT_PUBLIC_SUPABASE_URL` | URL do projeto Supabase usada no navegador e no servidor |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Chave publicável com RLS habilitada |
+| `SUPABASE_SERVICE_ROLE_KEY` | Credencial de job confiável; apenas servidor |
+| `PNCP_BASE_URL` | Base da API de consulta; padrão `https://pncp.gov.br/api/consulta` |
+| `PNCP_MODALITY_CODES` | Códigos confirmados na documentação oficial |
+| `PNCP_LOOKBACK_DAYS` | Janela de reconsulta para capturar alterações |
+| `INGESTION_JOB_TOKEN` | Token privado que autoriza a execução agendada |
+| `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Configuração futura de entrega de e-mail |
+| `TELEGRAM_BOT_TOKEN` | Configuração futura de notificações |
+| `ASAAS_API_KEY` | Configuração futura de cobrança |
+
+## Limites conhecidos
+
+- Não há um projeto Supabase, domínio de e-mail ou provedor de cobrança conectado neste workspace; deploy, agendamento, envio de alertas e cobrança exigem configuração nesses serviços.
+- A interface salva preferências de alerta, mas não entrega e-mails até a integração Resend ser implementada e verificada.
+- A consulta de detalhe por ID, itens e arquivos PNCP deve ser concluída após validar as operações correspondentes na documentação vigente.
+- Consentimento fica registrado no cadastro; os textos legais são iniciais e exigem dados do controlador, retenção definida e revisão jurídica.
+- Fases 2 e 3 estão descritas no backlog; recursos de pipeline, lembretes, preços, concorrência, IA e WhatsApp não são anunciados como ativos no MVP.
+
+## Documentação do projeto
+
+- [`docs/backlog-jira.md`](docs/backlog-jira.md): épicos, histórias, critérios e estimativas.
+- [`docs/architecture.md`](docs/architecture.md): diagrama, decisões técnicas e estrutura do repositório.
+- [`docs/operations.md`](docs/operations.md): setup de ingestão, segredos e operação.
+- [`supabase/migrations/20261018071000_initial_schema.sql`](supabase/migrations/20261018071000_initial_schema.sql): modelo de dados e controles RLS.
+- [`supabase/migrations/20261018143000_harden_tenant_access.sql`](supabase/migrations/20261018143000_harden_tenant_access.sql): reforço de acesso aos comentários e visão segura do status do PNCP.
