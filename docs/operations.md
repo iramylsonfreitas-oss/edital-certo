@@ -22,16 +22,22 @@ A função está configurada para validar um token próprio em `x-ingestion-toke
 
 Depois do deploy e da aplicação das migrations, execute `supabase/ops/schedule-ingestion.sql` no SQL Editor do projeto. O script grava a URL do projeto no Vault e cria ou substitui o agendamento `0 */3 * * *`. O `ingestion_job_token` é criado pela migration no Vault. A chamada usa `pg_net` com limite de 120 segundos. Não é necessário guardar chave publicável no Vault para esse job.
 
-Para conferir a função antes de ativar a agenda, use o comando abaixo em um terminal com acesso ao projeto. O segredo é lido de variável local e não deve ser colado em tickets ou conversas:
+Para testar sem revelar o token, rode a chamada abaixo no SQL Editor do Supabase. O SQL lê o token diretamente do Vault e retorna um identificador de solicitação:
 
-```bash
-curl --fail-with-body --request POST \
-  "$SUPABASE_URL/functions/v1/ingest-pncp" \
-  --header "Content-Type: application/json" \
-  --header "apikey: $SUPABASE_PUBLISHABLE_KEY" \
-  --header "x-ingestion-token: $INGESTION_JOB_TOKEN" \
-  --data '{}'
+```sql
+select net.http_post(
+  url := (select decrypted_secret from vault.decrypted_secrets where name = 'project_url')
+    || '/functions/v1/ingest-pncp',
+  headers := jsonb_build_object(
+    'Content-Type', 'application/json',
+    'x-ingestion-token', (select decrypted_secret from vault.decrypted_secrets where name = 'ingestion_job_token')
+  ),
+  body := '{}'::jsonb,
+  timeout_milliseconds := 120000
+);
 ```
+
+O resultado desta consulta é o identificador da solicitação. Consulte o resultado HTTP em `net._http_response` usando esse identificador.
 
 Uma chamada pode retornar `partial` quando o limite de páginas por execução for atingido. O checkpoint permite que a próxima execução continue; `succeeded` significa que as modalidades configuradas foram percorridas. Se o PNCP limitar a consulta com HTTP 429 mesmo após os intervalos, a execução registra `failed` e preserva o checkpoint para a próxima rodada.
 
