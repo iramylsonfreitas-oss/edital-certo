@@ -6,8 +6,8 @@ import { toSafeHttpUrl } from "@/lib/security/safe-url";
 import { AppNavigation } from "@/components/app-navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { scoreTender, type InterestProfile } from "@/lib/matching/score";
-import { addTenderToPipelineAction, updateTenderFeedbackAction } from "./actions";
 import { SearchFilters } from "./search-filters";
+import { FavoriteCount, TenderOpportunityCard } from "./tender-card-actions";
 
 export const dynamic = "force-dynamic";
 
@@ -269,7 +269,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           { label: "Resultados dos filtros", value: Number(totalCount).toLocaleString("pt-BR") },
           { label: "Encerram em até 3 dias", value: Number(urgentCount).toLocaleString("pt-BR") },
           { label: "Favoritas", value: (favoriteCount ?? 0).toLocaleString("pt-BR") }
-        ].map((metric) => <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={metric.label}><p className="text-xs text-slate-600 dark:text-slate-300 sm:text-sm">{metric.label}</p><p className="mt-2 text-2xl font-bold">{metric.value}</p></article>)}
+        ].map((metric) => <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={metric.label}><p className="text-xs text-slate-600 dark:text-slate-300 sm:text-sm">{metric.label}</p><p className="mt-2 text-2xl font-bold">{metric.label === "Favoritas" ? <FavoriteCount initialCount={favoriteCount ?? 0} /> : metric.value}</p></article>)}
       </section>
 
       <div className="mt-6 grid items-start gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
@@ -320,7 +320,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             {databaseTenders.map((tender) => {
               const bestMatch = scoreForTender(tender, scoringProfiles);
               const deadline = deadlineBadge(tender.proposal_close_at);
-              return <article className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800" key={tender.id}>
+              return <TenderOpportunityCard
+                key={tender.id}
+                tenderId={tender.id}
+                organizationId={organizationId}
+                initialFeedback={feedbackByTender.get(tender.id) ?? null}
+                initiallyInPipeline={pipelineTenderIds.has(tender.id)}
+                listMode={view}
+              >
                 <div className="flex flex-wrap justify-between gap-3">
                   <h2 className="max-w-3xl font-semibold"><Link className="hover:text-blue-700" href={`/tenders/${tender.id}`}>{tender.title}</Link></h2>
                   <span className="text-sm text-slate-600 dark:text-slate-300">{tender.uf ?? "UF não informada"}</span>
@@ -332,38 +339,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                   {deadline ? <span className={`rounded-full px-3 py-1 text-xs font-semibold ${deadline.style}`}>{deadline.text}</span> : null}
                 </div>
                 {bestMatch?.explanation.length ? <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">{bestMatch.explanation.slice(0, 2).join(" · ")}</p> : null}
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <form action={updateTenderFeedbackAction}>
-                    <input name="tenderId" type="hidden" value={tender.id} />
-                    <input name="listMode" type="hidden" value={view} />
-                    <input name="state" type="hidden" value={feedbackByTender.get(tender.id) === "favorite" ? "clear" : "favorite"} />
-                    <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700" type="submit">
-                      {feedbackByTender.get(tender.id) === "favorite" ? "★ Favorita · remover" : "☆ Favoritar"}
-                    </button>
-                  </form>
-                  {view === "discarded" ? (
-                    <form action={updateTenderFeedbackAction}>
-                      <input name="tenderId" type="hidden" value={tender.id} />
-                      <input name="listMode" type="hidden" value="discarded" />
-                      <input name="state" type="hidden" value="clear" />
-                      <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-700" type="submit">Restaurar</button>
-                    </form>
-                  ) : (
-                    <form action={updateTenderFeedbackAction}>
-                      <input name="tenderId" type="hidden" value={tender.id} />
-                      <input name="listMode" type="hidden" value={view} />
-                      <input name="state" type="hidden" value="discarded" />
-                      <button className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-rose-700 hover:bg-rose-50 dark:border-slate-600 dark:text-rose-300 dark:hover:bg-rose-950" type="submit">Descartar</button>
-                    </form>
-                  )}
-                  <form action={addTenderToPipelineAction}>
-                    <input name="tenderId" type="hidden" value={tender.id} />
-                    <button className="rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800" type="submit">
-                      {pipelineTenderIds.has(tender.id) ? "Abrir no pipeline" : "Acompanhar"}
-                    </button>
-                  </form>
-                </div>
-              </article>;
+              </TenderOpportunityCard>;
             })}
           </section>
           <nav aria-label="Paginação" className="mt-6 flex justify-between">
