@@ -46,7 +46,11 @@ export function TenderOpportunityCard({
   async function saveFeedback(nextState: FeedbackState) {
     if (busy) return;
     const previousState = feedback;
-    const shouldHide = listMode === "discarded" ? nextState !== "discarded" : nextState === "discarded";
+    const shouldHide = listMode === "discarded"
+      ? nextState !== "discarded"
+      : listMode === "favorites"
+        ? nextState !== "favorite"
+        : nextState === "discarded";
     setFeedback(nextState);
     setVisible(!shouldHide);
     setMessage(shouldHide ? "Oportunidade removida desta lista." : "Salvando…");
