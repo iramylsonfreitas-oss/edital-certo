@@ -18,7 +18,15 @@ interface Checkpoint {
 
 const sourceKey = "pncp";
 const pageSize = 50;
-const maximumPagesPerRun = 20;
+// O PNCP limitou a consulta depois de cerca de doze páginas em teste real.
+// Rodadas menores e pausas maiores reduzem novos HTTP 429; o checkpoint
+// permite continuar na próxima execução agendada.
+const maximumPagesPerRun = 10;
+const minimumPauseBetweenRequestsMs = 6_000;
+const requestTimeoutMs = 30_000;
+const maximumRequestAttempts = 3;
+const verifiedModalityCodes = new Set([4, 6, 8]);
+let lastRequestStartedAt = 0;
 
 function requiredEnvironment(name: string): string {
   const value = Deno.env.get(name);
@@ -166,26 +174,42 @@ function delay(milliseconds: number): Promise<void> {
 
 async function fetchWithRetry(url: URL): Promise<Response> {
   let lastError: unknown;
-  for (let attempt = 0; attempt < 5; attempt += 1) {
+  for (let attempt = 0; attempt < maximumRequestAttempts; attempt += 1) {
     try {
+      const pauseRemaining = minimumPauseBetweenRequestsMs - (Date.now() - lastRequestStartedAt);
+      if (lastRequestStartedAt > 0 && pauseRemaining > 0) await delay(pauseRemaining);
+      lastRequestStartedAt = Date.now();
       const response = await fetch(url, {
         headers: { accept: "application/json" },
-        signal: AbortSignal.timeout(20_000)
+        signal: AbortSignal.timeout(requestTimeoutMs)
       });
       if (response.ok) return response;
       if (response.status !== 429 && response.status < 500) {
         throw new Error(`PNCP respondeu HTTP ${response.status}.`);
       }
       lastError = new Error(`PNCP respondeu HTTP ${response.status}.`);
-      const retryAfterSeconds = Number(response.headers.get("retry-after"));
-      const retryDelay = Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
+      if (attempt === maximumRequestAttempts - 1) break;
+
+      const retryAfter = response.headers.get("retry-after");
+      const retryAfterSeconds = retryAfter ? Number(retryAfter) : Number.NaN;
+      const retryAfterDate = retryAfter && !Number.isFinite(retryAfterSeconds)
+        ? Date.parse(retryAfter)
+        : Number.NaN;
+      const serverDelayMs = Number.isFinite(retryAfterSeconds) && retryAfterSeconds > 0
         ? retryAfterSeconds * 1000
-        : Math.min(500 * (2 ** attempt), 8_000);
-      await delay(retryDelay);
+        : Number.isFinite(retryAfterDate)
+        ? Math.max(0, retryAfterDate - Date.now())
+        : 0;
+      const exponentialDelayMs = response.status === 429
+        ? Math.min(15_000 * (2 ** attempt), 60_000)
+        : Math.min(2_000 * (2 ** attempt), 10_000);
+      await delay(Math.max(serverDelayMs, exponentialDelayMs));
     } catch (error) {
       lastError = error;
       if (error instanceof Error && error.message.startsWith("PNCP respondeu HTTP 4")) throw error;
-      await delay(Math.min(500 * (2 ** attempt), 8_000));
+      if (attempt < maximumRequestAttempts - 1) {
+        await delay(Math.min(2_000 * (2 ** attempt), 10_000));
+      }
     }
   }
   throw lastError instanceof Error ? lastError : new Error("Falha de rede no PNCP após novas tentativas.");
@@ -201,35 +225,50 @@ function makePageUrl(baseUrl: string, fromDate: string, toDate: string, modality
   return url;
 }
 
-async function saveTender(supabase: ReturnType<typeof createClient>, raw: JsonObject) {
-  const tender = mapTender(raw);
-  let agencyId: string | null = null;
-
-  if (tender.agency) {
-    const { data: agency, error: agencyError } = await supabase
-      .from("agencies")
-      .upsert(tender.agency, { onConflict: "source_key,source_agency_id" })
-      .select("id")
-      .single();
-    if (agencyError) throw agencyError;
-    agencyId = agency.id;
+async function savePage(supabase: ReturnType<typeof createClient>, rawRecords: JsonObject[]) {
+  const tenders = rawRecords.map(mapTender);
+  const agenciesBySourceId = new Map<string, NonNullable<(typeof tenders)[number]["agency"]>>();
+  for (const tender of tenders) {
+    if (tender.agency) agenciesBySourceId.set(tender.agency.source_agency_id, tender.agency);
   }
 
-  const tenderRow: Record<string, unknown> = { ...tender, agency_id: agencyId };
-  delete tenderRow.agency;
-  const { data: previous, error: lookupError } = await supabase
+  const agencyIds = new Map<string, string>();
+  if (agenciesBySourceId.size) {
+    const { data: agencies, error: agencyError } = await supabase
+      .from("agencies")
+      .upsert([...agenciesBySourceId.values()], { onConflict: "source_key,source_agency_id" })
+      .select("id,source_agency_id");
+    if (agencyError) throw agencyError;
+    for (const agency of agencies ?? []) agencyIds.set(agency.source_agency_id, agency.id);
+  }
+
+  const tenderRows = tenders.map((tender) => {
+    const { agency, ...row } = tender;
+    return {
+      ...row,
+      agency_id: agency ? agencyIds.get(agency.source_agency_id) ?? null : null
+    };
+  });
+  const sourceIds = [...new Set(tenderRows.map((tender) => tender.source_id))];
+  if (sourceIds.length === 0) return { seen: rawRecords.length, inserted: 0, updated: 0 };
+  const { data: existingRows, error: lookupError } = await supabase
     .from("tenders")
-    .select("id")
+    .select("source_id")
     .eq("source_key", sourceKey)
-    .eq("source_id", tender.source_id)
-    .maybeSingle();
+    .in("source_id", sourceIds);
   if (lookupError) throw lookupError;
 
-  const { error } = await supabase
+  const existingIds = new Set((existingRows ?? []).map((row) => row.source_id));
+  const { error: tenderError } = await supabase
     .from("tenders")
-    .upsert(tenderRow, { onConflict: "source_key,source_id" });
-  if (error) throw error;
-  return previous ? "updated" : "inserted";
+    .upsert(tenderRows, { onConflict: "source_key,source_id" });
+  if (tenderError) throw tenderError;
+
+  return {
+    seen: rawRecords.length,
+    inserted: sourceIds.filter((id) => !existingIds.has(id)).length,
+    updated: sourceIds.filter((id) => existingIds.has(id)).length
+  };
 }
 
 function buildInitialCheckpoint(lookbackDays: number): Checkpoint {
@@ -248,29 +287,47 @@ Deno.serve(async (request) => {
     return new Response("Método não permitido.", { status: 405 });
   }
 
-  const token = requiredEnvironment("INGESTION_JOB_TOKEN");
-  if (request.headers.get("x-ingestion-token") !== token) {
-    return new Response("Não autorizado.", { status: 401 });
-  }
-
-  const modalityCodes = (requiredEnvironment("PNCP_MODALITY_CODES"))
+  const modalitySetting = Deno.env.get("PNCP_MODALITY_CODES") ?? "4,6,8";
+  const modalityCodes = modalitySetting
     .split(",")
     .map((value) => value.trim())
     .filter(Boolean)
-    .map(Number)
-    .filter((value) => Number.isInteger(value) && value >= 0);
-  if (modalityCodes.length === 0) {
-    return new Response("Nenhum código de modalidade foi configurado.", { status: 500 });
+    .map(Number);
+  if (
+    modalityCodes.length === 0 ||
+    modalityCodes.some((value) => !Number.isInteger(value) || !verifiedModalityCodes.has(value))
+  ) {
+    return new Response("Use somente os códigos de modalidade PNCP já confirmados: 4, 6 e 8.", { status: 500 });
   }
 
   const supabaseUrl = requiredEnvironment("SUPABASE_URL");
   const serviceRoleKey = requiredEnvironment("SUPABASE_SERVICE_ROLE_KEY");
-  const pncpBaseUrl = Deno.env.get("PNCP_BASE_URL") ?? "https://pncp.gov.br/api/consulta";
-  const lookbackDays = parsePositiveInteger(Deno.env.get("PNCP_LOOKBACK_DAYS"), 2);
-  const maxPages = parsePositiveInteger(Deno.env.get("PNCP_MAX_PAGES_PER_RUN"), maximumPagesPerRun);
   const supabase = createClient(supabaseUrl, serviceRoleKey, {
     auth: { persistSession: false, autoRefreshToken: false }
   });
+
+  const presentedToken = request.headers.get("x-ingestion-token") ?? "";
+  if (!presentedToken) return new Response("Não autorizado.", { status: 401 });
+  const { data: tokenIsValid, error: tokenError } = await supabase.rpc("validate_ingestion_job_token", {
+    p_candidate: presentedToken
+  });
+  if (tokenError || tokenIsValid !== true) return new Response("Não autorizado.", { status: 401 });
+
+  const pncpBaseUrl = Deno.env.get("PNCP_BASE_URL") ?? "https://pncp.gov.br/api/consulta";
+  const lookbackDays = parsePositiveInteger(Deno.env.get("PNCP_LOOKBACK_DAYS"), 3);
+  const maxPages = parsePositiveInteger(Deno.env.get("PNCP_MAX_PAGES_PER_RUN"), maximumPagesPerRun);
+
+  const staleBefore = new Date(Date.now() - 5 * 60_000).toISOString();
+  await supabase
+    .from("ingestion_runs")
+    .update({
+      status: "failed",
+      finished_at: new Date().toISOString(),
+      error_message: "Execução interrompida antes de finalizar; checkpoint será retomado."
+    })
+    .eq("source_key", sourceKey)
+    .eq("status", "running")
+    .lt("started_at", staleBefore);
 
   const { data: previousRuns } = await supabase
     .from("ingestion_runs")
@@ -307,12 +364,10 @@ Deno.serve(async (request) => {
       const response = await fetchWithRetry(pageUrl);
       const page = parsePage(await response.json());
 
-      for (const record of page.data) {
-        const outcome = await saveTender(supabase, record);
-        recordsSeen += 1;
-        if (outcome === "inserted") recordsInserted += 1;
-        else recordsUpdated += 1;
-      }
+      const saved = await savePage(supabase, page.data);
+      recordsSeen += saved.seen;
+      recordsInserted += saved.inserted;
+      recordsUpdated += saved.updated;
       pagesFetched += 1;
 
       if (current.page < page.totalPaginas) {
