@@ -13,14 +13,16 @@ export default async function TenderDetailPage({ params }: { params: Promise<{ i
   const { data: authData } = await supabase.auth.getUser();
   if (!authData.user) redirect("/login");
 
-  const [{ data: tender, error }, { data: organizations }, { data: feedback }] = await Promise.all([
+  const [{ data: tender, error }, { data: organizations }, { data: feedback }, { data: items }, { data: files }] = await Promise.all([
     supabase
       .from("tenders")
       .select("id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,agencies(name,cnpj,sphere)")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("organizations").select("id,name").order("created_at"),
-    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id)
+    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id),
+    supabase.from("tender_items").select("id,item_number,description,unit,quantity,estimated_unit_value,estimated_total_value,catmat_code,catser_code").eq("tender_id", id).order("item_number"),
+    supabase.from("tender_files").select("id,title,document_type,external_url,published_at,source_updated_at").eq("tender_id", id).order("published_at", { ascending: false })
   ]);
 
   if (error || !tender) notFound();
@@ -55,6 +57,14 @@ export default async function TenderDetailPage({ params }: { params: Promise<{ i
           <div><dt className="text-sm text-slate-500">Publicação no PNCP</dt><dd className="mt-1 font-medium">{date(tender.published_at)}</dd></div>
           <div><dt className="text-sm text-slate-500">Última atualização da fonte</dt><dd className="mt-1 font-medium">{date(tender.source_updated_at)}</dd></div>
         </dl>
+        <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
+          <h2 className="text-xl font-bold">Itens da licitação</h2>
+          {items?.length ? <ul className="mt-3 grid gap-3">{items.map((item) => <li className="rounded-xl border border-slate-200 p-4 dark:border-slate-700" key={item.id}><h3 className="font-semibold">Item {item.item_number} · {item.description}</h3><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.quantity == null ? "Quantidade não informada" : `${item.quantity} ${item.unit ?? "unidades"}`} · {item.estimated_unit_value == null ? "Valor unitário não informado" : item.estimated_unit_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{item.estimated_total_value == null ? "" : ` · Total ${item.estimated_total_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`}</p>{item.catmat_code || item.catser_code ? <p className="mt-1 text-xs text-slate-500">{item.catmat_code ? `CATMAT ${item.catmat_code}` : `CATSER ${item.catser_code}`}</p> : null}</li>)}</ul> : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">A fonte ainda não forneceu itens detalhados para esta contratação.</p>}
+        </section>
+        <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
+          <h2 className="text-xl font-bold">Arquivos e documentos</h2>
+          {files?.length ? <ul className="mt-3 grid gap-3">{files.map((file) => { const fileUrl = toSafeHttpUrl(file.external_url); return <li className="rounded-xl border border-slate-200 p-4 dark:border-slate-700" key={file.id}><h3 className="font-semibold">{file.title}</h3><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{file.document_type ?? "Documento"}{file.source_updated_at ? ` · atualizado ${date(file.source_updated_at)}` : ""}</p>{fileUrl ? <a className="mt-3 inline-flex rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-blue-700 dark:border-slate-600" href={fileUrl} rel="noopener noreferrer" target="_blank">Abrir documento oficial</a> : <p className="mt-2 text-sm text-slate-500">Sem link disponível na fonte.</p>}</li>; })}</ul> : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">A fonte não informou arquivos para esta contratação.</p>}
+        </section>
         {officialUrl ? (
           <a className="mt-8 inline-flex rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white" href={officialUrl} rel="noopener noreferrer" target="_blank">
             Abrir fonte oficial
