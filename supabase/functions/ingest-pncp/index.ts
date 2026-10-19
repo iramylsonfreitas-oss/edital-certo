@@ -365,7 +365,9 @@ Deno.serve(async (request) => {
 
       const pageUrl = makePageUrl(pncpBaseUrl, current.toDate, modalityCode, current.page);
       const response = await fetchWithRetry(pageUrl);
-      const page = parsePage(await response.json());
+      const page = response.status === 204
+        ? { data: [], totalPaginas: 0, numeroPagina: current.page, paginasRestantes: 0 }
+        : parsePage(await response.json());
 
       const saved = await savePage(supabase, page.data);
       recordsSeen += saved.seen;
