@@ -58,7 +58,9 @@ npm run test:e2e
 
 ## PNCP
 
-A consulta de novas publicações usa a API oficial de consultas. A rota `/api/consulta/v1/contratacoes/publicacao`, os parâmetros de página e o envelope foram confirmados com resposta real. Os códigos de modalidade restantes ainda devem ser configurados a partir do domínio oficial; a captura de teste usou o código 6 para Pregão - Eletrônico. Datas sem offset são convertidas usando o fuso de Brasília documentado pelo PNCP.
+O job de ingestão consulta oportunidades com propostas abertas pelo endpoint oficial `/v1/contratacoes/proposta`. O Swagger e o manual do PNCP documentam os parâmetros `dataFinal`, `codigoModalidadeContratacao`, `pagina` e `tamanhoPagina`. Em teste real em 19/10/2026, o PNCP aceitou `tamanhoPagina=50` e rejeitou 100 e 500, apesar do limite maior descrito no manual; por isso o coletor fixa 50. A validação ao vivo percorreu 8 páginas, recebeu 326 registros únicos e não teve HTTP 429. Esse total varia conforme os prazos das licitações. O job preserva a pausa de 6 segundos, limite de 10 páginas e checkpoint; a agenda permanece a cada 3 horas.
+
+Referências oficiais: [Swagger do PNCP](https://pncp.gov.br/api/consulta/swagger-ui/index.html?configUrl=%2Fpncp-api%2Fv3%2Fapi-docs%2Fswagger-config) e [Manual da API de Consultas](https://www.gov.br/pncp/pt-br/pncp/copy_of_manuais/ManualPNCPAPIConsultasVerso1.0.pdf/@@display-file/file).
 
 Configure códigos já confirmados no ambiente que tenha conectividade com o PNCP e execute:
 
@@ -86,7 +88,6 @@ O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura.
 | `SUPABASE_SERVICE_ROLE_KEY` | Credencial de job confiável; apenas servidor |
 | `PNCP_BASE_URL` | Base da API de consulta; padrão `https://pncp.gov.br/api/consulta` |
 | `PNCP_MODALITY_CODES` | Códigos confirmados na documentação oficial |
-| `PNCP_LOOKBACK_DAYS` | Janela de reconsulta para capturar alterações |
 | `INGESTION_JOB_TOKEN` | Token privado que autoriza a execução agendada |
 | `RESEND_API_KEY`, `RESEND_FROM_EMAIL` | Configuração futura de entrega de e-mail |
 | `TELEGRAM_BOT_TOKEN` | Configuração futura de notificações |
