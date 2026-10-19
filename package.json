@@ -14,6 +14,7 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "pncp:verify": "node --import=tsx scripts/verify-pncp.ts",
+    "pncp:verify-open": "node scripts/verify-pncp-open-proposals.mjs",
     "pncp:capture-fixture": "node --import=tsx scripts/capture-pncp-fixture.ts",
     "build:html": "node scripts/generate-standalone-html.mjs"
   },
