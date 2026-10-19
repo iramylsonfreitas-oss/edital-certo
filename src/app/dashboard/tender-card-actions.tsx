@@ -25,6 +25,7 @@ export function FavoriteCount({ initialCount }: { initialCount: number }) {
 export function TenderOpportunityCard({
   tenderId,
   organizationId,
+  userId,
   initialFeedback,
   initiallyInPipeline,
   listMode,
@@ -32,6 +33,7 @@ export function TenderOpportunityCard({
 }: {
   tenderId: string;
   organizationId: string;
+  userId: string;
   initialFeedback: FeedbackState;
   initiallyInPipeline: boolean;
   listMode: ListMode;
@@ -58,12 +60,10 @@ export function TenderOpportunityCard({
 
     try {
       const supabase = createSupabaseBrowserClient();
-      const { data: authData, error: authError } = await supabase.auth.getUser();
-      if (authError || !authData.user) throw new Error("Sua sessão expirou. Entre novamente.");
 
       const key = {
         organization_id: organizationId,
-        user_id: authData.user.id,
+        user_id: userId,
         tender_id: tenderId
       };
       const result = nextState
@@ -92,13 +92,11 @@ export function TenderOpportunityCard({
     setMessage("Salvando no pipeline…");
     try {
       const supabase = createSupabaseBrowserClient();
-      const { data: authData, error: authError } = await supabase.auth.getUser();
-      if (authError || !authData.user) throw new Error("Sua sessão expirou. Entre novamente.");
       const { error } = await supabase.from("pipeline_cards").insert({
         organization_id: organizationId,
         tender_id: tenderId,
         status: "triage",
-        created_by: authData.user.id
+        created_by: userId
       });
       if (error) {
         if (error.code === "23505") {
