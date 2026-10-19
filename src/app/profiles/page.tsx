@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { AppNavigation } from "@/components/app-navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -15,9 +16,8 @@ export default async function ProfilesPage() {
     .order("updated_at", { ascending: false });
 
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-4 py-8 sm:px-6">
-      <Link className="text-sm text-blue-700" href="/dashboard">← Oportunidades</Link>
-      <h1 className="mt-4 text-3xl font-bold">Perfis de interesse</h1>
+    <main className="mx-auto min-h-screen max-w-5xl px-4 py-8 pb-28 sm:px-6 md:pb-8">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-700"><div><Link className="text-sm text-blue-700" href="/dashboard">← Oportunidades</Link><h1 className="mt-3 text-3xl font-bold">Perfis de interesse</h1></div><AppNavigation active="/dashboard" /></header>
       <Link className="mt-4 inline-flex rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white" href="/profiles/new">Criar perfil</Link>
       {profiles?.length ? (
         <ul className="mt-6 grid gap-3">

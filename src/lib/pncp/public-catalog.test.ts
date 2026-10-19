@@ -5,6 +5,7 @@ const records: PublicPncpRecord[] = [
   {
     numeroControlePNCP: "123-1-000001/2026",
     objetoCompra: "Aquisição de notebook para laboratório",
+    orgaoEntidade: { esferaId: "E" },
     modalidadeId: 6,
     modalidadeNome: "Pregão Eletrônico",
     valorTotalEstimado: 45000,
@@ -14,6 +15,7 @@ const records: PublicPncpRecord[] = [
   {
     numeroControlePNCP: "456-1-000002/2026",
     objetoCompra: "Licenças de software para gestão",
+    orgaoEntidade: { esferaId: "M" },
     modalidadeId: 8,
     modalidadeNome: "Dispensa",
     valorTotalEstimado: 80000,
@@ -48,6 +50,11 @@ describe("catálogo público PNCP", () => {
   it("busca sem diferenciar acentos e maiúsculas", () => {
     const result = filterPublicPncpRecords(records, { ...defaultFilters, query: "LICENÇAS SOFTWARE" });
 
+    expect(result.map((record) => record.numeroControlePNCP)).toEqual(["456-1-000002/2026"]);
+  });
+
+  it("filtra pela esfera do órgão quando a captura traz esse campo", () => {
+    const result = filterPublicPncpRecords(records, { ...defaultFilters, sphere: "M" });
     expect(result.map((record) => record.numeroControlePNCP)).toEqual(["456-1-000002/2026"]);
   });
 
