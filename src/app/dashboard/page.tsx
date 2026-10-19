@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { fetchPublicPncpCatalog, filterPublicPncpRecords, parsePncpDate, type PublicPncpRecord } from "@/lib/pncp/public-catalog";
+import { toSafeHttpUrl } from "@/lib/security/safe-url";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
@@ -8,6 +10,16 @@ export const dynamic = "force-dynamic";
 const sortSchema = z.enum(["relevance", "deadline", "value"]);
 const numericFilterSchema = z.coerce.number().finite().nonnegative();
 type TenderSearchRow = { tender_id: string; search_rank: number; total_count: number };
+type DatabaseTender = {
+  id: string;
+  title: string;
+  uf: string | null;
+  municipality_name: string | null;
+  estimated_value: number | null;
+  proposal_close_at: string | null;
+  modality_name: string | null;
+  agencies: { name: string }[] | { name: string } | null;
+};
 
 function parameter(value: string | string[] | undefined): string | undefined {
   return typeof value === "string" ? value : undefined;
@@ -27,6 +39,21 @@ function pageHref(params: Record<string, string | string[] | undefined>, page: n
   }
   search.set("page", String(page));
   return `/dashboard?${search.toString()}`;
+}
+
+function formatDate(value: string | null): string | null {
+  const date = parsePncpDate(value);
+  return date
+    ? date.toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })
+    : null;
+}
+
+function agencyName(record: PublicPncpRecord): string {
+  return record.orgaoEntidade?.razaoSocial ?? "Órgão não informado";
+}
+
+function publicRecordUrl(record: PublicPncpRecord): string | null {
+  return toSafeHttpUrl(record.linkSistemaOrigem);
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
@@ -54,7 +81,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const page = Number.isInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, 100_000) : 1;
   const pageSize = 50;
 
-  const [{ data: rawSearchRows, error }, { data: latestRun }] = await Promise.all([
+  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }] = await Promise.all([
     supabase.rpc("search_tenders", {
       p_query: queryValue,
       p_uf: uf,
@@ -79,15 +106,41 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const searchOrder = new Map<string, number>();
   searchRows.forEach((row, index) => searchOrder.set(row.tender_id, index));
   const tenderIds = [...searchOrder.keys()];
-  const { data: tenderRows } = tenderIds.length
+  const { data: rawTenderRows } = tenderIds.length
     ? await supabase
       .from("tenders")
       .select("id,title,uf,municipality_name,estimated_value,proposal_close_at,modality_name,agencies(name)")
       .in("id", tenderIds)
     : { data: [] };
-  const tenders = (tenderRows ?? []).sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
-  const totalCount = searchRows?.[0]?.total_count ?? 0;
-  const pageCount = Math.ceil(Number(totalCount) / pageSize);
+  const databaseTenders = ((rawTenderRows ?? []) as DatabaseTender[])
+    .sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
+
+  let catalog = null;
+  if (searchError || databaseTenders.length === 0) {
+    try {
+      catalog = await fetchPublicPncpCatalog();
+    } catch {
+      catalog = null;
+    }
+  }
+
+  const filteredPublicRecords = catalog
+    ? filterPublicPncpRecords(catalog.registros, {
+      query: queryValue,
+      uf,
+      modality,
+      minimumValue,
+      maximumValue,
+      closesBefore: closesBeforeValue && /^\d{4}-\d{2}-\d{2}$/.test(closesBeforeValue) ? closesBeforeValue : null,
+      sort
+    })
+    : [];
+  const usePublicCatalog = databaseTenders.length === 0 && filteredPublicRecords.length > 0;
+  const publicPageCount = Math.ceil(filteredPublicRecords.length / pageSize);
+  const publicPageRecords = filteredPublicRecords.slice((page - 1) * pageSize, page * pageSize);
+  const publicCount = usePublicCatalog ? filteredPublicRecords.length : 0;
+  const totalCount = usePublicCatalog ? publicCount : (searchRows[0]?.total_count ?? 0);
+  const pageCount = usePublicCatalog ? publicPageCount : Math.ceil(Number(totalCount) / pageSize);
 
   return (
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 sm:px-6">
@@ -105,7 +158,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <p className="mt-5 text-sm text-slate-600 dark:text-slate-300">Conectado como {authData.user.email ?? "usuário"}.</p>
       <aside aria-label="Status da fonte PNCP" className="mt-5 rounded-xl border border-slate-200 p-4 text-sm dark:border-slate-700">
         <strong>Fonte PNCP: </strong>
-        {latestRun ? `${latestRun.status === "succeeded" ? "Operacional" : latestRun.status === "running" || latestRun.status === "partial" ? "Em execução" : "Com falha"} · última execução ${new Date(latestRun.started_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : "Aguardando a primeira execução agendada"}
+        {latestRun
+          ? `${latestRun.status === "succeeded" ? "Operacional" : latestRun.status === "running" || latestRun.status === "partial" ? "Em execução" : "Com falha"} · última execução ${new Date(latestRun.started_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`
+          : catalog?.atualizadoEm
+            ? `Catálogo atualizado em ${new Date(catalog.atualizadoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })} · ${catalog.registros.length} registros · ${catalog.status === "ok" ? "coleta concluída" : catalog.status === "parcial" ? "coleta parcial" : "última coleta com erro"}`
+            : "Catálogo PNCP indisponível no momento"}
       </aside>
 
       <form action="/dashboard" className="mt-6 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800 sm:grid-cols-2 lg:grid-cols-4">
@@ -138,19 +195,54 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </div>
       </form>
 
-      {error ? (
-        <p className="mt-8 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900">Não foi possível pesquisar o catálogo. Confira se a migration e as políticas RLS estão aplicadas.</p>
-      ) : tenders.length ? (
+      {usePublicCatalog ? (
+        <>
+          <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">
+            {publicCount.toLocaleString("pt-BR")} oportunidades do catálogo público · página {page} de {Math.max(1, pageCount)} · leitura somente para consulta
+          </p>
+          <section className="mt-3 grid gap-3" aria-label="Oportunidades do catálogo PNCP">
+            {publicPageRecords.map((record) => {
+              const sourceUrl = publicRecordUrl(record);
+              const closeDate = formatDate(record.dataEncerramentoProposta ?? null);
+              const value = typeof record.valorTotalEstimado === "number" && record.valorTotalEstimado > 0
+                ? record.valorTotalEstimado.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+                : "Valor não informado";
+              const details = `${record.modalidadeNome ?? "Modalidade não informada"} · ${value}${closeDate ? ` · Prazo: ${closeDate}` : ""}`;
+              return (
+                <article className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" key={record.numeroControlePNCP}>
+                  <div className="flex flex-wrap justify-between gap-3">
+                    <h2 className="max-w-3xl font-semibold">{record.objetoCompra.slice(0, 512)}</h2>
+                    <span className="text-sm text-slate-600 dark:text-slate-300">{record.unidadeOrgao?.ufSigla ?? "UF não informada"}</span>
+                  </div>
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{agencyName(record)}</p>
+                  <p className="mt-3 text-sm">{details}</p>
+                  {sourceUrl ? (
+                    <a className="mt-4 inline-flex rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white" href={sourceUrl} rel="noopener noreferrer" target="_blank">
+                      Consultar edital no portal oficial
+                    </a>
+                  ) : (
+                    <p className="mt-4 text-sm text-slate-500">O registro não tem link oficial de origem.</p>
+                  )}
+                </article>
+              );
+            })}
+          </section>
+          <nav aria-label="Paginação" className="mt-6 flex justify-between">
+            {page > 1 ? <Link className="font-semibold text-blue-700" href={pageHref(params, page - 1)}>← Anterior</Link> : <span />}
+            {page < pageCount ? <Link className="font-semibold text-blue-700" href={pageHref(params, page + 1)}>Próxima →</Link> : null}
+          </nav>
+        </>
+      ) : databaseTenders.length ? (
         <>
           <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">{Number(totalCount).toLocaleString("pt-BR")} oportunidade(s) encontradas · página {page} de {Math.max(1, pageCount)}</p>
           <section className="mt-3 grid gap-3">
-            {tenders.map((tender) => (
+            {databaseTenders.map((tender) => (
               <Link className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800" href={`/tenders/${tender.id}`} key={tender.id}>
                 <div className="flex flex-wrap justify-between gap-3">
                   <h2 className="max-w-3xl font-semibold">{tender.title}</h2>
                   <span className="text-sm text-slate-600 dark:text-slate-300">{tender.uf ?? "UF não informada"}</span>
                 </div>
-                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : ""}</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
                 <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
               </Link>
             ))}
@@ -163,7 +255,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       ) : (
         <section className="mt-12 rounded-2xl border border-dashed border-slate-300 p-8 text-center">
           <h2 className="text-lg font-semibold">Nenhuma licitação encontrada</h2>
-          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Confira os filtros ou aguarde a ingestão do catálogo real do PNCP.</p>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            {searchError
+              ? "O catálogo do PNCP está temporariamente indisponível. Tente novamente mais tarde."
+              : "Confira os filtros ou aguarde a próxima atualização do catálogo público do PNCP."}
+          </p>
         </section>
       )}
     </main>
