@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toSafeHttpUrl } from "@/lib/security/safe-url";
 import { FeedbackControls } from "./feedback-controls";
+import { AppNavigation } from "@/components/app-navigation";
 
 export const dynamic = "force-dynamic";
 
@@ -29,8 +30,11 @@ export default async function TenderDetailPage({ params }: { params: Promise<{ i
   const officialUrl = toSafeHttpUrl(tender.official_url);
 
   return (
-    <main className="mx-auto min-h-screen max-w-4xl px-4 py-8 sm:px-6">
-      <Link className="text-sm text-blue-700" href="/dashboard">← Oportunidades</Link>
+    <main className="mx-auto min-h-screen max-w-4xl px-4 py-8 pb-28 sm:px-6 md:pb-8">
+      <header className="mb-5 flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-4 dark:border-slate-700">
+        <Link className="text-sm text-blue-700" href="/dashboard">← Oportunidades</Link>
+        <AppNavigation active="/dashboard" />
+      </header>
       <article className="mt-5 rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-800 sm:p-8">
         <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
           <span>{tender.uf ?? "UF não informada"}</span>
