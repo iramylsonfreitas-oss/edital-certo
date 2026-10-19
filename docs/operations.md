@@ -5,7 +5,7 @@
 1. Configure `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` no ambiente do Next.js.
 2. No Supabase, configure o Auth para e-mail/senha e magic link e inclua a URL de callback `/auth/callback` na lista de redirecionamentos permitidos.
 3. Aplique `supabase/migrations/20261018071000_initial_schema.sql` em homologação e confirme as políticas RLS com usuários de organizações distintas.
-4. A migration `20261019121500_secure_ingestion_scheduler.sql` cria um token aleatório no Vault. A função compara o cabeçalho `x-ingestion-token` com esse segredo por uma RPC restrita; não copie o token para o repositório nem para o navegador. Os códigos padrão são 4, 6 e 8, já observados nos registros PNCP desta integração. `PNCP_MODALITY_CODES`, `PNCP_LOOKBACK_DAYS` e `PNCP_BASE_URL` são ajustes opcionais da Edge Function; os códigos aceitos permanecem limitados a 4, 6 e 8 até validação adicional.
+4. A migration `supabase/migrations/20261019121500_secure_ingestion_scheduler.sql` cria um token aleatório no Vault. A função compara o cabeçalho `x-ingestion-token` com esse segredo por uma RPC restrita; não copie o token para o repositório nem para o navegador. Os códigos padrão são 4, 6 e 8. `PNCP_MODALITY_CODES` e `PNCP_BASE_URL` são ajustes opcionais da Edge Function; os códigos aceitos permanecem limitados a 4, 6 e 8.
 5. Não grave a chave `SUPABASE_SERVICE_ROLE_KEY` no navegador nem em variáveis prefixadas com `NEXT_PUBLIC_`. No Supabase hospedado, a função recebe as variáveis reservadas do projeto; em execução local, use um arquivo privado `supabase/functions/.env` ignorado pelo Git.
 
 ## Publicar a função de ingestão
@@ -16,7 +16,7 @@ Depois de autenticar a CLI e vincular o projeto correto:
 supabase functions deploy ingest-pncp --project-ref "$SUPABASE_PROJECT_REF"
 ```
 
-A função está configurada para validar um token próprio em `x-ingestion-token` e tem `verify_jwt = false` em `supabase/config.toml`. A chamada só segue após a validação pela RPC `validate_ingestion_job_token`, cuja execução é concedida apenas a `service_role`. A função consulta os últimos três dias, percorre até dez páginas por rodada e grava o checkpoint para continuar depois. Há pausa de seis segundos entre consultas; erros HTTP 429 recebem espera exponencial e respeitam `Retry-After` quando o PNCP o envia.
+A função está configurada para validar um token próprio em `x-ingestion-token` e tem `verify_jwt = false` em `supabase/config.toml`. A chamada só segue após a validação pela RPC `validate_ingestion_job_token`, cuja execução é concedida apenas a `service_role`. A versão proposta neste repositório usa `/v1/contratacoes/proposta`, que retorna contratações com recebimento de propostas aberto na data final informada. O checkpoint inclui a versão da estratégia; checkpoints da consulta antiga por publicação são ignorados na primeira execução após a mudança. A função percorre até dez páginas por rodada e grava o checkpoint para continuar depois. Há pausa de seis segundos entre consultas; erros HTTP 429 recebem espera exponencial e respeitam `Retry-After` quando o PNCP o envia. O tamanho de página fica em 50, maior que a API aceitou no teste real de 19/10/2026.
 
 ## Agendar a execução a cada três horas
 
@@ -59,7 +59,7 @@ O arquivo `fixtures/pncp/real-response.json` contém uma resposta HTTP real capt
 
 - O código da Edge Function, a validação privada do token, o retry, a paginação, a deduplicação e o checkpoint estão disponíveis neste repositório.
 - No projeto de desenvolvimento `edital-certo-dev`, a função está publicada e o agendamento de três em três horas está ativo. A primeira consulta real adicionou 719 registros, mas terminou com HTTP 429; o checkpoint foi salvo e o coletor foi ajustado para consultar mais devagar. Confirme as próximas execuções antes de considerar a ingestão estável.
-- A publicação em produção ainda depende de revisão e merge da PR. A configuração do projeto de desenvolvimento não deve ser tratada como configuração de produção.
+- A mudança para o endpoint de propostas abertas aguarda revisão e merge da PR #8; até deploy explícito, a função já publicada continua com a versão anterior. A configuração do projeto de desenvolvimento não deve ser tratada como configuração de produção.
 - A captura da fixture PNCP depende de uma rede com acesso ao domínio PNCP e de um código de modalidade confirmado; a primeira amostra já foi obtida.
 - O formulário de alertas grava preferências; a entrega por Resend depende da Edge Function de envio, domínio de e-mail verificado e credenciais. Não considere alertas entregues até essa integração estar configurada e testada.
 - Pagamentos, Telegram/WhatsApp e recursos de IA são integrações externas ainda não habilitadas no MVP.
