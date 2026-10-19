@@ -35,10 +35,12 @@ export interface PublicTenderFilters {
   query: string | null;
   uf: string | null;
   modality: string | null;
+  sphere?: string | null;
   minimumValue: number | null;
   maximumValue: number | null;
   closesBefore: string | null;
   sort: "relevance" | "deadline" | "value";
+  showClosed?: boolean;
 }
 
 const catalogUrl = "https://raw.githubusercontent.com/iramylsonfreitas-oss/edital-certo/main/data/dados.json";
@@ -114,12 +116,15 @@ export function filterPublicPncpRecords(
     const modalityCode = record.modalidadeId == null ? null : String(record.modalidadeId);
     const value = typeof record.valorTotalEstimado === "number" ? record.valorTotalEstimado : null;
     const closeDate = parsePncpDate(record.dataEncerramentoProposta);
+    const sphere = typeof record.orgaoEntidade?.esferaId === "string" ? record.orgaoEntidade.esferaId : null;
 
     return (!normalizedQuery || normalizedQuery.split(/\s+/).every((term) => objectText.includes(term)))
       && (!filters.uf || uf === filters.uf)
       && (!filters.modality || modalityCode === filters.modality)
+      && (!filters.sphere || sphere === filters.sphere)
       && (filters.minimumValue == null || (value != null && value >= filters.minimumValue))
       && (filters.maximumValue == null || (value != null && value <= filters.maximumValue))
+      && (filters.showClosed === true || !closeDate || closeDate >= new Date())
       && (!closeLimit || (closeDate != null && closeDate <= closeLimit));
   });
 
