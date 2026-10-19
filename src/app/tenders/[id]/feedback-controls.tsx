@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type OrganizationOption = { id: string; name: string };
@@ -16,16 +15,20 @@ export function FeedbackControls({
   organizations: OrganizationOption[];
   feedback: Feedback[];
 }) {
-  const router = useRouter();
   const [organizationId, setOrganizationId] = useState(organizations[0]?.id ?? "");
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
-  const currentFeedback = feedback.find((item) => item.organization_id === organizationId)?.state ?? null;
+  const [feedbackByOrganization, setFeedbackByOrganization] = useState<Record<string, Feedback["state"] | null>>({});
+  const currentFeedback = Object.hasOwn(feedbackByOrganization, organizationId)
+    ? feedbackByOrganization[organizationId]
+    : feedback.find((item) => item.organization_id === organizationId)?.state ?? null;
 
   async function save(state: "favorite" | "discarded" | null) {
     if (!organizationId) return;
+    const previousFeedback = currentFeedback;
     setBusy(true);
     setMessage("");
+    setFeedbackByOrganization((current) => ({ ...current, [organizationId]: state }));
     try {
       const supabase = createSupabaseBrowserClient();
       const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -36,8 +39,8 @@ export function FeedbackControls({
         : await query.delete().eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("tender_id", tenderId);
       if (result.error) throw result.error;
       setMessage(state === "favorite" ? "Licitação favoritada." : state === "discarded" ? "Licitação descartada." : "Status removido.");
-      router.refresh();
     } catch (error) {
+      setFeedbackByOrganization((current) => ({ ...current, [organizationId]: previousFeedback }));
       setMessage(error instanceof Error ? error.message : "Não foi possível salvar o status.");
     } finally {
       setBusy(false);
