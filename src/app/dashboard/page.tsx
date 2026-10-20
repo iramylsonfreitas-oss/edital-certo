@@ -324,6 +324,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 key={tender.id}
                 tenderId={tender.id}
                 organizationId={organizationId}
+                userId={authData.user.id}
                 initialFeedback={feedbackByTender.get(tender.id) ?? null}
                 initiallyInPipeline={pipelineTenderIds.has(tender.id)}
                 listMode={view}
