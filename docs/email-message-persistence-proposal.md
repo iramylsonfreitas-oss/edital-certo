@@ -1,6 +1,6 @@
 # Proposta: persistência das mensagens de e-mail
 
-Status em 20/10/2026: proposta em revisão, sem migração aplicada e sem integração com o trabalhador. A produção continua apenas preparando oportunidades e oferecendo a prévia do e-mail. Nenhum envio real é habilitado por estes arquivos.
+Status em 20/10/2026: proposta em revisão, sem migração aplicada. A ponte TypeScript para as RPCs está implementada; o trabalhador ainda não a utiliza. A produção continua apenas preparando oportunidades e oferecendo a prévia do e-mail. Nenhum envio real é habilitado por estes arquivos.
 
 ## Problema e comportamento proposto
 
@@ -40,3 +40,16 @@ Não executar esse teste em produção: ele cria usuários e oportunidades sint�
 A concessão por si só não garante entrega única após atrasos de rede. A integração precisa usar a mesma chave no provedor e respeitar sua janela de idempotência. Uma pausa posterior à reclamação ou uma mudança de dados durante a chamada externa também exige tratamento pelo trabalhador. Mensagens incertas precisam de reconciliação; não devem ser reenviadas sob uma nova identidade automaticamente.
 
 O ambiente de execução estava indisponível nesta etapa. O SQL foi validado pelo banco de desenvolvimento; CLI, compilação da aplicação, testes JavaScript e integração completa não foram executados nesta proposta.
+
+## Ponte TypeScript para as RPCs
+
+`src/lib/alerts/persisted.ts` recebe um cliente RPC do servidor, compatível com Supabase, sem criar conexão ou transporte. A aplicação em produção ainda não importa essa camada.
+
+- `stageEmailMessage`: valida até 20 IDs e o conteúdo, faz uma cópia antes de aguardar o banco, reserva uma vez e congela os bytes. Confere o hash devolvido. Se o congelamento falhar, solicita a liberação apenas se a mensagem continuar sem tentativas. Falhas de reserva não provocam outra reserva automática.
+- `claimStoredMessage`: aceita ausência de trabalho, confere mensagem, token, chave estável, limite de bytes, SHA-256 dos bytes originais e estrutura dos cinco campos. Retorna conteúdo e identificação imutáveis. Uma resposta inválida nunca chega a um transporte.
+- `finishStoredAttempt`: registra o resultado com o token original. Requer ID de provedor para aceite e propaga falha de gravação sem nova tentativa de envio. Não decide o mapeamento dos erros HTTP.
+- `cancelUnattemptedMessage`: respeita a recusa do banco quando já houve tentativa.
+
+Os testes TypeScript usam RPCs simuladas e endereços `example.invalid`. Cobrem o contrato e as falhas entre etapas; não substituem testes de integração com banco/REST nem de concorrência. A CI do GitHub verifica tipos, lint, testes, build e navegação. O resultado da execução mais recente fica na proposta 26.
+
+Ainda falta selecionar os itens reais da fila, compor o resumo, recuperar rascunhos após respostas ambíguas e montar o ciclo do trabalhador. O adaptador de provedor precisa classificar conflitos de idempotência como resultado incerto terminal; não deve convertê-los em rejeição permanente comum. A elegibilidade deve ser revalidada perto da chamada externa. Nenhuma dessas funções envia e-mail.
