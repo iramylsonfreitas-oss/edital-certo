@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { scoreTender, type InterestProfile } from "@/lib/matching/score";
 import { SearchFilters } from "./search-filters";
 import { FavoriteCount, TenderOpportunityCard } from "./tender-card-actions";
+import { deadlineState } from "@/lib/deadlines/time";
 import { formatSourceStatus } from "@/lib/ingestion/source-status";
 
 export const dynamic = "force-dynamic";
@@ -99,16 +100,16 @@ function scoreStyle(score: number): string {
 }
 
 function deadlineBadge(value: string | null): { text: string; style: string } | null {
-  if (!value) return null;
-  const remainingDays = Math.ceil((new Date(value).getTime() - new Date().getTime()) / 86_400_000);
-  if (remainingDays < 0) return { text: "Encerrada", style: "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200" };
-  if (remainingDays === 0) return { text: "Encerra hoje", style: "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200" };
-  const style = remainingDays <= 3
-    ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
-    : remainingDays <= 7
-      ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
-      : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200";
-  return { text: `Faltam ${remainingDays} dias`, style };
+  const state = deadlineState(value);
+  if (!state) return null;
+  const style = state.expired
+    ? "bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200"
+    : state.days <= 3
+      ? "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-200"
+      : state.days <= 7
+        ? "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200"
+        : "bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200";
+  return { text: state.text, style };
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
