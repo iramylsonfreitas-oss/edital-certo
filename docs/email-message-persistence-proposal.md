@@ -39,7 +39,7 @@ Não executar esse teste em produção: ele cria usuários e oportunidades sint�
 
 A concessão por si só não garante entrega única após atrasos de rede. A integração precisa usar a mesma chave no provedor e respeitar sua janela de idempotência. Uma pausa posterior à reclamação ou uma mudança de dados durante a chamada externa também exige tratamento pelo trabalhador. Mensagens incertas precisam de reconciliação; não devem ser reenviadas sob uma nova identidade automaticamente.
 
-O ambiente de execução estava indisponível nesta etapa. O SQL foi validado pelo banco de desenvolvimento; CLI, compilação da aplicação, testes JavaScript e integração completa não foram executados nesta proposta.
+O terminal desta sessão está indisponível. O SQL foi validado pelo banco de desenvolvimento. A ponte TypeScript foi verificada pela CI do GitHub: lint, tipos, testes unitários, build e testes de navegador passaram no commit fe9d9e915ecab37c5ff8ada2ba4a7a70b25c3de6. CLI, banco/REST com a ponte e integração completa ainda não foram executados.
 
 ## Ponte TypeScript para as RPCs
 
