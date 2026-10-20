@@ -124,4 +124,32 @@ end $$;
 reset role;
 select 'all SQL tests passed: recovery, hash/identity, fencing, backoff, accepted simulation, pause, retry window, five-attempt limit, uncertainty retention and private access; no email sent' as result;
 
+
+set local role service_role;
+do $$
+declare selected jsonb; msg uuid; outcome text; claimed jsonb;
+begin
+ selected:=public.reserve_next_email_digest();
+ if selected is null then raise exception 'SELECTOR_DID_NOT_RESERVE'; end if;
+ msg:=(selected->>'message_id')::uuid;
+ if jsonb_array_length(selected->'items')=0 then raise exception 'SELECTOR_EMPTY_DIGEST'; end if;
+ if public.reserve_next_email_digest() is not null then raise exception 'SELECTOR_DUPLICATE_ACTIVE'; end if;
+ update public.email_messages set created_at=clock_timestamp()-interval '16 minutes' where id=msg;
+ if public.recover_email_message_drafts()<>1 then raise exception 'ORPHAN_NOT_RECOVERED'; end if;
+ if exists(select 1 from public.email_message_items where message_id=msg) then raise exception 'ORPHAN_ITEMS_NOT_RELEASED'; end if;
+ selected:=public.reserve_next_email_digest(); msg:=(selected->>'message_id')::uuid;
+ perform public.freeze_email_message(msg,json_build_array('sender@example.invalid',selected->>'to','Resumo','<p>Teste</p>','Teste')::text);
+ if public.recover_email_message_drafts()<>0 then raise exception 'READY_MESSAGE_RECOVERED'; end if;
+ claimed:=public.claim_email_message(msg);
+ if not public.validate_email_message_claim(msg,(claimed->>'claim_token')::uuid) then raise exception 'VALID_CLAIM_REJECTED'; end if;
+ outcome:=public.finish_email_message_attempt(msg,(claimed->>'claim_token')::uuid,'conflict');
+ if outcome<>'uncertain' or public.claim_email_message(msg) is not null then raise exception 'CONFLICT_RETRIED'; end if;
+ if not exists(select 1 from public.email_message_items where message_id=msg) then raise exception 'CONFLICT_ITEMS_RELEASED'; end if;
+ if has_function_privilege('authenticated','public.reserve_next_email_digest()','execute')
+ or has_function_privilege('anon','public.recover_email_message_drafts()','execute')
+ or has_function_privilege('authenticated','public.validate_email_message_claim(uuid,uuid)','execute') then raise exception 'WORKER_RPC_PRIVILEGE_LEAK'; end if;
+end $$;
+reset role;
+select 'selector, orphan recovery, ready preservation, claim revalidation, terminal conflict and worker RPC privileges passed' as result;
+
 rollback;

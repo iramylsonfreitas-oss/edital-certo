@@ -91,6 +91,15 @@ assert.equal((await admin.rpc("validate_email_message_claim", { p_message_id: co
 assert.equal(await finishStoredAttempt(admin, pausedClaim, "permanent"), "uncertain");
 // Orphaned reservation recovery releases only an old unattempted draft.
 sql("update public.alerts set is_enabled=true");
+sql("update public.email_alert_scans set next_scan_at=now(),config_key=''");
+const refreshedPage = await admin.rpc("claim_email_alert_page");
+assert.ifError(refreshedPage.error);
+const refreshed = await admin.rpc("save_email_alert_page", {
+  p_alert_id: refreshedPage.data.alert_id, p_profile_id: refreshedPage.data.profile_id,
+  p_claim_token: refreshedPage.data.claim_token,
+  p_results: fixture.rows.map((item: { opportunity: { id: string } }) => ({ tender_id: item.opportunity.id, score: 100, explanation: ["nobreak"] })),
+});
+assert.ifError(refreshed.error);
 const orphan = await admin.rpc("reserve_email_message", { p_queue_ids: [fixture.rows[3].queueId] });
 assert.ifError(orphan.error);
 sql(`update public.email_messages set created_at=clock_timestamp()-interval '16 minutes' where id='${orphan.data}'`);
