@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { filterPublicPncpRecords, parsePncpDate, type PublicPncpRecord } from "./public-catalog";
 
 const records: PublicPncpRecord[] = [
@@ -35,6 +35,21 @@ const defaultFilters = {
 };
 
 describe("catálogo público PNCP", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-10-19T12:00:00Z"));
+  });
+
+  afterEach(() => vi.useRealTimers());
+
+  it("oculta encerradas por padrão e permite consultá-las explicitamente", () => {
+    vi.setSystemTime(new Date("2026-10-20T13:00:01Z"));
+    expect(filterPublicPncpRecords(records, defaultFilters).map((record) => record.numeroControlePNCP))
+      .toEqual(["456-1-000002/2026"]);
+    expect(filterPublicPncpRecords(records, { ...defaultFilters, showClosed: true }))
+      .toHaveLength(2);
+  });
+
   it("filtra por UF, modalidade e faixa de valor", () => {
     const result = filterPublicPncpRecords(records, {
       ...defaultFilters,
