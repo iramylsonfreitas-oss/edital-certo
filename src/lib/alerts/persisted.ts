@@ -56,7 +56,15 @@ export async function stageEmailMessage(client: EmailMessageRpc, queueIds: reado
   if (encoder.encode(bytes).byteLength > 120000) throw new Error("EMAIL_MESSAGE_PAYLOAD_TOO_LARGE");
   const id = await call(client, "reserve_email_message", { p_queue_ids: items });
   if (typeof id !== "string" || !uuid.test(id)) throw new Error("EMAIL_MESSAGE_RESPONSE_INVALID");
+  return freezeReservedMessage(client, id, snapshot.payload);
+}
+
+export async function freezeReservedMessage(client: EmailMessageRpc, id: string, payload: EmailPayload): Promise<string> {
+  requireId(id);
   try {
+    const snapshot = await freezeDelivery(id, payload);
+    const bytes = serialize(snapshot.payload);
+    if (encoder.encode(bytes).byteLength > 120000) throw new Error("EMAIL_MESSAGE_PAYLOAD_TOO_LARGE");
     const hash = await call(client, "freeze_email_message", { p_message_id: id, p_payload_bytes: bytes });
     if (hash !== snapshot.payloadHash) throw new Error("EMAIL_MESSAGE_HASH_MISMATCH");
     return id;

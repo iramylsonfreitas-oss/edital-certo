@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { createClient } from "@supabase/supabase-js";
 import { cancelUnattemptedMessage, claimStoredMessage, finishStoredAttempt, stageEmailMessage } from "../src/lib/alerts/persisted.ts";
-import { stageStoredDigest, simulateStoredAttempt } from "../src/lib/alerts/stored-worker.ts";
+import { stageStoredDigest, simulateStoredAttempt, stageNextStoredDigest } from "../src/lib/alerts/stored-worker.ts";
 
 // Never accept hosted URLs or inherited app credentials. No provider API calls exist in this runner.
 const url = process.env.EMAIL_TEST_API_URL;
@@ -89,6 +89,19 @@ const pausedClaim = (await claimStoredMessage(admin, corruptedId))!;
 sql("update public.alerts set is_enabled=false");
 assert.equal((await admin.rpc("validate_email_message_claim", { p_message_id: corruptedId, p_claim_token: pausedClaim.token })).data, false);
 assert.equal(await finishStoredAttempt(admin, pausedClaim, "permanent"), "uncertain");
+// Orphaned reservation recovery releases only an old unattempted draft.
+sql("update public.alerts set is_enabled=true");
+const orphan = await admin.rpc("reserve_email_message", { p_queue_ids: [fixture.rows[3].queueId] });
+assert.ifError(orphan.error);
+sql(`update public.email_messages set created_at=clock_timestamp()-interval '16 minutes' where id='${orphan.data}'`);
+assert.equal((await admin.rpc("recover_email_message_drafts")).data, 1);
+assert.equal(sql(`select count(*) from public.email_message_items where message_id='${orphan.data}'`), "0");
+// Full queue selection/reservation/composition/freeze through worker and REST.
+const staged = await Promise.all(Array.from({ length: 4 }, () => stageNextStoredDigest(admin, payload.from, new Date())));
+const nextIds = staged.filter((value) => value !== null);
+assert.equal(nextIds.length, 1);
+assert.equal(await simulateStoredAttempt(admin, nextIds[0]!, { kind: "accepted", id: "simulated-batch" }), "accepted");
+assert.equal(await stageNextStoredDigest(admin, payload.from, new Date()), null);
 console.log(JSON.stringify({ mode: "disposable_local_only", real_emails_sent: 0, concurrent_reservations: 8,
  concurrent_claims: 12, exclusive_owner: true, rest_access: "anon_and_authenticated_denied",
  restart_recovery: true, stale_token_rejected: true, hash_verified: true, worker_simulation: "passed",

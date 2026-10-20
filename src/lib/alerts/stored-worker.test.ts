@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { stageStoredDigest, storedProviderOutcome, simulateStoredAttempt } from "./stored-worker";
+import { stageStoredDigest, storedProviderOutcome, simulateStoredAttempt, stageNextStoredDigest } from "./stored-worker";
 import { freezeDelivery } from "./delivery";
 const id = "00000000-0000-0000-0000-000000000001";
 const token = "00000000-0000-0000-0000-000000000002";
@@ -49,6 +49,29 @@ describe("stored worker simulation without email transport", () => {
     for (const items of [[], [item, item], [item]]) {
       await expect(stageStoredDigest({ rpc }, items, payload, new Date("2026-10-20"))).rejects.toThrow();
     }
+    expect(rpc).not.toHaveBeenCalled();
+  });
+});
+
+describe("stored worker selection and recovery", () => {
+  it("recovers abandoned drafts and accepts no work", async () => {
+    const rpc = vi.fn().mockResolvedValueOnce(ok(2)).mockResolvedValueOnce(ok(null));
+    expect(await stageNextStoredDigest({ rpc }, payload.from, new Date())).toBeNull();
+    expect(rpc.mock.calls.map((call) => call[0])).toEqual(["recover_email_message_drafts", "reserve_next_email_digest"]);
+  });
+  it("stops on an ambiguous reservation without a second reservation", async () => {
+    const rpc = vi.fn().mockResolvedValueOnce(ok(0)).mockRejectedValueOnce(new Error("private@example.invalid"));
+    await expect(stageNextStoredDigest({ rpc }, payload.from, new Date())).rejects.toThrow("EMAIL_MESSAGE_RPC_FAILED:reserve_next_email_digest");
+    expect(rpc).toHaveBeenCalledTimes(2);
+  });
+  it("releases a known reservation if composition is invalid", async () => {
+    const rpc = vi.fn().mockResolvedValueOnce(ok(0)).mockResolvedValueOnce(ok({ message_id: id, to: payload.to, items: [] })).mockResolvedValueOnce(ok(true));
+    await expect(stageNextStoredDigest({ rpc }, payload.from, new Date())).rejects.toThrow("EMAIL_DIGEST_STAGE_FAILED");
+    expect(rpc.mock.calls[2]).toEqual(["cancel_unattempted_email_message", { p_message_id: id }]);
+  });
+  it("does not access the database with an invalid sender", async () => {
+    const rpc = vi.fn();
+    await expect(stageNextStoredDigest({ rpc }, "bad", new Date())).rejects.toThrow("EMAIL_DIGEST_INPUT_INVALID");
     expect(rpc).not.toHaveBeenCalled();
   });
 });

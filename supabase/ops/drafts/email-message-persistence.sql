@@ -224,3 +224,57 @@ returns boolean language sql volatile security invoker set search_path='' as $$
 $$;
 revoke all on function public.validate_email_message_claim(uuid,uuid) from public,anon,authenticated;
 grant execute on function public.validate_email_message_claim(uuid,uuid) to service_role;
+
+-- Bounded recovery only for drafts that never reached a provider.
+create function public.recover_email_message_drafts()
+returns integer language plpgsql security invoker set search_path='' as $$
+declare m public.email_messages; n integer:=0;
+begin
+ for m in select * from public.email_messages
+  where status='draft' and attempts=0 and created_at<clock_timestamp()-interval '15 minutes'
+  order by created_at,id limit 20 for update skip locked loop
+  if public.cancel_unattempted_email_message(m.id) then n:=n+1; end if;
+ end loop;
+ return n;
+end $$;
+revoke all on function public.recover_email_message_drafts() from public,anon,authenticated;
+grant execute on function public.recover_email_message_drafts() to service_role;
+
+-- Selection + reservation is atomic; never return unreserved queue items to the worker.
+create function public.reserve_next_email_digest()
+returns jsonb language plpgsql security invoker set search_path='' as $$
+declare actor uuid; ids uuid[]; msg uuid; recipient text; result jsonb;
+begin
+ select q.recipient_user_id into actor from public.email_alert_queue q
+ where q.status='prepared' and q.ready_at<=now()
+ and not exists(select 1 from public.email_message_items i where i.queue_id=q.id)
+ and not exists(select 1 from public.email_messages m where m.recipient_user_id=q.recipient_user_id
+  and m.status in ('draft','ready','dispatching','retry'))
+ and private.email_message_item_current(q.id,pg_catalog.md5(to_jsonb(q)::text))
+ order by q.ready_at,q.id limit 1 for update of q skip locked;
+ if not found then return null; end if;
+ recipient:=private.email_message_verified_address(actor);
+ if recipient is null then return null; end if;
+ select array_agg(candidate.id order by candidate.id) into ids from (
+  select q.id from public.email_alert_queue q
+  where q.recipient_user_id=actor and q.status='prepared' and q.ready_at<=now()
+  and not exists(select 1 from public.email_message_items i where i.queue_id=q.id)
+  and private.email_message_item_current(q.id,pg_catalog.md5(to_jsonb(q)::text))
+  order by q.id limit 20 for update of q skip locked
+ ) candidate;
+ if cardinality(ids) is null then return null; end if;
+ begin
+  msg:=public.reserve_email_message(ids);
+ exception when unique_violation then return null;
+ end;
+ select jsonb_build_object('message_id',msg,'to',recipient,'items',jsonb_agg(jsonb_build_object(
+  'queueId',q.id,'opportunity',jsonb_build_object(
+   'id',t.id,'title',t.title,'agency',a.name,'uf',t.uf,'estimatedValue',t.estimated_value,
+   'deadline',t.proposal_close_at,'score',q.score,'explanation',q.explanation)) order by q.id))
+ into result
+ from public.email_alert_queue q join public.tenders t on t.id=q.tender_id
+ left join public.agencies a on a.id=t.agency_id where q.id=any(ids);
+ return result;
+end $$;
+revoke all on function public.reserve_next_email_digest() from public,anon,authenticated;
+grant execute on function public.reserve_next_email_digest() to service_role;
