@@ -22,7 +22,7 @@ export default async function TenderDetailPage({ params, searchParams }: { param
   const [{ data: tender, error }, { data: organizations }, { data: feedback }] = await Promise.all([
     supabase
       .from("tenders")
-      .select("id,source_key,source_id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,agencies(name,cnpj,sphere)")
+      .select("id,source_key,source_id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,items_complete,items_checked_at,ti_match_source,agencies(name,cnpj,sphere)")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("organizations").select("id,name").order("created_at"),
@@ -52,6 +52,7 @@ export default async function TenderDetailPage({ params, searchParams }: { param
         </div>
         <h1 className="mt-4 text-3xl font-bold">{tender.title}</h1>
         <p className="mt-5 whitespace-pre-wrap text-slate-700 dark:text-slate-200">{tender.object}</p>
+        {tender.ti_match_source === "items" ? <p className="mt-3 text-sm font-medium text-blue-700 dark:text-blue-300">Oportunidade de TI identificada pela descrição dos itens.</p> : null}
         <dl className="mt-8 grid gap-5 sm:grid-cols-2">
           <div><dt className="text-sm text-slate-500">Órgão</dt><dd className="mt-1 font-medium">{agency?.name ?? "Não informado"}</dd></div>
           <div><dt className="text-sm text-slate-500">CNPJ do órgão</dt><dd className="mt-1 font-medium">{agency?.cnpj ?? "Não informado"}</dd></div>
@@ -65,7 +66,7 @@ export default async function TenderDetailPage({ params, searchParams }: { param
         <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700" id="itens">
           <h2 className="text-xl font-bold">Itens da licitação</h2>
           <Suspense key={`${sourceId}:${itemsPage}`} fallback={<p role="status" className="mt-3 text-sm text-slate-500">Consultando itens no PNCP…</p>}>
-            <TenderItems sourceId={sourceId} tenderId={tender.id} page={itemsPage} />
+            <TenderItems sourceId={sourceId} tenderId={tender.id} page={itemsPage} storedAt={tender.items_complete ? tender.items_checked_at : null} />
           </Suspense>
         </section>
         <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">

@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@2.118.0";
+import { resumableCheckpoint } from "../../../src/lib/ingestion/resume-checkpoint.ts";
 
 type JsonObject = Record<string, unknown>;
 
@@ -342,10 +343,10 @@ Deno.serve(async (request) => {
     .from("ingestion_runs")
     .select("status,checkpoint")
     .eq("source_key", sourceKey)
-    .in("status", ["partial", "failed"])
+    .neq("status", "running")
     .order("started_at", { ascending: false })
     .limit(1);
-  const checkpoint = parseCheckpoint(previousRuns?.[0]?.checkpoint) ?? buildInitialCheckpoint();
+  const checkpoint = parseCheckpoint(resumableCheckpoint(previousRuns?.[0])) ?? buildInitialCheckpoint();
 
   const { data: run, error: runError } = await supabase
     .from("ingestion_runs")

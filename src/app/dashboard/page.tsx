@@ -19,6 +19,8 @@ type DatabaseTender = {
   id: string;
   title: string;
   object: string;
+  items_search_text: string | null;
+  ti_match_source: string;
   uf: string | null;
   municipality_name: string | null;
   municipality_code: string | null;
@@ -84,7 +86,7 @@ function scoreForTender(tender: DatabaseTender, profiles: InterestProfile[]) {
   const configuredProfiles = profiles.filter((profile) => profile.requiredKeywords.length + profile.optionalKeywords.length + profile.excludedKeywords.length + profile.ufs.length + profile.municipalityCodes.length + profile.modalityCodes.length + profile.agencyTerms.length + profile.spheres.length + profile.cnaeCodes.length > 0 || profile.minimumValue !== null || profile.maximumValue !== null || profile.exclusiveMeEpp !== null);
   if (!configuredProfiles.length) return null;
   return configuredProfiles.map((profile) => scoreTender(profile, {
-    title: tender.title, object: tender.object, uf: tender.uf, municipalityCode: tender.municipality_code, modalityCode: tender.modality_code,
+    title: tender.title, object: tender.object, itemText: tender.items_search_text ?? "", uf: tender.uf, municipalityCode: tender.municipality_code, modalityCode: tender.modality_code,
     agencyName: agency?.name ?? null, sphere: agency?.sphere ?? null, estimatedValue: tender.estimated_value,
     exclusiveMeEpp: tender.exclusive_me_epp, cnaeCodes: []
   })).sort((first, second) => Number(second.matched) - Number(first.matched) || second.score - first.score)[0] ?? null;
@@ -181,7 +183,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const { data: rawTenderRows } = tenderIds.length
     ? await supabase
       .from("tenders")
-      .select("id,title,object,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
+      .select("id,title,object,items_search_text,ti_match_source,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
       .in("id", tenderIds)
     : { data: [] };
   const databaseTenders = ((rawTenderRows ?? []) as DatabaseTender[])
@@ -337,6 +339,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
                 <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
+                  {tender.ti_match_source === "items" ? <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-950 dark:text-blue-200">TI identificada nos itens</span> : null}
                   {bestMatch ? <span className={`rounded-full px-3 py-1 text-xs font-bold ${scoreStyle(bestMatch.score)}`}>{bestMatch.score >= 80 ? "Alta" : bestMatch.score >= 50 ? "Média" : "Baixa"} aderência · {bestMatch.score}/100</span> : null}
                   {deadline ? <span className={`rounded-full px-3 py-1 text-xs font-semibold ${deadline.style}`}>{deadline.text}</span> : null}
                 </div>

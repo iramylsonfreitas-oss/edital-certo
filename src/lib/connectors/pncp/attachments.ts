@@ -1,20 +1,10 @@
 import { normalizePncpDateTime } from "./date-time";
 import { toSafeHttpUrl } from "../../security/safe-url";
 
-export const itemPageSize = 50;
-const apiBase = "https://pncp.gov.br/api/pncp/v1";
+import { parseTenderItems, tenderReference, type TenderItem } from "./item-schema";
+export { parseTenderItems, tenderReference, type TenderItem } from "./item-schema";
 
-export interface TenderItem {
-  number: number;
-  description: string;
-  unit: string | null;
-  quantity: number | null;
-  unitValue: number | null;
-  totalValue: number | null;
-  budgetIsSecret: boolean;
-  status: string | null;
-  catalogCode: string | null;
-}
+export const itemPageSize = 50;
 
 export interface TenderFile {
   number: number;
@@ -44,48 +34,10 @@ function positiveInteger(value: unknown): number {
   return value;
 }
 
-function amount(value: unknown): number | null {
-  if (value == null) return null;
-  if (typeof value !== "number" || !Number.isFinite(value) || value < 0) throw new Error("Valor PNCP inválido.");
-  return value;
-}
-
-export function tenderReference(sourceId: string) {
-  const match = /^(\d{14})-1-(\d{1,10})\/(20\d{2})$/.exec(sourceId);
-  if (!match || Number(match[2]) < 1) return null;
-  const [, cnpj, sequence, year] = match;
-  const sequentialNumber = String(Number(sequence));
-  return {
-    apiUrl: `${apiBase}/orgaos/${cnpj}/compras/${year}/${sequentialNumber}`,
-    portalUrl: `https://pncp.gov.br/app/editais/${cnpj}/${year}/${sequentialNumber}`
-  };
-}
-
 function list(payload: unknown, field: string): unknown[] {
   const rows = Array.isArray(payload) ? payload : object(payload)[field];
   if (!Array.isArray(rows)) throw new Error("Lista PNCP não reconhecida.");
   return rows;
-}
-
-export function parseTenderItems(payload: unknown): TenderItem[] {
-  const seen = new Set<number>();
-  return list(payload, "itens").map((value) => {
-    const row = object(value);
-    const number = positiveInteger(row.numeroItem);
-    const description = text(row.descricao);
-    if (!description || seen.has(number)) throw new Error("Item PNCP incompleto ou duplicado.");
-    seen.add(number);
-    if (row.orcamentoSigiloso != null && typeof row.orcamentoSigiloso !== "boolean") throw new Error("Sigilo do orçamento não reconhecido.");
-    const budgetIsSecret = row.orcamentoSigiloso === true;
-    return {
-      number, description,
-      unit: text(row.unidadeMedida), quantity: amount(row.quantidade),
-      unitValue: budgetIsSecret ? null : amount(row.valorUnitarioEstimado),
-      totalValue: budgetIsSecret ? null : amount(row.valorTotal),
-      budgetIsSecret, status: text(row.situacaoCompraItemNome),
-      catalogCode: text(row.catalogoCodigoItem)
-    };
-  });
 }
 
 export function parseTenderFiles(payload: unknown): TenderFile[] {

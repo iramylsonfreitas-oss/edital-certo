@@ -3,3 +3,6 @@ project_id = "edital-certo"
 [functions.ingest-pncp]
 verify_jwt = false
 
+[functions.enrich-pncp-items]
+verify_jwt = false
+

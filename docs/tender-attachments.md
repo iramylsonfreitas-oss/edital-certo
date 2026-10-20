@@ -13,7 +13,7 @@ O número de controle do registro é validado antes de montar a URL, cujo domín
 - Timeout de oito segundos por consulta e cache público de cinco minutos. Falhas em uma seção não impedem a outra nem as ações de favorito.
 - O link do portal PNCP é usado como alternativa quando o registro não contém link válido do sistema de origem.
 
-Esta etapa faz consulta sob demanda; não preenche as tabelas `tender_items` e `tender_files` nem reclassifica automaticamente editais pelo conteúdo dos itens. Carga em lote e matching por itens continuam sendo trabalhos separados.
+A consulta ao vivo continua disponível. A carga em lote está ativa em produção a cada 15 minutos. Itens com sincronização completa são lidos do banco com a data da consulta; registros ainda não sincronizados e falhas de leitura usam a consulta ao vivo. Consulte `docs/batch-items-validation.md`. Documentos continuam sob demanda, sem carga em lote nesta etapa.
 
 ## Fontes oficiais verificadas
 

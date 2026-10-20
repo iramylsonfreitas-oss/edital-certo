@@ -94,9 +94,9 @@ O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura.
 
 ## Limites conhecidos
 
-- O projeto Supabase `edital-certo-dev` está conectado como ambiente de desenvolvimento e já recebe a função de ingestão. A ingestão de produção ainda exige um projeto Supabase separado e validação operacional; envio de alertas e cobrança também dependem de integrações próprias.
+- Desenvolvimento usa `edital-certo-dev`; produção usa o projeto separado `iramylson@gmail.com's Project`. A coleta principal de produção está ativa. A carga em lote de itens está ativa em produção a cada 15 minutos, com processamento gradual da fila; consulte `docs/batch-items-validation.md`. Alertas e cobrança dependem de integrações próprias.
 - A interface salva preferências de alerta, mas não entrega e-mails até a integração Resend ser implementada e verificada.
-- A consulta de detalhe por ID, itens e arquivos PNCP deve ser concluída após validar as operações correspondentes na documentação vigente.
+- A página de detalhe consulta itens e documentos nas rotas oficiais do PNCP, com paginação e tratamento de falhas. A carga em lote e o matching por itens exigem as migrations adicionais descritas em `docs/batch-items-validation.md`.
 - Consentimento fica registrado no cadastro; os textos legais são iniciais e exigem dados do controlador, retenção definida e revisão jurídica.
 - Fases 2 e 3 estão descritas no backlog; recursos de pipeline, lembretes, preços, concorrência, IA e WhatsApp não são anunciados como ativos no MVP.
 
