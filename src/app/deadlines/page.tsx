@@ -27,7 +27,7 @@ export default async function DeadlinesPage() {
   if (!organization) redirect("/onboarding");
   const [{ data: favoriteRows }, { data: pipelineRows }] = await Promise.all([
     supabase.from("tender_feedback").select("tender_id,tenders!inner(id,title,uf,proposal_close_at,official_url,agencies(name))").eq("organization_id", organization.id).eq("user_id", authData.user.id).eq("state", "favorite"),
-    supabase.from("pipeline_cards").select("tender_id,tenders!inner(id,title,uf,proposal_close_at,official_url,agencies(name))").eq("organization_id", organization.id)
+    supabase.from("pipeline_cards").select("tender_id,tenders!inner(id,title,uf,proposal_close_at,official_url,agencies(name))").eq("organization_id", organization.id).is("archived_at", null)
   ]);
   const records = [...(favoriteRows ?? []), ...(pipelineRows ?? [])] as unknown as DeadlineRecord[];
   const seen = new Set<string>();

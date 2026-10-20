@@ -193,7 +193,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const [{ data: feedbackRows }, { data: pipelineRows }] = currentTenderIds.length
     ? await Promise.all([
       supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", currentTenderIds),
-      supabase.from("pipeline_cards").select("tender_id").eq("organization_id", organizationId).in("tender_id", currentTenderIds)
+      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", currentTenderIds)
     ])
     : [{ data: [] }, { data: [] }];
   const feedbackByTender = new Map((feedbackRows ?? []).map((item) => [item.tender_id, item.state]));

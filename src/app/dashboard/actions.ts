@@ -66,24 +66,12 @@ export async function addTenderToPipelineAction(formData: FormData): Promise<voi
   const parsed = tenderSchema.safeParse({ tenderId: formData.get("tenderId") });
   if (!parsed.success) redirect("/dashboard?notice=invalid-action");
 
-  const { supabase, user, organization } = await getUserOrganization();
-  const { data: existing, error: lookupError } = await supabase
-    .from("pipeline_cards")
-    .select("id")
-    .eq("organization_id", organization.id)
-    .eq("tender_id", parsed.data.tenderId)
-    .maybeSingle();
-  if (lookupError) redirect("/dashboard?notice=save-error");
-
-  if (!existing) {
-    const { error } = await supabase.from("pipeline_cards").insert({
-      organization_id: organization.id,
-      tender_id: parsed.data.tenderId,
-      status: "triage",
-      created_by: user.id
-    });
-    if (error) redirect("/dashboard?notice=save-error");
-  }
+  const { supabase, organization } = await getUserOrganization();
+  const { error } = await supabase.rpc("follow_tender", {
+    p_organization_id: organization.id,
+    p_tender_id: parsed.data.tenderId
+  });
+  if (error) redirect("/dashboard?notice=save-error");
 
   revalidatePath("/dashboard");
   revalidatePath("/pipeline");
