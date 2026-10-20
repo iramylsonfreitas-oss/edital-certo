@@ -49,7 +49,7 @@ npm run test:e2e
 
 ## Supabase
 
-1. Aplique em ordem as migrations `supabase/migrations/20261018071000_initial_schema.sql` e `supabase/migrations/20261018143000_harden_tenant_access.sql` em um projeto de desenvolvimento.
+1. Aplique todas as migrations de `supabase/migrations/`, na ordem dos nomes, em um projeto de desenvolvimento.
 2. Verifique RLS com duas contas de teste em organizações distintas antes de carregar dados de clientes.
 3. Configure Supabase Auth para senha e magic link.
 4. Leia [`docs/operations.md`](docs/operations.md) para publicar o job de ingestão e configurar seu agendamento seguro.
@@ -95,7 +95,7 @@ O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura.
 ## Limites conhecidos
 
 - Desenvolvimento usa `edital-certo-dev`; produção usa o projeto separado `iramylson@gmail.com's Project`. A coleta principal de produção está ativa. A carga em lote de itens está ativa em produção a cada 15 minutos, com processamento gradual da fila; consulte `docs/batch-items-validation.md`. Alertas e cobrança dependem de integrações próprias.
-- A interface salva preferências de alerta, mas não entrega e-mails até a integração Resend ser implementada e verificada.
+- A interface salva preferências pessoais de alerta com autorização explícita, fuso escolhido e controles de pausa, retomada e exclusão. O banco separa as preferências e o histórico por destinatário. A entrega automática ainda depende da rotina de processamento e da configuração do remetente Resend; consulte `docs/email-alert-preferences.md`.
 - A página de detalhe consulta itens e documentos nas rotas oficiais do PNCP, com paginação e tratamento de falhas. A carga em lote e o matching por itens exigem as migrations adicionais descritas em `docs/batch-items-validation.md`.
 - Consentimento fica registrado no cadastro; os textos legais são iniciais e exigem dados do controlador, retenção definida e revisão jurídica.
 - O acompanhamento possui etapas, checklist, arquivamento e restauração. A tela de prazos exporta calendário com lembretes opcionais; consulte `docs/deadline-calendar.md`. Alertas enviados, preços, concorrência, IA, cobrança e WhatsApp continuam pendentes.

@@ -46,7 +46,7 @@ export async function GET() {
     const [profileRows, alertRows, pipelineRows] = organizationIds.length
       ? await Promise.all([
         readAllPages((from, to) => supabase.from("interest_profiles").select("id,organization_id,name,segment_key,required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,cnae_codes,exclusive_me_epp,is_active,created_at,updated_at").in("organization_id", organizationIds).range(from, to)),
-        readAllPages((from, to) => supabase.from("alerts").select("id,organization_id,profile_id,frequency,minimum_score,email_enabled,telegram_enabled,timezone,daily_send_time,is_enabled,created_at,updated_at").in("organization_id", organizationIds).range(from, to)),
+        readAllPages((from, to) => supabase.from("alerts").select("id,organization_id,profile_id,recipient_user_id,email_consent_at,frequency,minimum_score,email_enabled,telegram_enabled,timezone,daily_send_time,is_enabled,created_at,updated_at").eq("recipient_user_id", userId).in("organization_id", organizationIds).range(from, to)),
         readAllPages((from, to) => supabase.from("pipeline_cards").select("id,organization_id,tender_id,status,archived_at,responsible_user_id,notes,created_at,updated_at").in("organization_id", organizationIds).range(from, to))
       ])
       : [[], [], []];
