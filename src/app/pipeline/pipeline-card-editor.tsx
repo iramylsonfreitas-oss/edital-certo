@@ -22,7 +22,8 @@ export function PipelineCardEditor({
   initialStatus,
   initialResponsible,
   initialNotes,
-  initialChecklist
+  initialChecklist,
+  isArchived = false
 }: {
   cardId: string;
   organizationId: string;
@@ -30,6 +31,7 @@ export function PipelineCardEditor({
   initialResponsible: string;
   initialNotes: string;
   initialChecklist: ChecklistItem[];
+  isArchived?: boolean;
 }) {
   const router = useRouter();
   const [status, setStatus] = useState<Stage>(initialStatus);
@@ -39,6 +41,25 @@ export function PipelineCardEditor({
   const [newItem, setNewItem] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
+
+  async function changeArchive() {
+    if (busy) return;
+    setBusy(true);
+    setMessage("Salvando…");
+    try {
+      const supabase = createSupabaseBrowserClient();
+      const { error } = await supabase.from("pipeline_cards")
+        .update({ archived_at: isArchived ? null : new Date().toISOString() })
+        .eq("id", cardId).eq("organization_id", organizationId).select("id").single();
+      if (error) throw error;
+      router.refresh();
+      setMessage(isArchived ? "Acompanhamento restaurado." : "Cartão arquivado.");
+    } catch {
+      setMessage("Não foi possível alterar o acompanhamento. Confira sua permissão e tente novamente.");
+    } finally {
+      setBusy(false);
+    }
+  }
 
   function addChecklistItem() {
     const text = newItem.trim();
@@ -74,6 +95,12 @@ export function PipelineCardEditor({
     }
   }
 
+  if (isArchived) return <div className="mt-4 grid gap-3">
+    <p className="text-sm text-slate-600 dark:text-slate-300">Arquivado. A etapa, o responsável, as anotações e o checklist foram preservados.</p>
+    <button type="button" disabled={busy} onClick={() => void changeArchive()} className="rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white disabled:opacity-60">Restaurar acompanhamento</button>
+    <p aria-live="polite" className="text-xs text-slate-500">{message}</p>
+  </div>;
+
   return (
     <form className="mt-4 grid gap-3" onSubmit={(event) => void save(event)}>
       <label className="text-xs font-semibold">Mover para…
@@ -95,6 +122,8 @@ export function PipelineCardEditor({
         <button className="self-end rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold disabled:opacity-50 dark:border-slate-600" disabled={!newItem.trim() || checklist.length >= 50} onClick={addChecklistItem} type="button">Adicionar</button>
       </div>
       <button className="rounded-lg bg-blue-700 px-3 py-2 text-sm font-semibold text-white hover:bg-blue-800 disabled:opacity-60" disabled={busy} type="submit">{busy ? "Salvando…" : "Salvar cartão"}</button>
+      <button type="button" disabled={busy} onClick={() => void changeArchive()} className="rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold disabled:opacity-60 dark:border-slate-600">Retirar do acompanhamento</button>
+      <p className="text-xs text-slate-500">O cartão irá para Arquivados e poderá ser restaurado com seus dados salvos.</p>
       <p aria-live="polite" className="min-h-5 text-xs text-slate-500 dark:text-slate-400">{message}</p>
     </form>
   );

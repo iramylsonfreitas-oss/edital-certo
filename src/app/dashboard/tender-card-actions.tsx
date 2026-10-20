@@ -94,22 +94,13 @@ export function TenderOpportunityCard({
     setMessage("Salvando no pipeline…");
     try {
       const supabase = createSupabaseBrowserClient();
-      const { error } = await supabase.from("pipeline_cards").insert({
-        organization_id: organizationId,
-        tender_id: tenderId,
-        status: "triage",
-        created_by: userId
+      const { error } = await supabase.rpc("follow_tender", {
+        p_organization_id: organizationId,
+        p_tender_id: tenderId
       });
-      if (error) {
-        if (error.code === "23505") {
-          setInPipeline(true);
-          setMessage("Esta oportunidade já está no pipeline.");
-          return;
-        }
-        throw error;
-      }
+      if (error) throw error;
       setInPipeline(true);
-      setMessage("Oportunidade adicionada à Triagem.");
+      setMessage("Acompanhamento ativado.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Não foi possível adicionar ao pipeline.");
     } finally {

@@ -17,4 +17,4 @@ A resposta local removia o cartão, mas o total de resultados e a contagem de op
 
 ## Limites
 
-Esta checagem cobre o fluxo de um usuário com acesso à organização. Não substitui testes de isolamento entre organizações, testes de concorrência ou automação autenticada no CI. A interface ainda não oferece remoção de cartões; a limpeza do cartão criado exclusivamente para a validação é feita pelo operador, com restrição ao ID do teste.
+Esta checagem cobre o fluxo de um usuário com acesso à organização. Não substitui testes de isolamento entre organizações, testes de concorrência ou automação autenticada no CI. Naquela validação, a interface ainda não oferecia retirada de cartões; o cartão temporário foi removido pelo operador com restrição ao ID do teste. O arquivamento reversível foi implementado na etapa seguinte, conforme `docs/pipeline-archive.md`.
