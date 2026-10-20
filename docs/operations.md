@@ -68,7 +68,7 @@ O arquivo `fixtures/pncp/real-response.json` contém uma resposta HTTP real capt
 
 ## Rotina de validação
 
-A carga de itens usa uma função separada, `enrich-pncp-items`, e o parser compartilhado `src/lib/connectors/pncp/item-schema.ts`. Foi validada em desenvolvimento; sua ativação em produção está pendente de autorização explícita após recusa da revisão automática. Siga `docs/batch-items-validation.md` antes de aplicar migrations, publicar a função, agendar ou mesclar a interface. O script `supabase/ops/schedule-item-enrichment.sql` agenda rodadas nos minutos 5, 20, 35 e 50 e não foi ativado em produção nesta etapa.
+A carga de itens usa uma função separada, `enrich-pncp-items`, e o parser compartilhado `src/lib/connectors/pncp/item-schema.ts`. Está ativa em produção desde 20/10/2026: primeira rodada com oito contratações concluídas e 88 itens, sem falhas. O script `supabase/ops/schedule-item-enrichment.sql` foi aplicado e agenda rodadas nos minutos 5, 20, 35 e 50. O coletor principal está na versão 3 com a correção do checkpoint. Consulte `docs/batch-items-validation.md` para evidências e limites de validação.
 
 ```bash
 npm ci

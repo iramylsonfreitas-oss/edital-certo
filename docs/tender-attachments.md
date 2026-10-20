@@ -13,7 +13,7 @@ O número de controle do registro é validado antes de montar a URL, cujo domín
 - Timeout de oito segundos por consulta e cache público de cinco minutos. Falhas em uma seção não impedem a outra nem as ações de favorito.
 - O link do portal PNCP é usado como alternativa quando o registro não contém link válido do sistema de origem.
 
-A consulta ao vivo continua disponível. A carga em lote e o uso de itens salvos estão preparados conforme `docs/batch-items-validation.md`; sua ativação em produção depende das migrations e da autorização registrada ali. Documentos continuam sob demanda, sem carga em lote nesta etapa.
+A consulta ao vivo continua disponível. A carga em lote está ativa em produção a cada 15 minutos. Itens com sincronização completa são lidos do banco com a data da consulta; registros ainda não sincronizados e falhas de leitura usam a consulta ao vivo. Consulte `docs/batch-items-validation.md`. Documentos continuam sob demanda, sem carga em lote nesta etapa.
 
 ## Fontes oficiais verificadas
 

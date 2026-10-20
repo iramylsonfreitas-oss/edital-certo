@@ -1,6 +1,6 @@
 # Carga de itens e identificação de TI — 20/10/2026
 
-## Escopo pronto para revisão
+## Escopo implementado
 
 - Rotina `enrich-pncp-items`, independente da coleta principal, com até oito páginas por execução, pausa de seis segundos, timeout de dez segundos e orçamento de execução de 75 segundos.
 - Fila por contratação, reserva temporária de 150 segundos, retomada por página e retentativas. HTTP 429 interrompe a rodada e adia a contratação por uma hora.
@@ -32,18 +32,16 @@ Ambiente confirmado pela listagem da conta: `edital-certo-dev` (`afbuozouupuguvk
 - 43 testes unitários passaram, incluindo cache na interface, fallback ao PNCP, pontuação por itens e reinício do ciclo após sucesso. TypeScript e build passaram. Lint sem erros, com um aviso preexistente no coletor.
 - O teste autenticado no navegador continua pendente. A checagem de segurança identificou apenas os avisos informativos esperados para fila/área temporária sem políticas públicas e o aviso preexistente sobre proteção contra senhas vazadas.
 
-## Produção: pendente de autorização
+## Ativação em produção — 20/10/2026
 
-Produção continua sendo `iramylson@gmail.com's Project` (`mbjysvmcikovndohacnq`). A tentativa de aplicar a migration aditiva foi recusada pela revisão automática, que considerou a autorização de ativação em produção insuficiente. Essa tentativa não aplicou a migration. Não foram usados caminhos alternativos para contornar a recusa.
+Após autorização do usuário, as duas migrations foram aplicadas em produção (`mbjysvmcikovndohacnq`), na ordem. A rotina `enrich-pncp-items` está ativa na versão 1, com o mesmo hash validado em desenvolvimento (`8c066cd75e2627dc6913cdbb6c149cdc8d39abde9135a93b0cd874557efe3e78`). O coletor principal foi atualizado para a versão 3 com a correção do checkpoint.
 
-Não mesclar esta alteração antes da autorização e das migrations: a nova interface consulta colunas que ainda não existem em produção. A implantação de preview também depende de um ambiente de banco que contenha essas colunas.
+- Rodada limitada: HTTP 200, oito páginas, oito contratações concluídas, 88 itens e nenhuma falha. O estado `partial` indica que ainda há fila a processar.
+- Duas contratações passaram a ser identificadas pelos itens: `04888830000158-1-000008/2026` (notebooks, impressoras, no-breaks e tablets) e `14472412000139-1-000008/2026` (desenvolvimento e locação de software).
+- Chamada sem token: HTTP 401. Usuários autenticados não têm SELECT na fila nem na área temporária; possuem acesso de leitura aos itens. Nenhuma estimativa sigilosa apareceu preenchida e a área temporária ficou vazia ao fim da rodada.
+- Agendamento `edital-certo-pncp-itens` ativo nos minutos 5, 20, 35 e 50. A coleta principal continua no agendamento separado de três horas.
+- A verificação de navegação com uma sessão autenticada real permanece pendente; o CI cobre os fluxos públicos e os testes unitários cobrem a renderização dos itens e o fallback.
 
-## Sequência após autorização
-
-1. Aplicar as duas migrations em produção, na ordem.
-2. Publicar `enrich-pncp-items` com o parser compartilhado e a configuração Deno; publicar o coletor com a correção do checkpoint.
-3. Executar uma rodada manual limitada, conferir os dados persistidos, a classificação e a recusa de chamadas sem token.
-4. Aplicar `supabase/ops/schedule-item-enrichment.sql`: execução nos minutos 5, 20, 35 e 50 de cada hora. O agendamento de três horas da coleta principal permanece separado.
-5. Mesclar após CI, confirmar a publicação e verificar a interface autenticada.
+A cobertura cresce gradualmente conforme a fila é processada. Essa primeira rodada não demonstra cobertura nacional completa.
 
 Para interromper a carga, desativar o agendamento `edital-certo-pncp-itens` e aguardar o término da rodada em curso antes de qualquer intervenção nas reservas. Não é necessário apagar fila, itens, empresas ou usuários.

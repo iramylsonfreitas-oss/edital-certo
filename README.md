@@ -94,7 +94,7 @@ O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura.
 
 ## Limites conhecidos
 
-- Desenvolvimento usa `edital-certo-dev`; produção usa o projeto separado `iramylson@gmail.com's Project`. A coleta principal de produção está ativa. A carga em lote de itens foi validada em desenvolvimento e aguarda autorização de ativação em produção; consulte `docs/batch-items-validation.md`. Alertas e cobrança dependem de integrações próprias.
+- Desenvolvimento usa `edital-certo-dev`; produção usa o projeto separado `iramylson@gmail.com's Project`. A coleta principal de produção está ativa. A carga em lote de itens está ativa em produção a cada 15 minutos, com processamento gradual da fila; consulte `docs/batch-items-validation.md`. Alertas e cobrança dependem de integrações próprias.
 - A interface salva preferências de alerta, mas não entrega e-mails até a integração Resend ser implementada e verificada.
 - A página de detalhe consulta itens e documentos nas rotas oficiais do PNCP, com paginação e tratamento de falhas. A carga em lote e o matching por itens exigem as migrations adicionais descritas em `docs/batch-items-validation.md`.
 - Consentimento fica registrado no cadastro; os textos legais são iniciais e exigem dados do controlador, retenção definida e revisão jurídica.
