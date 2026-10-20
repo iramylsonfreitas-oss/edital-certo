@@ -274,7 +274,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           { label: "Resultados dos filtros", value: Number(totalCount).toLocaleString("pt-BR") },
           { label: "Encerram em até 3 dias", value: Number(urgentCount).toLocaleString("pt-BR") },
           { label: "Favoritas", value: (favoriteCount ?? 0).toLocaleString("pt-BR") }
-        ].map((metric) => <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={metric.label}><p className="text-xs text-slate-600 dark:text-slate-300 sm:text-sm">{metric.label}</p><p className="mt-2 text-2xl font-bold">{metric.label === "Favoritas" ? <FavoriteCount initialCount={favoriteCount ?? 0} /> : metric.value}</p></article>)}
+        ].map((metric) => <article className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={metric.label}><p className="text-xs text-slate-600 dark:text-slate-300 sm:text-sm">{metric.label}</p><p className="mt-2 text-2xl font-bold">{metric.label === "Favoritas" ? <FavoriteCount key={favoriteCount ?? 0} initialCount={favoriteCount ?? 0} /> : metric.value}</p></article>)}
       </section>
 
       <div className="mt-6 grid items-start gap-5 md:grid-cols-[260px_minmax(0,1fr)]">

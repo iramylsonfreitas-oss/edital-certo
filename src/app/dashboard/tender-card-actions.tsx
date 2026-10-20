@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -39,6 +40,7 @@ export function TenderOpportunityCard({
   listMode: ListMode;
   children: ReactNode;
 }) {
+  const router = useRouter();
   const [feedback, setFeedback] = useState<FeedbackState>(initialFeedback);
   const [inPipeline, setInPipeline] = useState(initiallyInPipeline);
   const [busy, setBusy] = useState(false);
@@ -76,6 +78,7 @@ export function TenderOpportunityCard({
       const delta = Number(nextState === "favorite") - Number(previousState === "favorite");
       if (delta) window.dispatchEvent(new CustomEvent("tender-favorite-count-change", { detail: { delta } }));
       setMessage(shouldHide ? "Status salvo; a oportunidade saiu desta lista." : "Alteração salva.");
+      router.refresh();
     } catch (error) {
       setFeedback(previousState);
       setVisible(true);
