@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppNavigation } from "@/components/app-navigation";
+import { deadlineState, DEADLINE_TIMEZONE } from "@/lib/deadlines/time";
 import { IcsDownloadButton } from "./ics-download-button";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -12,11 +13,6 @@ type DeadlineItem = { id: string; title: string; deadline: string; agency: strin
 
 function getTender(record: DeadlineRecord): DeadlineTender | null {
   return Array.isArray(record.tenders) ? record.tenders[0] ?? null : record.tenders;
-}
-
-function dayDifference(date: string, today: Date): number {
-  const target = new Date(date);
-  return Math.floor((Date.UTC(target.getUTCFullYear(), target.getUTCMonth(), target.getUTCDate()) - Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate())) / 86_400_000);
 }
 
 export default async function DeadlinesPage() {
@@ -34,15 +30,15 @@ export default async function DeadlinesPage() {
   const now = new Date();
   const deadlines: DeadlineItem[] = records.flatMap((record) => {
     const tender = getTender(record);
-    if (!tender?.proposal_close_at || seen.has(record.tender_id) || dayDifference(tender.proposal_close_at, now) < 0) return [];
+    if (!tender?.proposal_close_at || seen.has(record.tender_id) || deadlineState(tender.proposal_close_at, now)?.expired !== false) return [];
     seen.add(record.tender_id);
     const agency = Array.isArray(tender.agencies) ? tender.agencies[0] : tender.agencies;
     return [{ id: tender.id, title: tender.title, deadline: tender.proposal_close_at, agency: agency?.name ?? "Órgão não informado", uf: tender.uf ?? "UF não informada", url: tender.official_url }];
   }).sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime());
   const groups = [
-    { title: "Esta semana", items: deadlines.filter((item) => dayDifference(item.deadline, now) <= 7) },
-    { title: "Próxima semana", items: deadlines.filter((item) => dayDifference(item.deadline, now) > 7 && dayDifference(item.deadline, now) <= 14) },
-    { title: "Depois", items: deadlines.filter((item) => dayDifference(item.deadline, now) > 14) }
+    { title: "Próximos 7 dias", items: deadlines.filter((item) => deadlineState(item.deadline, now)!.days <= 7) },
+    { title: "De 8 a 14 dias", items: deadlines.filter((item) => deadlineState(item.deadline, now)!.days > 7 && deadlineState(item.deadline, now)!.days <= 14) },
+    { title: "Após 14 dias", items: deadlines.filter((item) => deadlineState(item.deadline, now)!.days > 14) }
   ];
 
   return (
@@ -52,8 +48,8 @@ export default async function DeadlinesPage() {
         <AppNavigation active="/deadlines" />
         <Link className="text-sm font-semibold text-blue-700" href="/dashboard">Ver oportunidades</Link>
       </header>
-      <p className="mt-5 text-sm text-slate-600 dark:text-slate-300">Prazos das oportunidades favoritas e dos cartões no pipeline.</p>
-      {deadlines.length ? <div className="mt-6 grid gap-8">{groups.map((group) => <section key={group.title}><h2 className="text-lg font-bold">{group.title} <span className="text-sm font-normal text-slate-500">({group.items.length})</span></h2>{group.items.length ? <ul className="mt-3 grid gap-3">{group.items.map((item) => <li className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={item.id}><div className="min-w-0 flex-1"><Link className="font-semibold hover:text-blue-700" href={`/tenders/${item.id}`}>{item.title}</Link><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.agency} · {item.uf}</p><p className="mt-1 text-sm font-semibold text-rose-700 dark:text-rose-300">Encerra {new Date(item.deadline).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}</p></div><IcsDownloadButton event={{ title: item.title, deadline: item.deadline, agency: item.agency, url: item.url }} /></li>)}</ul> : <p className="mt-2 text-sm text-slate-500">Nenhum prazo neste período.</p>}</section>)}</div> : <section className="mt-8 rounded-2xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"><h2 className="font-semibold">Ainda não há prazos acompanhados</h2><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Favorite uma licitação ou adicione-a ao pipeline para ver o prazo aqui.</p><Link className="mt-4 inline-flex rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white" href="/dashboard">Abrir oportunidades</Link></section>}
+      <p className="mt-5 text-sm text-slate-600 dark:text-slate-300">Prazos em aberto das oportunidades favoritas e dos cartões em acompanhamento. Horário de Brasília.</p>
+      {deadlines.length ? <div className="mt-6 grid gap-8">{groups.map((group) => <section key={group.title}><h2 className="text-lg font-bold">{group.title} <span className="text-sm font-normal text-slate-500">({group.items.length})</span></h2>{group.items.length ? <ul className="mt-3 grid gap-3">{group.items.map((item) => <li className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" key={item.id}><div className="min-w-0 flex-1"><Link className="font-semibold hover:text-blue-700" href={`/tenders/${item.id}`}>{item.title}</Link><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{item.agency} · {item.uf}</p><p className="mt-1 text-sm font-semibold text-rose-700 dark:text-rose-300">Encerra {new Date(item.deadline).toLocaleString("pt-BR", { timeZone: DEADLINE_TIMEZONE })}</p></div><IcsDownloadButton event={{ id: item.id, title: item.title, deadline: item.deadline, agency: item.agency, url: item.url }} /></li>)}</ul> : <p className="mt-2 text-sm text-slate-500">Nenhum prazo neste período.</p>}</section>)}</div> : <section className="mt-8 rounded-2xl border border-dashed border-slate-300 p-8 text-center dark:border-slate-700"><h2 className="font-semibold">Ainda não há prazos acompanhados</h2><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Favorite uma licitação ou adicione-a ao pipeline para ver o prazo aqui.</p><Link className="mt-4 inline-flex rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white" href="/dashboard">Abrir oportunidades</Link></section>}
     </main>
   );
 }
