@@ -40,7 +40,7 @@ create table public.email_message_attempts (
  claim_token uuid not null unique,
  started_at timestamptz not null default clock_timestamp(),
  finished_at timestamptz,
- outcome text check(outcome in ('accepted','retryable','permanent','unknown')),
+ outcome text check(outcome in ('accepted','retryable','permanent','unknown','conflict')),
  primary key(message_id,attempt_number)
 );
 alter table public.email_message_attempts enable row level security;
@@ -170,13 +170,13 @@ begin
  if not found or p_claim_token is null or m.claim_token is distinct from p_claim_token or m.status<>'dispatching' or m.lease_until<=clock_timestamp() then
   raise exception 'EMAIL_MESSAGE_LEASE_LOST' using errcode='40001';
  end if;
- if p_outcome not in ('accepted','retryable','permanent','unknown') or p_outcome is null
+ if p_outcome not in ('accepted','retryable','permanent','unknown','conflict') or p_outcome is null
  or p_outcome='accepted' and coalesce(length(trim(p_provider_id)),0)=0 then
   raise exception 'EMAIL_MESSAGE_OUTCOME_INVALID' using errcode='22023';
  end if;
- uncertain:=m.had_unknown_outcome or p_outcome='unknown';
+ uncertain:=m.had_unknown_outcome or p_outcome in ('unknown','conflict');
  final_status:=case when p_outcome='accepted' then 'accepted'
- when p_outcome='permanent' or m.attempts>=5 then case when uncertain then 'uncertain' else 'failed' end else 'retry' end;
+ when p_outcome in ('permanent','conflict') or m.attempts>=5 then case when uncertain then 'uncertain' else 'failed' end else 'retry' end;
  update public.email_message_attempts set outcome=p_outcome,finished_at=clock_timestamp() where message_id=m.id and attempt_number=m.attempts and claim_token=p_claim_token;
  update public.email_messages set status=final_status,had_unknown_outcome=uncertain,claim_token=null,lease_until=null,
  provider_message_id=case when final_status='accepted' then p_provider_id else provider_message_id end,
@@ -209,3 +209,18 @@ begin
 end $$;
 revoke all on function public.cancel_unattempted_email_message(uuid) from public,anon,authenticated;
 grant execute on function public.cancel_unattempted_email_message(uuid) to service_role;
+
+-- Read immediately before the simulated transport; never hold a transaction over network IO.
+create function public.validate_email_message_claim(p_message_id uuid,p_claim_token uuid)
+returns boolean language sql volatile security invoker set search_path='' as $$
+ select exists(select 1 from public.email_messages m
+ where m.id=p_message_id and m.claim_token=p_claim_token and m.status='dispatching'
+ and m.lease_until>clock_timestamp() and m.first_attempt_at>clock_timestamp()-interval '23 hours'
+ and m.payload_hash=encode(extensions.digest(convert_to(m.payload_bytes,'UTF8'),'sha256'),'hex')
+ and private.email_message_verified_address(m.recipient_user_id)=(m.payload_bytes::jsonb->>1)
+ and exists(select 1 from public.email_message_items where message_id=m.id)
+ and not exists(select 1 from public.email_message_items i where i.message_id=m.id
+  and not private.email_message_item_current(i.queue_id,i.queue_version)));
+$$;
+revoke all on function public.validate_email_message_claim(uuid,uuid) from public,anon,authenticated;
+grant execute on function public.validate_email_message_claim(uuid,uuid) to service_role;

@@ -12,7 +12,7 @@ export interface StoredClaim {
   readonly idempotencyKey: string;
   readonly payload: Readonly<EmailPayload>;
 }
-export type StoredOutcome = "accepted" | "retryable" | "permanent" | "unknown";
+export type StoredOutcome = "accepted" | "retryable" | "permanent" | "unknown" | "conflict";
 export type StoredCompletion = "accepted" | "retry" | "failed" | "uncertain";
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const encoder = new TextEncoder();
@@ -97,7 +97,7 @@ export async function claimStoredMessage(client: EmailMessageRpc, messageId: str
 export async function finishStoredAttempt(client: EmailMessageRpc, claim: StoredClaim, outcome: StoredOutcome, providerId?: string): Promise<StoredCompletion> {
   requireId(claim.messageId);
   requireId(claim.token);
-  if (!["accepted", "retryable", "permanent", "unknown"].includes(outcome)
+  if (!["accepted", "retryable", "permanent", "unknown", "conflict"].includes(outcome)
     || outcome === "accepted" && !providerId?.trim()) throw new Error("EMAIL_MESSAGE_OUTCOME_INVALID");
   const result = await call(client, "finish_email_message_attempt", {
     p_message_id: claim.messageId, p_claim_token: claim.token, p_outcome: outcome, p_provider_id: providerId ?? null,
@@ -105,5 +105,13 @@ export async function finishStoredAttempt(client: EmailMessageRpc, claim: Stored
   if (result !== "accepted" && result !== "retry" && result !== "failed" && result !== "uncertain") {
     throw new Error("EMAIL_MESSAGE_RESPONSE_INVALID");
   }
+  return result;
+}
+
+export async function validateStoredClaim(client: EmailMessageRpc, claim: StoredClaim): Promise<boolean> {
+  const result = await call(client, "validate_email_message_claim", {
+    p_message_id: claim.messageId, p_claim_token: claim.token,
+  });
+  if (typeof result !== "boolean") throw new Error("EMAIL_MESSAGE_RESPONSE_INVALID");
   return result;
 }
