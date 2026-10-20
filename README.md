@@ -58,7 +58,7 @@ npm run test:e2e
 
 ## PNCP
 
-A consulta de novas publicações usa a API oficial de consultas. A rota `/api/consulta/v1/contratacoes/publicacao`, os parâmetros de página e o envelope foram confirmados com resposta real. Os códigos de modalidade restantes ainda devem ser configurados a partir do domínio oficial; a captura de teste usou o código 6 para Pregão - Eletrônico. Datas sem offset são convertidas usando o fuso de Brasília documentado pelo PNCP.
+A ingestão do MVP usa a rota oficial `/v1/contratacoes/proposta`, documentada pelo PNCP para contratações com período de recebimento de propostas em aberto. Ela recebe `dataFinal`, código da modalidade, página e tamanho da página; a documentação aceita tamanho de até 500, mas o coletor usa 50 para reduzir respostas grandes. A data de consulta é calculada no fuso de Brasília e o checkpoint é versionado para reiniciar com segurança quando a estratégia mudar. Códigos configurados: 4, 6 e 8. Referência: [Manual oficial da API de Consultas do PNCP](https://www.gov.br/pncp/pt-br/pncp/copy_of_manuais/ManualPNCPAPIConsultasVerso1.0.pdf/@@display-file/file), seção 6.4.
 
 Configure códigos já confirmados no ambiente que tenha conectividade com o PNCP e execute:
 
