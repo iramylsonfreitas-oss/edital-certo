@@ -25,4 +25,4 @@ A consulta ao vivo continua disponível. A carga em lote está ativa em produç�
 
 39 testes unitários passaram, incluindo nove do conector e cinco da renderização das seções. As respostas reais retornam um item e quatro documentos, que foram verificados na saída HTML dos componentes. Há cenários de sigilo, URL inválida, registros duplicados, timeout, erro, lista vazia e paginação. TypeScript, lint e build passaram; permanece um aviso preexistente de função não utilizada no coletor.
 
-O teste com uma sessão autenticada real no navegador continua pendente. A instalação local do Chromium falhou; os testes de navegador disponíveis são executados pelo CI. Eles cobrem os fluxos públicos existentes, não o detalhe autenticado.
+Em 20/10/2026, o navegador autenticado em produção confirmou a lista, a indicação de TI pelos itens e o detalhe de uma contratação com 33 itens salvos, data de consulta e link do edital oficial. O CI continua cobrindo os fluxos públicos; a navegação autenticada foi conferida manualmente, sem alterar dados do usuário.

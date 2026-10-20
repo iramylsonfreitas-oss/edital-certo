@@ -261,14 +261,16 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           ? formatSourceStatus(latestRun)
           : catalog?.atualizadoEm
             ? `Catálogo atualizado em ${new Date(catalog.atualizadoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }).replace(",", " às")} · ${catalog.registros.length} registros · ${catalog.status === "ok" ? "coleta concluída" : catalog.status === "parcial" ? "coleta parcial" : "última coleta com erro"}`
-            : "Catálogo PNCP indisponível no momento"}
+            : (sampleCount ?? 0) > 0
+              ? "Catálogo salvo disponível. Não foi possível consultar o status da última coleta agora."
+              : "Catálogo PNCP indisponível no momento"}
       </aside>
       {parameter(params.notice) === "saved" ? <p aria-live="polite" className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">Alteração salva.</p> : null}
       {parameter(params.notice) === "save-error" || parameter(params.notice) === "invalid-action" ? <p role="alert" className="mt-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">Não foi possível concluir essa ação. Atualize a página e tente novamente.</p> : null}
 
       <section aria-label="Resumo das oportunidades" className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "Oportunidades na amostra", value: (sampleCount ?? catalog?.registros.length ?? 0).toLocaleString("pt-BR") },
+          { label: "Oportunidades de TI no catálogo", value: (sampleCount ?? catalog?.registros.length ?? 0).toLocaleString("pt-BR") },
           { label: "Resultados dos filtros", value: Number(totalCount).toLocaleString("pt-BR") },
           { label: "Encerram em até 3 dias", value: Number(urgentCount).toLocaleString("pt-BR") },
           { label: "Favoritas", value: (favoriteCount ?? 0).toLocaleString("pt-BR") }
