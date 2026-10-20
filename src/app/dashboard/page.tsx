@@ -8,6 +8,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { scoreTender, type InterestProfile } from "@/lib/matching/score";
 import { SearchFilters } from "./search-filters";
 import { FavoriteCount, TenderOpportunityCard } from "./tender-card-actions";
+import { formatSourceStatus } from "@/lib/ingestion/source-status";
 
 export const dynamic = "force-dynamic";
 
@@ -157,7 +158,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     }),
     supabase
       .from("source_status")
-      .select("status,started_at")
+      .select("status,started_at,finished_at,pages_fetched,records_seen,records_inserted,records_updated")
       .eq("source_key", "pncp")
       .order("started_at", { ascending: false })
       .limit(1)
@@ -255,9 +256,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       <aside aria-label="Status da fonte PNCP" className="mt-5 rounded-xl border border-slate-200 p-4 text-sm dark:border-slate-700">
         <strong>Fonte PNCP: </strong>
         {latestRun
-          ? `${latestRun.status === "succeeded" ? "Operacional" : latestRun.status === "running" || latestRun.status === "partial" ? "Em execução" : "Com falha"} · última execução ${new Date(latestRun.started_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}`
+          ? formatSourceStatus(latestRun)
           : catalog?.atualizadoEm
-            ? `Catálogo atualizado em ${new Date(catalog.atualizadoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })} · ${catalog.registros.length} registros · ${catalog.status === "ok" ? "coleta concluída" : catalog.status === "parcial" ? "coleta parcial" : "última coleta com erro"}`
+            ? `Catálogo atualizado em ${new Date(catalog.atualizadoEm).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }).replace(",", " às")} · ${catalog.registros.length} registros · ${catalog.status === "ok" ? "coleta concluída" : catalog.status === "parcial" ? "coleta parcial" : "última coleta com erro"}`
             : "Catálogo PNCP indisponível no momento"}
       </aside>
       {parameter(params.notice) === "saved" ? <p aria-live="polite" className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">Alteração salva.</p> : null}
