@@ -1,35 +1,40 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { toSafeHttpUrl } from "@/lib/security/safe-url";
 import { FeedbackControls } from "./feedback-controls";
 import { AppNavigation } from "@/components/app-navigation";
+import { tenderReference } from "@/lib/connectors/pncp/attachments";
+import { TenderFiles, TenderItems } from "./attachments";
 
 export const dynamic = "force-dynamic";
 
-export default async function TenderDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function TenderDetailPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
   const { data: authData } = await supabase.auth.getUser();
   if (!authData.user) redirect("/login");
 
-  const [{ data: tender, error }, { data: organizations }, { data: feedback }, { data: items }, { data: files }] = await Promise.all([
+  const query = await searchParams;
+  const requestedPage = typeof query.itemsPage === "string" ? Number(query.itemsPage) : 1;
+  const itemsPage = Number.isSafeInteger(requestedPage) && requestedPage >= 1 && requestedPage <= 1000 ? requestedPage : 1;
+  const [{ data: tender, error }, { data: organizations }, { data: feedback }] = await Promise.all([
     supabase
       .from("tenders")
-      .select("id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,agencies(name,cnpj,sphere)")
+      .select("id,source_key,source_id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,agencies(name,cnpj,sphere)")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("organizations").select("id,name").order("created_at"),
-    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id),
-    supabase.from("tender_items").select("id,item_number,description,unit,quantity,estimated_unit_value,estimated_total_value,catmat_code,catser_code").eq("tender_id", id).order("item_number"),
-    supabase.from("tender_files").select("id,title,document_type,external_url,published_at,source_updated_at").eq("tender_id", id).order("published_at", { ascending: false })
+    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id)
   ]);
 
   if (error || !tender) notFound();
 
   const date = (value: string | null) => value ? new Date(value).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }) : "Não informado";
   const agency = tender.agencies && Array.isArray(tender.agencies) ? tender.agencies[0] : tender.agencies;
-  const officialUrl = toSafeHttpUrl(tender.official_url);
+  const sourceId = tender.source_key === "pncp" ? tender.source_id : "";
+  const officialUrl = toSafeHttpUrl(tender.official_url) ?? tenderReference(sourceId)?.portalUrl;
 
   return (
     <main className="mx-auto min-h-screen max-w-4xl px-4 py-8 pb-28 sm:px-6 md:pb-8">
@@ -57,13 +62,17 @@ export default async function TenderDetailPage({ params }: { params: Promise<{ i
           <div><dt className="text-sm text-slate-500">Publicação no PNCP</dt><dd className="mt-1 font-medium">{date(tender.published_at)}</dd></div>
           <div><dt className="text-sm text-slate-500">Última atualização da fonte</dt><dd className="mt-1 font-medium">{date(tender.source_updated_at)}</dd></div>
         </dl>
-        <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
+        <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700" id="itens">
           <h2 className="text-xl font-bold">Itens da licitação</h2>
-          {items?.length ? <ul className="mt-3 grid gap-3">{items.map((item) => <li className="rounded-xl border border-slate-200 p-4 dark:border-slate-700" key={item.id}><h3 className="font-semibold">Item {item.item_number} · {item.description}</h3><p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{item.quantity == null ? "Quantidade não informada" : `${item.quantity} ${item.unit ?? "unidades"}`} · {item.estimated_unit_value == null ? "Valor unitário não informado" : item.estimated_unit_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{item.estimated_total_value == null ? "" : ` · Total ${item.estimated_total_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}`}</p>{item.catmat_code || item.catser_code ? <p className="mt-1 text-xs text-slate-500">{item.catmat_code ? `CATMAT ${item.catmat_code}` : `CATSER ${item.catser_code}`}</p> : null}</li>)}</ul> : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">A fonte ainda não forneceu itens detalhados para esta contratação.</p>}
+          <Suspense key={`${sourceId}:${itemsPage}`} fallback={<p role="status" className="mt-3 text-sm text-slate-500">Consultando itens no PNCP…</p>}>
+            <TenderItems sourceId={sourceId} tenderId={tender.id} page={itemsPage} />
+          </Suspense>
         </section>
         <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700">
           <h2 className="text-xl font-bold">Arquivos e documentos</h2>
-          {files?.length ? <ul className="mt-3 grid gap-3">{files.map((file) => { const fileUrl = toSafeHttpUrl(file.external_url); return <li className="rounded-xl border border-slate-200 p-4 dark:border-slate-700" key={file.id}><h3 className="font-semibold">{file.title}</h3><p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{file.document_type ?? "Documento"}{file.source_updated_at ? ` · atualizado ${date(file.source_updated_at)}` : ""}</p>{fileUrl ? <a className="mt-3 inline-flex rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-blue-700 dark:border-slate-600" href={fileUrl} rel="noopener noreferrer" target="_blank">Abrir documento oficial</a> : <p className="mt-2 text-sm text-slate-500">Sem link disponível na fonte.</p>}</li>; })}</ul> : <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">A fonte não informou arquivos para esta contratação.</p>}
+          <Suspense key={sourceId} fallback={<p role="status" className="mt-3 text-sm text-slate-500">Consultando documentos no PNCP…</p>}>
+            <TenderFiles sourceId={sourceId} />
+          </Suspense>
         </section>
         {officialUrl ? (
           <a className="mt-8 inline-flex rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white" href={officialUrl} rel="noopener noreferrer" target="_blank">
