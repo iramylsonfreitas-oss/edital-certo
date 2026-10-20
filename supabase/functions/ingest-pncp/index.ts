@@ -10,13 +10,14 @@ interface PncpPage {
 }
 
 interface Checkpoint {
-  fromDate: string;
+  strategy: string;
   toDate: string;
   modalityIndex: number;
   page: number;
 }
 
 const sourceKey = "pncp";
+const checkpointStrategy = "open-proposals-v1";
 const pageSize = 50;
 // O PNCP limitou a consulta depois de cerca de doze páginas em teste real.
 // Rodadas menores e pausas maiores reduzem novos HTTP 429; o checkpoint
@@ -40,20 +41,32 @@ function parsePositiveInteger(value: string | undefined, fallback: number): numb
 }
 
 function formatDate(date: Date): string {
-  return date.toISOString().slice(0, 10).replaceAll("-", "");
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(date);
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+  return `${values.year}${values.month}${values.day}`;
 }
 
 function parseCheckpoint(value: unknown): Checkpoint | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
   const row = value as Record<string, unknown>;
   if (
-    typeof row.fromDate !== "string" ||
+    row.strategy !== checkpointStrategy ||
     typeof row.toDate !== "string" ||
+    !/^\d{8}$/.test(row.toDate) ||
     typeof row.modalityIndex !== "number" ||
-    typeof row.page !== "number"
+    !Number.isInteger(row.modalityIndex) ||
+    row.modalityIndex < 0 ||
+    typeof row.page !== "number" ||
+    !Number.isInteger(row.page) ||
+    row.page < 1
   ) return null;
   return {
-    fromDate: row.fromDate,
+    strategy: checkpointStrategy,
     toDate: row.toDate,
     modalityIndex: row.modalityIndex,
     page: row.page
@@ -215,9 +228,8 @@ async function fetchWithRetry(url: URL): Promise<Response> {
   throw lastError instanceof Error ? lastError : new Error("Falha de rede no PNCP após novas tentativas.");
 }
 
-function makePageUrl(baseUrl: string, fromDate: string, toDate: string, modalityCode: number, page: number): URL {
-  const url = new URL("v1/contratacoes/publicacao", `${baseUrl.replace(/\/$/, "")}/`);
-  url.searchParams.set("dataInicial", fromDate);
+function makePageUrl(baseUrl: string, toDate: string, modalityCode: number, page: number): URL {
+  const url = new URL("v1/contratacoes/proposta", `${baseUrl.replace(/\/$/, "")}/`);
   url.searchParams.set("dataFinal", toDate);
   url.searchParams.set("codigoModalidadeContratacao", String(modalityCode));
   url.searchParams.set("pagina", String(page));
@@ -271,12 +283,10 @@ async function savePage(supabase: ReturnType<typeof createClient>, rawRecords: J
   };
 }
 
-function buildInitialCheckpoint(lookbackDays: number): Checkpoint {
-  const end = new Date();
-  const start = new Date(end.getTime() - lookbackDays * 24 * 60 * 60 * 1000);
+function buildInitialCheckpoint(): Checkpoint {
   return {
-    fromDate: formatDate(start),
-    toDate: formatDate(end),
+    strategy: checkpointStrategy,
+    toDate: formatDate(new Date()),
     modalityIndex: 0,
     page: 1
   };
@@ -314,7 +324,6 @@ Deno.serve(async (request) => {
   if (tokenError || tokenIsValid !== true) return new Response("Não autorizado.", { status: 401 });
 
   const pncpBaseUrl = Deno.env.get("PNCP_BASE_URL") ?? "https://pncp.gov.br/api/consulta";
-  const lookbackDays = parsePositiveInteger(Deno.env.get("PNCP_LOOKBACK_DAYS"), 3);
   const maxPages = parsePositiveInteger(Deno.env.get("PNCP_MAX_PAGES_PER_RUN"), maximumPagesPerRun);
 
   const staleBefore = new Date(Date.now() - 5 * 60_000).toISOString();
@@ -336,7 +345,7 @@ Deno.serve(async (request) => {
     .in("status", ["partial", "failed"])
     .order("started_at", { ascending: false })
     .limit(1);
-  const checkpoint = parseCheckpoint(previousRuns?.[0]?.checkpoint) ?? buildInitialCheckpoint(lookbackDays);
+  const checkpoint = parseCheckpoint(previousRuns?.[0]?.checkpoint) ?? buildInitialCheckpoint();
 
   const { data: run, error: runError } = await supabase
     .from("ingestion_runs")
@@ -360,9 +369,11 @@ Deno.serve(async (request) => {
       const modalityCode = modalityCodes[current.modalityIndex];
       if (modalityCode === undefined) break;
 
-      const pageUrl = makePageUrl(pncpBaseUrl, current.fromDate, current.toDate, modalityCode, current.page);
+      const pageUrl = makePageUrl(pncpBaseUrl, current.toDate, modalityCode, current.page);
       const response = await fetchWithRetry(pageUrl);
-      const page = parsePage(await response.json());
+      const page = response.status === 204
+        ? { data: [], totalPaginas: 0, numeroPagina: current.page, paginasRestantes: 0 }
+        : parsePage(await response.json());
 
       const saved = await savePage(supabase, page.data);
       recordsSeen += saved.seen;
