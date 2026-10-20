@@ -94,7 +94,7 @@ O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura.
 
 ## Limites conhecidos
 
-- Não há um projeto Supabase, domínio de e-mail ou provedor de cobrança conectado neste workspace; deploy, agendamento, envio de alertas e cobrança exigem configuração nesses serviços.
+- O projeto Supabase `edital-certo-dev` está conectado como ambiente de desenvolvimento e já recebe a função de ingestão. A ingestão de produção ainda exige um projeto Supabase separado e validação operacional; envio de alertas e cobrança também dependem de integrações próprias.
 - A interface salva preferências de alerta, mas não entrega e-mails até a integração Resend ser implementada e verificada.
 - A consulta de detalhe por ID, itens e arquivos PNCP deve ser concluída após validar as operações correspondentes na documentação vigente.
 - Consentimento fica registrado no cadastro; os textos legais são iniciais e exigem dados do controlador, retenção definida e revisão jurídica.
