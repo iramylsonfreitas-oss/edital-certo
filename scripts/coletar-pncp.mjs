@@ -37,6 +37,8 @@ const TI_KEYWORDS = [
 ];
 const WEAK_TI_KEYWORDS = ['sistema', 'rede', 'hospedagem', 'monitor', 'impressora', 'servidor'];
 const STRONG_TI_KEYWORDS = [
+  'storage server', 'disco rígido', 'discos rígidos',
+  'monitor de vídeo', 'monitores de vídeo',
   'informática', 'informática e comunicação', 'software', 'notebook',
   'computador', 'desktop', 'TI', 'tecnologia da informação',
   'tecnologia da informação e comunicação', 'nuvem', 'data center', 'datacenter',
@@ -68,6 +70,10 @@ const EXCLUDED_TERMS = [
 ];
 const SERVER_PUBLIC_PHRASES = ['servidor público', 'servidores públicos'];
 const TI_CLASSIFICATION_TEST_CASES = [
+  { expected: true, text: 'Registro de preços para aquisição de Discos Rígidos – HDs para serem utilizados no Storage Server, destinado ao armazenamento de dados dos sistemas corporativos e no Sistema de Monitoramento e Vigilância.' },
+  { expected: true, text: 'Aquisição de monitor de vídeo de 24 polegadas' },
+  { expected: true, text: 'Aquisição de monitores de vídeo para estações de trabalho' },
+  { expected: false, text: 'Aquisição de monitor cardíaco hospitalar' },
   { expected: true, text: 'Aquisição de sistema de alimentação ininterrupta (UPS/Nobreak) destinados à infraestrutura computacional' },
   { expected: true, text: 'Locação de sistema web integrado de gestão pública municipal, em nuvem, para servidores públicos' },
   { expected: true, text: 'Fornecimento de sistema acadêmico para Institutos de Ensino Superior' },

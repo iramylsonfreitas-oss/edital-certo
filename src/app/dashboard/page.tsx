@@ -163,7 +163,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase.from("tenders").select("id", { count: "exact", head: true }),
+    supabase.from("tenders").select("id", { count: "exact", head: true }).eq("is_ti", true),
     supabase.from("tender_feedback").select("tender_id", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite"),
     supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true)
   ]);
