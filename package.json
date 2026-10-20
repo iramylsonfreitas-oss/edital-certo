@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "email:simulate": "node --import=tsx scripts/simulate-email-delivery.ts",
     "test:e2e": "playwright test",
     "pncp:verify": "node --import=tsx scripts/verify-pncp.ts",
     "pncp:capture-fixture": "node --import=tsx scripts/capture-pncp-fixture.ts",

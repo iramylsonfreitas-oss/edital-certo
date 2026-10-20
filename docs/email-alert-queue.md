@@ -41,4 +41,4 @@ Para interromper somente esta rotina, remover o job `edital-certo-preparar-alert
 
 ## Ainda pendente
 
-Montagem e congelamento dos resumos, envio pelo provedor com chave de idempotência, retries da entrega, histórico de aceitação/entrega, descadastro, eventos assinados de devolução/reclamação e supressão de destinatários. Exigem testes próprios antes da ativação real, além do remetente/domínio verificado e credenciais configuradas no servidor.
+O conteúdo HTML/texto, a prévia e o núcleo de entrega simulada estão descritos em `docs/email-digest-preview.md`. Ainda faltam persistência e reserva das mensagens, integração com a fila e o provedor real, histórico de aceitação/entrega, descadastro, eventos assinados de devolução/reclamação e supressão. Exigem testes próprios antes da ativação real, além do remetente/domínio verificado e credenciais configuradas no servidor.

@@ -40,6 +40,7 @@ export default async function AlertsPage() {
       </section>
       <section className="mt-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" aria-label="Preparação de alertas">
         <h2 className="font-semibold">Preparação de alertas</h2>
+        <Link className="mt-2 inline-block text-sm font-semibold text-blue-700 underline dark:text-blue-300" href="/alerts/preview">Ver prévia do e-mail</Link>
         <p className="mt-2 text-sm">{queueResult.error ? "Não foi possível consultar sua fila agora. Atualize a página para tentar novamente." : `${queueResult.count ?? 0} oportunidade(s) em preparação para você. Nenhum e-mail enviado por esta rotina.`}</p>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">A preparação ocorre gradualmente e confere os prazos e as autorizações. Os registros podem mudar após uma atualização ou pausa. Para começar, salve um <Link className="text-blue-700 underline dark:text-blue-300" href="/profiles">perfil de interesse</Link> com critérios positivos e uma preferência de e-mail.</p>
       </section>
