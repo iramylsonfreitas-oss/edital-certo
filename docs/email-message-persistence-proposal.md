@@ -1,0 +1,77 @@
+# Persistência das mensagens de e-mail
+
+Status em 20/10/2026: migração versionada, ponte REST e trabalhador simulado implementados na proposta 26, branch `draft/email-message-persistence`. Nenhum envio real está implementado ou habilitado. Nenhum esquema desta proposta foi aplicado permanentemente em projeto hospedado. O trabalhador publicado `prepare-email-alerts` continua preparando a fila.
+
+## Fluxo implementado
+
+1. `recover_email_message_drafts` libera, por execução, no máximo 20 rascunhos sem tentativas abandonados há mais de 15 minutos. Não libera mensagens prontas, tentadas ou incertas.
+2. `reserve_next_email_digest` seleciona e reserva atomicamente até 20 itens atuais do mesmo destinatário. A seleção usa locks e a restrição única de destinatário ativo resolve disputas entre trabalhadores. Somente `service_role` recebe o endereço confirmado e os dados necessários ao resumo.
+3. `stageNextStoredDigest`, em `src/lib/alerts/stored-worker.ts`, compõe o resumo e congela os bytes por meio da ponte `persisted.ts`. Se a composição omitir um item inválido, a reserva inteira é recusada. Falhas ambíguas de reserva não provocam nova reserva automática; uma reserva sem resposta é recuperada pela expiração do rascunho.
+4. `claimStoredMessage` reclama a mensagem, grava a tentativa no banco e verifica UUIDs, token, chave, estrutura, tamanho e SHA-256 dos bytes recuperados. Uma resposta inválida não chega à conclusão simulada.
+5. `simulateStoredAttempt` revalida a concessão e a autorização via `validate_email_message_claim` e registra exclusivamente um resultado simulado com o token original. Não recebe transporte, credenciais, callback de envio ou opção de envio real. Uma falha de gravação não provoca outra tentativa.
+
+`stageStoredDigest` também permite testar itens selecionados explicitamente pelo servidor. `stageEmailMessage` conserva seu contrato anterior de reservar e congelar; `freezeReservedMessage` permite congelar a seleção já reservada em uma transação do banco.
+
+## Identidade, concessões e incerteza
+
+As tabelas `email_messages`, `email_message_items` e `email_message_attempts` guardam mensagens, vínculos e histórico. O conteúdo congelado usa os bytes UTF-8 de `JSON.stringify([from,to,subject,html,text])`, com SHA-256. A chave é sempre `edital-certo/<uuid-da-mensagem>`.
+
+A concessão dura dois minutos. O token rejeita respostas antigas. Uma concessão expirada marca a tentativa anterior como desconhecida antes da recuperação. Há limite de cinco tentativas e janela de 23 horas desde o primeiro início; o backoff é de 1/2/4/8 minutos. Os vínculos permanecem reservados quando existe incerteza.
+
+O mapeamento de resultados considera aceite com ID, erros transitórios, rejeições permanentes, resultado desconhecido e conflito de identidade. HTTP 409 com `concurrent_idempotent_requests` permite retry. Outro 409 usa `conflict` e encerra imediatamente como `uncertain`, sem gerar nova mensagem para o mesmo item.
+
+Um aceite simulado marca a fila local como `sent`; por isso o runner só aceita uma instância local descartável. Em uma integração futura, `sent` significará aceite do provedor, sem comprovar entrega na caixa postal. A concessão não garante entrega única após atrasos de rede. Um transporte futuro deverá conservar bytes e chave e respeitar a janela de idempotência do provedor.
+
+## Acesso
+
+RLS está habilitada nas três tabelas, sem políticas para usuários. Tabelas e RPCs revogam acesso de `PUBLIC`, `anon` e `authenticated`, conforme o tipo de objeto; as operações são exclusivas de `service_role`. A função privada que consulta um único endereço confirmado usa `SECURITY DEFINER`, caminho de busca vazio e execução restrita ao servidor, sem conceder acesso direto a `auth.users`.
+
+Reserva, congelamento, reclamação e revalidação conferem consentimento, plano, perfil, vínculo com a organização, endereço confirmado, situação/prazo da oportunidade e versões da fila. A revalidação imediatamente antes do resultado não elimina a possibilidade de mudança durante uma futura chamada externa. Nenhuma transação permanece aberta durante chamadas de rede.
+
+Erros da ponte e do trabalhador usam códigos genéricos; endereços e mensagens do banco não são propagados. Os relatórios do runner contêm contadores e resultados de verificações, sem corpos ou endereços.
+
+## Migração e CI
+
+A migração `supabase/migrations/20261020203247_email_message_persistence.sql` foi criada com Supabase CLI 2.121.0 na execução 39492652515. O arquivo em `supabase/ops/drafts/email-message-persistence.sql` conserva a mesma fonte; a CI exige igualdade entre os dois arquivos.
+
+O terminal desta conversa permaneceu indisponível. O GitHub Actions executa o CLI em uma instância descartável, sem segredos de Supabase hospedado ou de provedor. O workflow `.github/workflows/email-persistence.yml`:
+
+- consulta versão e comandos com `--help`;
+- inicializa um projeto local e aplica as migrações anteriores;
+- roda a regressão SQL em transação com rollback;
+- aplica a migração versionada via `supabase db reset --local --no-seed` e confere o histórico com `migration list --local`;
+- carrega dados sintéticos comprometidos apenas na instância descartável, para permitir transações REST independentes;
+- roda a ponte e o trabalhador por REST, preserva a migração como artefato e encerra os serviços.
+
+O runner `scripts/test-email-persistence.ts` exige `EMAIL_TEST_DISPOSABLE=true`, API `http://127.0.0.1:54321` e banco `postgresql://postgres:postgres@127.0.0.1:54322/postgres`. Recusa uma variável `RESEND_API_KEY`. As chaves usadas são obtidas do próprio CLI local. Não usa credenciais da aplicação.
+
+## Evidências de validação
+
+- Commit de código verificado: `a4945f20adc024e8ed4586962f5cec70027dc98e`.
+- [CI 39493079950](https://github.com/iramylsonfreitas-oss/edital-certo/actions/runs/39493079950): lint, tipos, 92 testes unitários, build e testes de navegador aprovados. Há um aviso de lint preexistente no coletor PNCP.
+- [Integração de banco 39493080107](https://github.com/iramylsonfreitas-oss/edital-certo/actions/runs/39493080107): regressão SQL, aplicação local da migração versionada, banco/REST, concorrência e ciclo simulado completo aprovados. O runner registrou `real_emails_sent: 0`.
+- A documentação foi consolidada depois desses testes; essa consolidação não altera SQL ou TypeScript.
+
+A regressão SQL ampliada também passou no projeto de desenvolvimento `afbuozouupuguvkkuvib`, em transação com rollback. Foram confirmadas a ausência de `email_messages` e de `reserve_next_email_digest` após o rollback. Esse teste não aplica a migração permanentemente.
+
+Os cenários incluem reserva duplicada, recuperação de rascunho, imutabilidade, hash, desvio de destinatário, concessão exclusiva, retomada com mesmos bytes/chave, rejeição de token antigo, backoff, aceite simulado, pausa, limite de cinco tentativas, janela de 23 horas, conflito terminal e privilégios.
+
+A integração REST usa oito reservas e doze reclamações simultâneas, cada chamada em transação independente, e exige um único proprietário. Também testa quatro seleções simultâneas, resumo em lote, recuperação de rascunho, revalidação após pausa e acesso negado a `anon`/`authenticated`. Depois de pausar e retomar um alerta, o cenário refaz a preparação por `claim_email_alert_page`/`save_email_alert_page`: o `updated_at` faz parte da versão da configuração e invalida as linhas antigas.
+
+Para repetir a regressão em um banco descartável com apenas as migrações anteriores à de persistência:
+
+```sh
+psql "$TEST_DATABASE_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-persistence-proposal.sql
+```
+
+Não executar esse teste nem a fixture local em produção. A regressão inclui a proposta dentro da transação e precisa de conexão administrativa para preparar usuários sintéticos e alternar papéis.
+
+## Pendências antes da publicação
+
+1. Homologar a migração versionada em desenvolvimento hospedado e conferir histórico, tipos e acessos após a aplicação.
+2. Definir a operação de mensagens incertas e a retenção/limpeza do histórico. A recuperação automática implementada se limita aos rascunhos sem tentativas.
+3. Ligar o ciclo ao agendador de desenvolvimento, com limites por execução e telemetria sem dados pessoais. O trabalhador publicado ainda não importa o novo ciclo.
+4. Para envio real, implementar adaptador de provedor, timeout, remetente/domínio, descadastro, eventos assinados de entrega/falha e supressão. Revalidar autorização perto da chamada externa e reconciliar resultados incertos.
+5. Publicar somente após homologação. O aceite simulado nunca deve ser aplicado à fila real de clientes.
+
+A proposta permanece em rascunho e não foi mesclada em `main`. A produção continua oferecendo preparação de oportunidades e prévia de e-mail.
