@@ -7,7 +7,7 @@ Esta etapa prepara as preferências de e-mail; não cria um job de envio nem ati
 - Cada preferência pertence ao usuário destinatário e a uma organização. O destino futuro é o e-mail confirmado da conta, nunca um endereço arbitrário informado por um colega.
 - A autorização começa desmarcada e é necessária para salvar pela interface. O horário diário usa o fuso escolhido explicitamente; o padrão visual é Brasília, com Boa Vista e demais opções brasileiras disponíveis.
 - Apenas administradores e analistas podem criar. Um destinatário ainda membro pode consultar, alterar, pausar ou excluir suas próprias preferências, mesmo após virar leitor. Colegas e administradores da mesma organização não podem ler ou controlar preferências de terceiros.
-- Pausar conserva a autorização anterior, permitindo retomada. Desabilitar o canal no banco revoga a autorização; uma nova autorização registra um novo horário no servidor. Excluir remove a preferência e seu histórico associado.
+- Pausar conserva a autorização anterior, permitindo retomada. Desabilitar o canal no banco revoga a autorização; uma nova autorização registra um novo horário no servidor. Excluir remove a preferência e seu histórico de entregas associado. A fila de preparação mantém um registro pessoal para deduplicação, sujeito às regras de acesso e exclusão da conta.
 - A retomada de alertas imediatos confere novamente o plano. Uma redução de plano não impede pausar ou excluir uma preferência existente.
 - Configurações exatamente iguais para o mesmo destinatário são únicas, inclusive quando pausadas. Isso evita cadastros repetidos; não substitui a idempotência da futura entrega.
 - Falhas de consulta aparecem como erro, sem serem apresentadas como uma lista vazia. As mutações exigem o retorno da linha alterada para não anunciar sucesso quando RLS não encontrou uma linha permitida.
@@ -30,6 +30,6 @@ Na conferência da interface publicada, verificar aviso de envio pendente, botã
 
 ## Próxima etapa
 
-Implementar processamento paginado dos perfis ativos e oportunidades ainda abertas, fila persistente com deduplicação por destinatário/oportunidade, resumo diário no fuso escolhido e alertas imediatos conforme o plano. Antes de cada tentativa, validar preferência habilitada, autorização, associação à organização e e-mail confirmado. Acrescentar conteúdo HTML/texto, idempotência e tratamento de falhas, descadastro e eventos de entrega/devolução. Validar por simulação antes de ativar o remetente.
+O processamento paginado e a fila de preparação foram acrescentados em `docs/email-alert-queue.md`. Falta a entrega: montar resumos HTML/texto, aplicar idempotência e novas tentativas no provedor, incluir descadastro e tratar eventos de entrega/devolução. Antes de cada tentativa real, revalidar preferência habilitada, autorização, associação à organização, e-mail confirmado, critérios e prazo. Validar por simulação antes de ativar o remetente.
 
 As contas Resend conectadas foram consultadas nesta etapa e não tinham domínios de envio cadastrados. A ativação real exige definir remetente e domínio, verificar o DNS e configurar as credenciais no servidor.

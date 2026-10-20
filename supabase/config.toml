@@ -6,3 +6,6 @@ verify_jwt = false
 [functions.enrich-pncp-items]
 verify_jwt = false
 
+[functions.prepare-email-alerts]
+verify_jwt = false
+

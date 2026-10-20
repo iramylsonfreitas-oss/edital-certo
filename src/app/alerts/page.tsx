@@ -12,7 +12,7 @@ export default async function AlertsPage() {
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect("/login");
 
-  const [alertResult, organizationResult, profileResult, membershipResult] = await Promise.all([
+  const [alertResult, organizationResult, profileResult, membershipResult, queueResult] = await Promise.all([
     supabase
     .from("alerts")
     .select("id,organization_id,profile_id,frequency,minimum_score,email_enabled,timezone,daily_send_time,is_enabled,email_consent_at")
@@ -20,7 +20,8 @@ export default async function AlertsPage() {
     .order("created_at"),
     supabase.from("organizations").select("id,name").order("created_at"),
     supabase.from("interest_profiles").select("id,organization_id,name").order("name"),
-    supabase.from("memberships").select("organization_id,role").eq("user_id", data.user.id)
+    supabase.from("memberships").select("organization_id,role").eq("user_id", data.user.id),
+    supabase.from("email_alert_queue").select("id", { count: "exact", head: true }).eq("recipient_user_id", data.user.id).eq("status", "prepared")
   ]);
   const alerts = alertResult.data ?? [];
   const organizations = organizationResult.data ?? [];
@@ -34,8 +35,13 @@ export default async function AlertsPage() {
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-700"><div><Link className="text-sm text-blue-700" href="/dashboard">← Oportunidades</Link><h1 className="mt-3 text-3xl font-bold">Configurações de alerta</h1></div><AppNavigation active="/dashboard" /></header>
       <section className="mt-6 rounded-xl border border-amber-300 bg-amber-50 p-5 text-amber-950" aria-label="Situação do envio por e-mail">
         <h2 className="font-semibold">Envio por e-mail aguardando ativação</h2>
-        <p className="mt-2 text-sm">Você já pode guardar suas preferências. Os e-mails ainda não serão enviados: faltam a configuração do remetente e a conclusão da rotina de entrega.</p>
+        <p className="mt-2 text-sm">O sistema já prepara oportunidades compatíveis com seus perfis de TI e preferências autorizadas. Os e-mails ainda não serão enviados: faltam a configuração do remetente e a conclusão da rotina de entrega.</p>
         <p className="mt-2 text-sm">As preferências são pessoais. O destinatário será o e-mail confirmado da sua própria conta.</p>
+      </section>
+      <section className="mt-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" aria-label="Preparação de alertas">
+        <h2 className="font-semibold">Preparação de alertas</h2>
+        <p className="mt-2 text-sm">{queueResult.error ? "Não foi possível consultar sua fila agora. Atualize a página para tentar novamente." : `${queueResult.count ?? 0} oportunidade(s) em preparação para você. Nenhum e-mail enviado por esta rotina.`}</p>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">A preparação ocorre gradualmente e confere os prazos e as autorizações. Os registros podem mudar após uma atualização ou pausa. Para começar, salve um <Link className="text-blue-700 underline dark:text-blue-300" href="/profiles">perfil de interesse</Link> com critérios positivos e uma preferência de e-mail.</p>
       </section>
       {canConfigure && editableOrganizations.length > 0 ? <AlertForm organizations={editableOrganizations} profiles={profiles} /> : <p className="mt-6 text-sm">{canConfigure ? "A criação de preferências exige acesso de administrador ou analista a uma organização." : "Não foi possível carregar as opções. Atualize a página para tentar novamente."}</p>}
       <h2 className="mt-8 text-xl font-semibold">Minhas preferências</h2>
