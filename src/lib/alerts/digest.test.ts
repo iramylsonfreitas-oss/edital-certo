@@ -28,6 +28,7 @@ describe("email digest content", () => {
     const rows = Array.from({ length: 30 }, (_, i) => ({ ...tender, id: `00000000-0000-0000-0000-${String(i).padStart(12, "0")}`, title: "a".repeat(10_000), estimatedValue: 0 }));
     const result = composeDigest(rows, now);
     expect(result.count).toBe(20);
+    expect(result.text).toContain("a".repeat(219) + "…");
     expect(new TextEncoder().encode(result.html).length).toBeLessThan(95_000);
     expect(result.text).toMatch(/R\$\s*0,00/);
   });

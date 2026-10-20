@@ -5,7 +5,13 @@ export interface DigestOpportunity {
 export interface DigestContent { subject: string; html: string; text: string; count: number }
 const appOrigin = "https://edital-certo-six.vercel.app";
 const escape = (value: string) => value.replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]!);
-const clean = (value: string, max: number) => value.replace(/[\u0000-\u001f\u007f]/g, " ").trim().slice(0, max);
+const clean = (value: string, max: number) => {
+  const text = value.replace(/[\u0000-\u001f\u007f]/g, " ").trim();
+  if (text.length <= max) return text;
+  const prefix = text.slice(0, max - 1);
+  const boundary = prefix.lastIndexOf(" ");
+  return `${prefix.slice(0, boundary > max * 0.75 ? boundary : prefix.length).trimEnd()}…`;
+};
 const uuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // No scripts, images, tracking pixels or remote assets. Portable to Node and Deno.
@@ -22,7 +28,7 @@ export function composeDigest(opportunities: DigestOpportunity[], now: Date, exa
   const introduction = example ? "Exemplo de formato com dados reais do catálogo. Não representa alertas pessoais enviados." : "Confira as oportunidades selecionadas para os seus perfis de interesse.";
   const plain: string[] = [subject, "", introduction, "", "Horários de encerramento no fuso de Brasília (America/Sao_Paulo).", ""];
   const cards = rows.map((row) => {
-    const title = clean(row.title, 500);
+    const title = clean(row.title, 220);
     const agency = clean(row.agency || "Órgão não informado", 180);
     const deadline = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(new Date(row.deadline));
     const value = row.estimatedValue !== null && Number.isFinite(row.estimatedValue) && row.estimatedValue >= 0
