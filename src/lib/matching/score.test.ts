@@ -30,13 +30,51 @@ const tender: TenderCandidate = {
 };
 
 describe("scoreTender", () => {
-  it("produz pontuação estável e explica os critérios", () => {
+  it("normaliza para 100 quando todos os critérios configurados são atendidos", () => {
     const first = scoreTender(profile, tender);
     const second = scoreTender(profile, tender);
     expect(first).toEqual(second);
-    expect(first.score).toBe(85);
+    expect(first.score).toBe(100);
     expect(first.explanation.join(" ")).toContain("notebook");
     expect(first.explanation.join(" ")).toContain("SP");
+  });
+
+  it("atribui 100 a um perfil configurado somente com UF", () => {
+    const result = scoreTender({ ...profile, requiredKeywords: [], optionalKeywords: [], excludedKeywords: [], ufs: ["SP"], modalityCodes: [], maximumValue: null }, tender);
+    expect(result).toMatchObject({ score: 100, matched: true });
+  });
+
+  it("atribui 100 a um perfil configurado somente com palavra obrigatória", () => {
+    const result = scoreTender({ ...profile, requiredKeywords: ["notebook"], optionalKeywords: [], excludedKeywords: [], ufs: [], modalityCodes: [], maximumValue: null }, tender);
+    expect(result).toMatchObject({ score: 100, matched: true });
+  });
+
+  it("calcula termos opcionais proporcionalmente e normaliza os critérios configurados", () => {
+    const result = scoreTender({
+      ...profile,
+      requiredKeywords: [],
+      optionalKeywords: ["notebook", "suporte"],
+      excludedKeywords: [],
+      ufs: [],
+      modalityCodes: [],
+      maximumValue: null
+    }, { ...tender, object: "Compra de notebook" });
+    expect(result.score).toBe(50);
+    expect(result.matched).toBe(true);
+  });
+
+  it("retorna zero e orientação para um perfil sem critérios positivos", () => {
+    const result = scoreTender({
+      ...profile,
+      requiredKeywords: [],
+      optionalKeywords: [],
+      excludedKeywords: ["recondicionado"],
+      ufs: [],
+      modalityCodes: [],
+      maximumValue: null
+    }, tender);
+    expect(result).toMatchObject({ score: 0, matched: true });
+    expect(result.explanation[0]).toContain("critérios positivos");
   });
 
   it("rejeita palavra-chave obrigatória ausente", () => {
