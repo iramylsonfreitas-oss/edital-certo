@@ -12,7 +12,9 @@ flowchart TD
   Edge --> DB
   DB --> Search["Busca e matching"]
   Search --> Web
-  Web -. "Fase de alertas" .-> Email["Resend"]
+  Scheduler --> Preparation["Preparação de alertas"]
+  Preparation --> DB
+  DB -. "Entrega ainda pendente" .-> Email["Resend"]
 ```
 
 O catálogo de licitações é compartilhado e contém dados públicos. Perfis e pipeline pertencem a uma organização. Preferências de e-mail têm também um destinatário pessoal: somente esse usuário, enquanto membro da organização, pode consultar e controlar seus alertas e histórico de entregas. As consultas da aplicação usam a sessão Supabase e RLS; os jobs de ingestão e carga de itens usam credenciais privilegiadas apenas no servidor.
@@ -58,5 +60,5 @@ docs/                   arquitetura, operação e backlog
 
 - O estado de foco comercial ainda não foi informado; a ingestão é nacional, e o onboarding permite limitar perfis por UF/município.
 - O endpoint de detalhe e as operações de itens/arquivos precisam ser verificadas no Swagger antes de ligar a captura dessas entidades.
-- Há projetos Supabase separados para desenvolvimento e produção. A ingestão está agendada em produção a cada três horas e a carga de itens a cada quinze minutos. Preferências de e-mail podem ser salvas, pausadas e excluídas; ainda faltam processamento dos alertas, remetente verificado e configuração de entrega. Cobrança permanece pendente.
+- Há projetos Supabase separados para desenvolvimento e produção. A ingestão está agendada em produção a cada três horas e a carga de itens a cada quinze minutos. A preparação de alertas usa páginas persistentes e fila deduplicada; ainda faltam remetente verificado e implementação da entrega. Cobrança permanece pendente.
 - O modelo contém as entidades previstas para pipeline e IA, mas as telas e os processos das Fases 2 e 3 estão no backlog.
