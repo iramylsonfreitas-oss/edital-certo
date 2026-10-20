@@ -58,7 +58,7 @@ describe("scoreTender", () => {
       ufs: [],
       modalityCodes: [],
       maximumValue: null
-    }, tender);
+    }, { ...tender, object: "Compra de notebook" });
     expect(result.score).toBe(50);
     expect(result.matched).toBe(true);
   });
