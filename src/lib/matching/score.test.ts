@@ -30,6 +30,12 @@ const tender: TenderCandidate = {
 };
 
 describe("scoreTender", () => {
+  it("uses item evidence when the procurement object is generic", () => {
+    const generic = { ...tender, title: "Materiais permanentes", object: "Aquisição de materiais permanentes", itemText: "Notebook corporativo com suporte técnico" };
+    expect(scoreTender(profile, generic)).toMatchObject({ matched: true, score: 100 });
+    expect(scoreTender(profile, { ...generic, itemText: "Mobiliário escolar" }).matched).toBe(false);
+    expect(scoreTender(profile, { ...generic, itemText: "Notebook recondicionado" }).matched).toBe(false);
+  });
   it("normaliza para 100 quando todos os critérios configurados são atendidos", () => {
     const first = scoreTender(profile, tender);
     const second = scoreTender(profile, tender);

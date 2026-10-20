@@ -1,10 +1,27 @@
 import Link from "next/link";
 import { fetchTenderFiles, fetchTenderItems } from "@/lib/connectors/pncp/attachments";
+import { parseStoredTenderItems } from "@/lib/connectors/pncp/item-schema";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 const money = (value: number) => value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
-export async function TenderItems({ sourceId, tenderId, page }: { sourceId: string; tenderId: string; page: number }) {
-  const result = await fetchTenderItems(sourceId, page);
+export async function TenderItems({ sourceId, tenderId, page, storedAt }: { sourceId: string; tenderId: string; page: number; storedAt?: string | null }) {
+  let result: Awaited<ReturnType<typeof fetchTenderItems>> | null = null;
+  let saved = false;
+  if (storedAt) {
+    try {
+      const client = await createSupabaseServerClient();
+      const from = (page - 1) * 50;
+      const rows = await client.from("tender_items").select("item_number,description,unit,quantity,estimated_unit_value,estimated_total_value,raw_data").eq("tender_id", tenderId).order("item_number").range(from, from + 50);
+      if (!rows.error) {
+        const data = rows.data ?? [];
+        const records = parseStoredTenderItems(data.slice(0, 50));
+        result = { status: records.length ? "ready" : "empty", records, hasMore: data.length > 50 };
+        saved = true;
+      }
+    } catch { /* Keep the live query available if the stored snapshot cannot be read. */ }
+  }
+  result ??= await fetchTenderItems(sourceId, page);
   return <>
     {result.status === "unavailable" ? <p role="status" className="mt-3 text-sm text-amber-800 dark:text-amber-200">Não foi possível consultar os itens no PNCP agora. Tente novamente mais tarde ou consulte a fonte oficial abaixo.</p> : null}
     {result.status === "empty" ? <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{page === 1 ? "O PNCP não retornou itens para esta contratação." : "Não há mais itens nesta página."}</p> : null}
@@ -24,7 +41,7 @@ export async function TenderItems({ sourceId, tenderId, page }: { sourceId: stri
       <span>Página {page}</span>
       {result.hasMore && page < 1000 ? <Link prefetch={false} className="rounded-lg border px-3 py-2 font-semibold text-blue-700 dark:text-blue-300" href={`/tenders/${tenderId}?itemsPage=${page + 1}#itens`}>Próximos itens</Link> : null}
     </nav> : null}
-    {result.status === "ready" ? <p className="mt-3 text-xs text-slate-500">Dados consultados no PNCP. Confira o edital e eventuais retificações antes de preparar a proposta.</p> : null}
+    {saved ? <p className="mt-3 text-xs text-slate-500">Itens consultados no PNCP em {new Date(storedAt!).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}. Confira eventuais retificações na fonte oficial.</p> : result.status === "ready" ? <p className="mt-3 text-xs text-slate-500">Dados consultados no PNCP. Confira o edital e eventuais retificações antes de preparar a proposta.</p> : null}
   </>;
 }
 

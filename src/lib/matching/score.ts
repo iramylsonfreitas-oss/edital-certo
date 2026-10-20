@@ -16,6 +16,7 @@ export interface InterestProfile {
 export interface TenderCandidate {
   title: string;
   object: string;
+  itemText?: string;
   uf: string | null;
   municipalityCode: string | null;
   modalityCode: string | null;
@@ -41,7 +42,7 @@ function includesTerm(haystack: string, term: string): boolean {
 }
 
 export function scoreTender(profile: InterestProfile, tender: TenderCandidate): MatchResult {
-  const text = normalizeText(`${tender.title} ${tender.object}`);
+  const text = normalizeText(`${tender.title} ${tender.object} ${tender.itemText ?? ""}`);
   const explanation: string[] = [];
   let availableWeight = 0;
   let earnedWeight = 0;

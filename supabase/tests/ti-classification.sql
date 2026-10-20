@@ -39,7 +39,7 @@ begin
   )
   select count(*) into failures from cases where public.is_ti_tender(object) is distinct from expected;
   if failures <> 0 then raise exception 'TI classification: % failed cases', failures; end if;
-  if exists(select 1 from public.tenders where is_ti is distinct from public.is_ti_tender(object)) then
+  if exists(select 1 from public.tenders where is_ti is distinct from (public.is_ti_tender(object) or coalesce(is_ti_by_items,false))) then
     raise exception 'TI cache differs from classifier';
   end if;
   if exists(select 1 from public.search_tenders_for_list(p_show_closed => true, p_page_size => 100) r join public.tenders t on t.id=r.tender_id where not t.is_ti) then

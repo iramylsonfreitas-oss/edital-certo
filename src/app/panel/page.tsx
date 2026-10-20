@@ -10,6 +10,7 @@ type PanelTender = {
   id: string;
   title: string;
   object: string;
+  items_search_text: string | null;
   uf: string | null;
   municipality_code: string | null;
   modality_code: string | null;
@@ -52,7 +53,7 @@ function asProfile(profile: PanelProfile): InterestProfile {
 function candidateOf(tender: PanelTender): TenderCandidate {
   const agency = agencyOf(tender);
   return {
-    title: tender.title, object: tender.object, uf: tender.uf, municipalityCode: tender.municipality_code, modalityCode: tender.modality_code,
+    title: tender.title, object: tender.object, itemText: tender.items_search_text ?? "", uf: tender.uf, municipalityCode: tender.municipality_code, modalityCode: tender.modality_code,
     agencyName: agency?.name ?? null, sphere: agency?.sphere ?? null, estimatedValue: tender.estimated_value, exclusiveMeEpp: tender.exclusive_me_epp, cnaeCodes: []
   };
 }
@@ -87,7 +88,7 @@ export default async function PanelPage() {
   const { data: organization } = await supabase.from("organizations").select("id").order("created_at").limit(1).maybeSingle();
   if (!organization) redirect("/onboarding");
   const [{ data: tenders }, { data: profiles }, { data: cards }, { data: feedback }] = await Promise.all([
-    supabase.from("tenders").select("id,title,object,uf,municipality_code,modality_code,estimated_value,exclusive_me_epp,proposal_close_at,agencies(name,sphere)").eq("is_ti", true).not("proposal_close_at", "lt", new Date().toISOString()).order("proposal_close_at").limit(2000),
+    supabase.from("tenders").select("id,title,object,items_search_text,uf,municipality_code,modality_code,estimated_value,exclusive_me_epp,proposal_close_at,agencies(name,sphere)").eq("is_ti", true).not("proposal_close_at", "lt", new Date().toISOString()).order("proposal_close_at").limit(2000),
     supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organization.id).eq("is_active", true),
     supabase.from("pipeline_cards").select("tender_id,status,tenders!inner(estimated_value,proposal_close_at)").eq("organization_id", organization.id),
     supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organization.id).eq("user_id", authData.user.id)
