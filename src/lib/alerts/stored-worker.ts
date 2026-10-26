@@ -74,3 +74,31 @@ export async function stageNextStoredDigest(client: EmailMessageRpc, from: strin
     throw new Error("EMAIL_DIGEST_STAGE_FAILED");
   }
 }
+
+export interface DigestPreparationReport {
+  prepared: number;
+  stopped: "limit" | "empty" | "error";
+}
+
+// Preparation only. Never claims attempts, simulates acceptance or calls a provider.
+// Stop at the first ambiguous failure; the next execution uses database recovery.
+// Counters deliberately exclude message IDs, addresses and exception details.
+export async function prepareStoredDigestBatch(client: EmailMessageRpc,
+  options: { from: string; limit: number; now: Date }): Promise<DigestPreparationReport> {
+  if (!Number.isInteger(options.limit) || options.limit < 1 || options.limit > 5
+    || !Number.isFinite(options.now.getTime()) || /[\r\n]/.test(options.from) || !options.from.includes("@")) {
+    throw new Error("EMAIL_DIGEST_BATCH_INPUT_INVALID");
+  }
+  let prepared = 0;
+  while (prepared < options.limit) {
+    try {
+      if (await stageNextStoredDigest(client, options.from, options.now) === null) {
+        return { prepared, stopped: "empty" };
+      }
+      prepared++;
+    } catch {
+      return { prepared, stopped: "error" };
+    }
+  }
+  return { prepared, stopped: "limit" };
+}

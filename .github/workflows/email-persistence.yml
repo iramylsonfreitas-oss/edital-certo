@@ -63,6 +63,8 @@ jobs:
           supabase db reset --local --no-seed --workdir "$EMAIL_TEST_WORKDIR"
           supabase migration list --local --workdir "$EMAIL_TEST_WORKDIR"
           psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -c "NOTIFY pgrst, 'reload schema'"
+      - name: Verify installed schema with rollback
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-installed.sql
       - name: REST, independent concurrent transactions and stored worker simulation
         run: |
           psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/email-message-local.sql

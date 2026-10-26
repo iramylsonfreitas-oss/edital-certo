@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { stageStoredDigest, storedProviderOutcome, simulateStoredAttempt, stageNextStoredDigest } from "./stored-worker";
+import { stageStoredDigest, storedProviderOutcome, simulateStoredAttempt, stageNextStoredDigest, prepareStoredDigestBatch } from "./stored-worker";
 import { freezeDelivery } from "./delivery";
 const id = "00000000-0000-0000-0000-000000000001";
 const token = "00000000-0000-0000-0000-000000000002";
@@ -49,6 +49,69 @@ describe("stored worker simulation without email transport", () => {
     for (const items of [[], [item, item], [item]]) {
       await expect(stageStoredDigest({ rpc }, items, payload, new Date("2026-10-20"))).rejects.toThrow();
     }
+    expect(rpc).not.toHaveBeenCalled();
+  });
+});
+
+describe("bounded digest preparation without delivery", () => {
+  const now = new Date("2026-10-26T12:00:00Z");
+  function selected(messageId: string) {
+    return { message_id: messageId, to: payload.to, items: [{ queueId: token, opportunity: {
+      id: token, title: "Nobreak", agency: null, uf: "AM", estimatedValue: null,
+      deadline: "2026-11-20T12:00:00Z", score: 100, explanation: ["nobreak"],
+    } }] };
+  }
+  function preparingRpc(selection: unknown) {
+    return vi.fn(async (name: string, args: Record<string, unknown>) => {
+      if (name === "recover_email_message_drafts") return ok(0);
+      if (name === "reserve_next_email_digest") return ok(selection);
+      if (name === "freeze_email_message") {
+        const { createHash } = await import("node:crypto");
+        return ok(createHash("sha256").update(args.p_payload_bytes as string).digest("hex"));
+      }
+      throw new Error("UNEXPECTED_RPC:" + name);
+    });
+  }
+  it("prepares at most the requested number without recording any attempt", async () => {
+    const rpc = preparingRpc(selected(id));
+    expect(await prepareStoredDigestBatch({ rpc }, { from: payload.from, limit: 2, now }))
+      .toEqual({ prepared: 2, stopped: "limit" });
+    expect(rpc.mock.calls.map(([name]) => name)).toEqual([
+      "recover_email_message_drafts", "reserve_next_email_digest", "freeze_email_message",
+      "recover_email_message_drafts", "reserve_next_email_digest", "freeze_email_message",
+    ]);
+  });
+  it("stops immediately when there is no eligible work", async () => {
+    const rpc = preparingRpc(null);
+    expect(await prepareStoredDigestBatch({ rpc }, { from: payload.from, limit: 5, now }))
+      .toEqual({ prepared: 0, stopped: "empty" });
+    expect(rpc).toHaveBeenCalledTimes(2);
+  });
+  it("does not retry an ambiguous reservation or expose its error", async () => {
+    const rpc = vi.fn().mockResolvedValueOnce(ok(0)).mockRejectedValueOnce(new Error("recipient@example.invalid"));
+    expect(await prepareStoredDigestBatch({ rpc }, { from: payload.from, limit: 5, now }))
+      .toEqual({ prepared: 0, stopped: "error" });
+    expect(rpc).toHaveBeenCalledTimes(2);
+  });
+  it("preserves the completed count if a later reservation fails", async () => {
+    const rpc = preparingRpc(selected(id));
+    const original = rpc.getMockImplementation()!;
+    let reservations = 0;
+    rpc.mockImplementation(async (name, args) => {
+      if (name === "reserve_next_email_digest" && ++reservations === 2) throw new Error("private");
+      return original(name, args);
+    });
+    expect(await prepareStoredDigestBatch({ rpc }, { from: payload.from, limit: 5, now }))
+      .toEqual({ prepared: 1, stopped: "error" });
+  });
+  it("validates bounds before reserving anything", async () => {
+    const rpc = vi.fn();
+    for (const limit of [0, -1, 6, 1.5, NaN]) {
+      await expect(prepareStoredDigestBatch({ rpc }, { from: payload.from, limit, now }))
+        .rejects.toThrow("EMAIL_DIGEST_BATCH_INPUT_INVALID");
+    }
+    await expect(prepareStoredDigestBatch({ rpc }, { from: "bad\n@example.invalid", limit: 1, now }))
+      .rejects.toThrow("EMAIL_DIGEST_BATCH_INPUT_INVALID");
     expect(rpc).not.toHaveBeenCalled();
   });
 });

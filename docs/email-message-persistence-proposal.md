@@ -1,6 +1,19 @@
 # Persistência das mensagens de e-mail
 
-Status em 20/10/2026: migração versionada, ponte REST e trabalhador simulado implementados na proposta 26, branch `draft/email-message-persistence`. Nenhum envio real está implementado ou habilitado. Nenhum esquema desta proposta foi aplicado permanentemente em projeto hospedado. O trabalhador publicado `prepare-email-alerts` continua preparando a fila.
+Status conferido em 26/10/2026: migração versionada, ponte REST e trabalhador simulado implementados na proposta 26, branch `draft/email-message-persistence`. Nenhum envio real está implementado ou habilitado. A migração já existe no desenvolvimento hospedado; o histórico anterior desta documentação estava desatualizado. O trabalhador publicado `prepare-email-alerts` continua preparando a fila.
+
+## Retomada e homologação em 26/10/2026
+
+- Terminal recuperado; testes executados também no checkout local.
+- Projeto confirmado pelo conector: `edital-certo-dev`, ref `afbuozouupuguvkkuvib`, conta Iramylson segunda conta. Produção não foi alterada nesta retomada.
+- O histórico hospedado registra `20261020204133_email_message_persistence`; o arquivo versionado é `20261020203247_email_message_persistence.sql`. Ambos têm 17.568 bytes e MD5 `ad8e2bf99b281bf0b17e1733f4a09e76`. Não reaplicar o SQL: as estruturas já existem. A reconciliação dos identificadores de histórico continua pendente antes de usar `db push` nesse projeto. Nenhum registro de histórico foi alterado nesta retomada.
+- `supabase/tests/email-message-installed.sql` passou no esquema instalado, em transação com rollback. Usa usuário, organização, oportunidade e fila sintéticos, sem selecionar dados de terceiros. Verifica reserva duplicada, hash, exclusividade, recuperação após expiração, token antigo, conflito terminal, retenção dos itens e permissões/RLS.
+- A consulta independente após o rollback confirmou uma mensagem preexistente preservada, zero tentativas, zero usuários e oportunidades temporários. A mensagem preexistente em estado `ready` não foi enviada, cancelada nem alterada.
+- Advisors de segurança: sem erro novo; tabelas operacionais sem políticas públicas são intencionalmente exclusivas do serviço. O aviso preexistente de proteção contra senhas vazadas permanece fora desta alteração.
+- `prepareStoredDigestBatch` prepara no máximo cinco mensagens (até vinte itens por mensagem), para ao esvaziar a fila ou no primeiro erro e retorna somente contadores. Não reclama tentativas, não simula aceite e não envia mensagens. Falhas ambíguas não provocam nova reserva na mesma execução.
+- 97 testes unitários, TypeScript e lint passaram localmente. O lint conserva um aviso preexistente no coletor PNCP. O novo teste pós-instalação também foi incluído na CI de banco.
+
+Esta etapa confirma o banco instalado e prepara o ciclo limitado. Ainda não instala agendamento para o novo ciclo, não confirma REST hospedado e não implementa operação de resultados incertos ou retenção. Essas pendências impedem considerar o fluxo completo pronto para produção.
 
 ## Fluxo implementado
 
@@ -68,7 +81,7 @@ Não executar esse teste nem a fixture local em produção. A regressão inclui 
 
 ## Pendências antes da publicação
 
-1. Homologar a migração versionada em desenvolvimento hospedado e conferir histórico, tipos e acessos após a aplicação.
+1. Reconciliar o identificador da migração já instalada no desenvolvimento hospedado e validar a ponte REST nesse ambiente. SQL e acessos instalados foram verificados em 26/10/2026.
 2. Definir a operação de mensagens incertas e a retenção/limpeza do histórico. A recuperação automática implementada se limita aos rascunhos sem tentativas.
 3. Ligar o ciclo ao agendador de desenvolvimento, com limites por execução e telemetria sem dados pessoais. O trabalhador publicado ainda não importa o novo ciclo.
 4. Para envio real, implementar adaptador de provedor, timeout, remetente/domínio, descadastro, eventos assinados de entrega/falha e supressão. Revalidar autorização perto da chamada externa e reconciliar resultados incertos.
