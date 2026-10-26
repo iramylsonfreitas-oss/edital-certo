@@ -1,7 +1,7 @@
-import { composeDigest, type DigestOpportunity } from "./digest";
-import type { EmailPayload, ProviderOutcome } from "./delivery";
+import { composeDigest, type DigestOpportunity } from "./digest.ts";
+import type { EmailPayload, ProviderOutcome } from "./delivery.ts";
 import { claimStoredMessage, finishStoredAttempt, stageEmailMessage, validateStoredClaim, freezeReservedMessage, cancelUnattemptedMessage,
-  type EmailMessageRpc, type StoredCompletion, type StoredOutcome } from "./persisted";
+  type EmailMessageRpc, type StoredCompletion, type StoredOutcome } from "./persisted.ts";
 
 export interface DigestQueueItem { queueId: string; opportunity: DigestOpportunity }
 

@@ -15,6 +15,22 @@ Status conferido em 26/10/2026: migração versionada, ponte REST e trabalhador 
 
 Esta etapa confirma o banco instalado e prepara o ciclo limitado. Ainda não instala agendamento para o novo ciclo, não confirma REST hospedado e não implementa operação de resultados incertos ou retenção. Essas pendências impedem considerar o fluxo completo pronto para produção.
 
+## Função de desenvolvimento recuperada em 26/10/2026
+
+A inspeção do projeto identificou `stage-email-messages` v1, já instalada em 20/10/2026, mas ausente da branch. O código foi recuperado pelo conector e incorporado à proposta. Não confundir essa implantação prévia com publicação em produção.
+
+`src/lib/alerts/staging.ts` usa o preparador limitado, com até cinco mensagens por execução e orçamento de 45 segundos verificado entre mensagens. Esse orçamento não interrompe uma chamada REST já iniciada. O remetente `preview@edital-certo.invalid` é exclusivo das prévias: essas mensagens não podem ser usadas em um futuro envio real. Uma mudança para remetente real exigirá cancelar as prévias sem tentativa e gerar novas mensagens com o conteúdo correto.
+
+A função só trabalha no URL fixo de desenvolvimento. Aceita POST e valida `x-ingestion-token` pela RPC existente antes de inserir o registro operacional. A rotina não reclama mensagens, não aceita resultados simulados, não importa transporte e não possui credencial de provedor. Registra contadores e erros genéricos, sem destinatário ou conteúdo do resumo. Não há cron dessa função instalado no desenvolvimento.
+
+Os cinco registros operacionais preexistentes de 20/10 mostram uma mensagem preparada por REST e quatro execuções sem novas mensagens. A consulta atual continua mostrando uma mensagem e zero tentativas. Isso é evidência histórica; não substitui uma nova execução autorizada após qualquer atualização.
+
+`scripts/verify-staging-public.ts` passou contra o desenvolvimento hospedado com chave publicável: as três tabelas e a RPC privada retornaram 401; GET da função retornou 405; POST sem token e com token inválido retornaram 401. Nenhum corpo ou endereço é impresso. O script rejeita URLs fora do projeto de desenvolvimento e não recebe credenciais privilegiadas.
+
+Os 102 testes unitários, TypeScript e lint passaram. A verificação Deno da função também integra o workflow de banco, com versão fixa. O workflow anterior e97cee5 concluiu com sucesso tanto banco/REST/concorrência quanto qualidade e navegador.
+
+Continua pendente a reconciliação do histórico, a nova execução positiva autenticada no desenvolvimento, o agendamento e a operação de resultados incertos. A consulta de nomes no cofre foi recusada pela revisão automática; nenhuma leitura de segredo ou alternativa para obter o token foi usada.
+
 ## Fluxo implementado
 
 1. `recover_email_message_drafts` libera, por execução, no máximo 20 rascunhos sem tentativas abandonados há mais de 15 minutos. Não libera mensagens prontas, tentadas ou incertas.

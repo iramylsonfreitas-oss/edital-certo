@@ -27,6 +27,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - name: Check development staging function with Deno
+        run: npx --yes deno@2.9.6 check --config supabase/functions/stage-email-messages/deno.json supabase/functions/stage-email-messages/index.ts
       - uses: supabase/setup-cli@v1
         with:
           version: 2.121.0

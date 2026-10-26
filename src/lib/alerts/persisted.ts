@@ -1,4 +1,4 @@
-import { freezeDelivery, type EmailPayload } from "./delivery";
+import { freezeDelivery, type EmailPayload } from "./delivery.ts";
 
 // Inject a server-side service-role client. No client, credential or transport is created here.
 export interface EmailMessageRpc {
