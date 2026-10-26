@@ -2,7 +2,19 @@
 
 Status conferido em 26/10/2026: migração versionada, ponte REST e trabalhador simulado implementados na proposta 26, branch `draft/email-message-persistence`. Nenhum envio real está implementado ou habilitado. A migração já existe no desenvolvimento hospedado; o histórico anterior desta documentação estava desatualizado. O trabalhador publicado `prepare-email-alerts` continua preparando a fila.
 
-## Estado atual: reconciliação e agendamento de desenvolvimento
+## Atualização: quarentena e retenção em desenvolvimento
+
+A migração `20261026194430_email_message_operations.sql` acrescenta manutenção interna, restrita ao serviço. Mensagens com concessão expirada e janela/limite encerrado são colocadas em `uncertain` quando existe dúvida sobre o resultado; seus itens não são liberados. Repetições encerradas sem incerteza ficam `failed`. A rotina nunca envia nem tenta entregar mensagens.
+
+Históricos aceitos podem ser removidos após 90 dias, mantendo os itens da fila em `sent` para impedir reenvio. Cancelados sem tentativa e sem vínculo podem ser removidos após 30 dias da criação. Incertos, falhos, ativos e aceites recentes são preservados. O orçamento compartilhado é de até 50 mensagens na rotina diária, com limite máximo de 100 por chamada. Política e limites: `docs/email-message-operations.md`.
+
+Testes SQL com oito cenários sintéticos passaram antes e depois da instalação, com rollback. A chamada sobre os dados existentes retornou zero alterações. A agenda diária de desenvolvimento foi ativada para 03h20 UTC; o comando armazenado no job foi testado manualmente, com registro operacional sem dados pessoais. A primeira execução diária agendada ainda precisa ser conferida. Produção permanece sem alteração.
+
+A CI anterior f05fd5a teve qualidade aprovada, mas a integração falhou numa suposição do runner: o lote vencedor de seletores concorrentes nem sempre contém todos os itens, por causa de `SKIP LOCKED`. O runner foi corrigido para drenar as rodadas restantes dentro do orçamento da fixture e exigir fila esgotada, sem reduzir o teste de exclusividade. A nova CI deve validar a correção.
+
+Os 102 testes unitários e TypeScript passaram localmente. Continuam pendentes a conciliação de resultados incertos com evidência de provedor, anonimização de falhas/incertezas e retenção dos logs gerais, além do provedor/remetente e envio real. A manutenção atual é uma política conservadora, não uma eliminação completa do histórico.
+
+## Estado anterior: reconciliação e agendamento de desenvolvimento
 
 Em 26/10/2026, os 15 identificadores de migração do desenvolvimento foram alinhados aos arquivos da branch. A rotina de prévias está agendada nos minutos 10, 25, 40 e 55 de cada hora. Somente o projeto `afbuozouupuguvkkuvib` foi alterado. Produção e envios permanecem sem alteração.
 

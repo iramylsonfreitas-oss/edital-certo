@@ -16,6 +16,9 @@ for (const table of ["email_messages", "email_message_items", "email_message_att
   await denied(table, "/rest/v1/" + table + "?select=*&limit=0", { headers }, [401, 403]);
 }
 await denied("private_rpc", "/rest/v1/rpc/reserve_next_email_digest", { method: "POST", headers, body: "{}" }, [401, 403]);
+await denied("maintenance_rpc", "/rest/v1/rpc/maintain_email_message_history", {
+  method: "POST", headers, body: '{"p_limit":1}',
+}, [401, 403]);
 await denied("stage_method", "/functions/v1/stage-email-messages", { headers }, [405]);
 await denied("stage_missing_token", "/functions/v1/stage-email-messages", { method: "POST", headers, body: "{}" }, [401]);
 await denied("stage_invalid_token", "/functions/v1/stage-email-messages", {

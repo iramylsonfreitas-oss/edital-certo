@@ -110,7 +110,18 @@ const staged = await Promise.all(Array.from({ length: 4 }, () => stageNextStored
 const nextIds = staged.filter((value) => value !== null);
 assert.equal(nextIds.length, 1);
 assert.equal(await simulateStoredAttempt(admin, nextIds[0]!, { kind: "accepted", id: "simulated-batch" }), "accepted");
+// SKIP LOCKED can leave rows locked by losing selectors out of the winning digest.
+// They must be handled by later batches, rather than assumed to disappear.
+let remainingBatches = 0;
+for (; remainingBatches < fixture.rows.length; remainingBatches++) {
+  const next = await stageNextStoredDigest(admin, payload.from, new Date());
+  if (next === null) break;
+  assert.equal(await simulateStoredAttempt(admin, next, { kind: "accepted", id: "simulated-remainder-" + remainingBatches }), "accepted");
+}
+assert.ok(remainingBatches < fixture.rows.length, "queue did not drain within fixture budget");
 assert.equal(await stageNextStoredDigest(admin, payload.from, new Date()), null);
+assert.equal(sql(`select count(*) from public.email_alert_queue q where q.recipient_user_id=(select recipient_user_id from public.email_messages where id='${id}')
+ and q.status='prepared' and not exists(select 1 from public.email_message_items i where i.queue_id=q.id)`), "0");
 console.log(JSON.stringify({ mode: "disposable_local_only", real_emails_sent: 0, concurrent_reservations: 8,
  concurrent_claims: 12, exclusive_owner: true, rest_access: "anon_and_authenticated_denied",
  restart_recovery: true, stale_token_rejected: true, hash_verified: true, worker_simulation: "passed",

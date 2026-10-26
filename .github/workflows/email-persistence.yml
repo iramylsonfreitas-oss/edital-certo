@@ -45,6 +45,7 @@ jobs:
           supabase init --workdir "$EMAIL_TEST_WORKDIR"
           cp -r supabase/migrations "$EMAIL_TEST_WORKDIR/supabase/"
           find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_persistence.sql' -delete
+          find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_operations.sql' -delete
           supabase start --workdir "$EMAIL_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
       - name: SQL regression with rollback before packaging
         run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-persistence-proposal.sql
@@ -62,11 +63,14 @@ jobs:
             test -n "$proposal_file"
             cp supabase/ops/drafts/email-message-persistence.sql "$proposal_file"
           fi
+          cp supabase/migrations/*_email_message_operations.sql "$EMAIL_TEST_WORKDIR/supabase/migrations/"
           supabase db reset --local --no-seed --workdir "$EMAIL_TEST_WORKDIR"
           supabase migration list --local --workdir "$EMAIL_TEST_WORKDIR"
           psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -c "NOTIFY pgrst, 'reload schema'"
       - name: Verify installed schema with rollback
         run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-installed.sql
+      - name: Verify quarantine and retention with rollback
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-operations.sql
       - name: REST, independent concurrent transactions and stored worker simulation
         run: |
           psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/email-message-local.sql
