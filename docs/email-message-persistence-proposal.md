@@ -2,7 +2,25 @@
 
 Status conferido em 26/10/2026: migração versionada, ponte REST e trabalhador simulado implementados na proposta 26, branch `draft/email-message-persistence`. Nenhum envio real está implementado ou habilitado. A migração já existe no desenvolvimento hospedado; o histórico anterior desta documentação estava desatualizado. O trabalhador publicado `prepare-email-alerts` continua preparando a fila.
 
-## Retomada e homologação em 26/10/2026
+## Estado atual: reconciliação e agendamento de desenvolvimento
+
+Em 26/10/2026, os 15 identificadores de migração do desenvolvimento foram alinhados aos arquivos da branch. A rotina de prévias está agendada nos minutos 10, 25, 40 e 55 de cada hora. Somente o projeto `afbuozouupuguvkkuvib` foi alterado. Produção e envios permanecem sem alteração.
+
+A auditoria identificou 14 registros antigos: onze tinham o mesmo corpo do repositório; três diferiam por formatação da view ou por correções posteriores de classificação/prioridade. Os corpos atuais de `is_ti_tender`, `is_ti_item` e `claim_pncp_item_job` foram conferidos por hash e coincidem com o repositório. A view foi conferida com `security_invoker=true` e `security_barrier=true`.
+
+`supabase/ops/reconcile-development-migration-history.sql` passou primeiro em transação com rollback, depois foi executado e conferido via listagem independente. Ajustou apenas identificadores, preservou os SQLs históricos originais e registrou a configuração de segurança da view que já estava instalada. Não reaplicou DDL nem alterou dados de usuários. O manifesto `docs/development-migration-history-audit.json` guarda os identificadores e hashes anteriores. Essa reconciliação não equivale a um diff completo de esquema nem autoriza `db push` em produção.
+
+O conector administrativo já autorizado foi utilizado porque não há credenciais de conexão direta configuradas para o CLI. A primeira simulação recebeu erro interno do conector; a consulta confirmou ausência de alterações e a segunda simulação passou. Nenhum segredo de conexão foi solicitado.
+
+`supabase/ops/schedule-email-message-staging.sql` também passou por rollback antes da ativação. Cria ou atualiza um único job nomeado, com URL fixo de desenvolvimento e token lido internamente no servidor. Não cria recurso pago ou credencial nova. A função conserva o limite de cinco mensagens e o orçamento verificado de 45 segundos entre mensagens. A agenda gera até 96 chamadas por dia e usa as cotas da infraestrutura existente.
+
+`supabase/ops/check-email-message-staging.sql` permite verificar, sem dados pessoais, a agenda, o resultado do cron, o registro operacional da função e os contadores. Sucesso do cron sozinho comprova apenas enfileiramento HTTP; o resultado da função precisa ser conferido no registro operacional.
+
+A primeira execução automática foi confirmada em 26/10 às 15h25 no fuso UTC-4 (19h25 UTC): cron concluído, função com `status=succeeded`, `mode=stage_only`, `sends_email=false`, zero novas mensagens por fila sem itens elegíveis. A mensagem preexistente foi preservada e o projeto continua com zero tentativas de envio. O primeiro ciclo não substitui o acompanhamento continuado da operação.
+
+As seções seguintes mantêm a sequência histórica dos testes. As pendências atuais são operação de mensagens incertas, retenção, acompanhamento da rotina e integração futura de provedor/remetente. A proposta permanece em rascunho.
+
+## Registro inicial de retomada em 26/10/2026 (antes da reconciliação)
 
 - Terminal recuperado; testes executados também no checkout local.
 - Projeto confirmado pelo conector: `edital-certo-dev`, ref `afbuozouupuguvkkuvib`, conta Iramylson segunda conta. Produção não foi alterada nesta retomada.
@@ -97,9 +115,9 @@ Não executar esse teste nem a fixture local em produção. A regressão inclui 
 
 ## Pendências antes da publicação
 
-1. Reconciliar o identificador da migração já instalada no desenvolvimento hospedado e validar a ponte REST nesse ambiente. SQL e acessos instalados foram verificados em 26/10/2026.
+1. Concluído em desenvolvimento: validação SQL/REST, reconciliação dos 15 identificadores e agendamento de prévias. Ver registro atual no início deste documento.
 2. Definir a operação de mensagens incertas e a retenção/limpeza do histórico. A recuperação automática implementada se limita aos rascunhos sem tentativas.
-3. Ligar o ciclo ao agendador de desenvolvimento, com limites por execução e telemetria sem dados pessoais. O trabalhador publicado ainda não importa o novo ciclo.
+3. Acompanhar as execuções do ciclo de desenvolvimento. O agendamento de prévias foi ativado; envio e simulação de aceite continuam ausentes dessa rotina.
 4. Para envio real, implementar adaptador de provedor, timeout, remetente/domínio, descadastro, eventos assinados de entrega/falha e supressão. Revalidar autorização perto da chamada externa e reconciliar resultados incertos.
 5. Publicar somente após homologação. O aceite simulado nunca deve ser aplicado à fila real de clientes.
 
