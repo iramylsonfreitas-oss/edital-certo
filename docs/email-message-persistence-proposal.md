@@ -29,7 +29,7 @@ Os cinco registros operacionais preexistentes de 20/10 mostram uma mensagem prep
 
 Os 102 testes unitários, TypeScript e lint passaram. A verificação Deno da função também integra o workflow de banco, com versão fixa. O workflow anterior e97cee5 concluiu com sucesso tanto banco/REST/concorrência quanto qualidade e navegador.
 
-Continua pendente a reconciliação do histórico, a nova execução positiva autenticada no desenvolvimento, o agendamento e a operação de resultados incertos. A consulta de nomes no cofre foi recusada pela revisão automática; nenhuma leitura de segredo ou alternativa para obter o token foi usada.
+Continuam pendentes a reconciliação do histórico, o agendamento e a operação de resultados incertos. A nova execução positiva autenticada foi concluída após autorização específica do usuário, conforme o registro abaixo.
 
 ## Fluxo implementado
 
@@ -104,3 +104,18 @@ Não executar esse teste nem a fixture local em produção. A regressão inclui 
 5. Publicar somente após homologação. O aceite simulado nunca deve ser aplicado à fila real de clientes.
 
 A proposta permanece em rascunho e não foi mesclada em `main`. A produção continua oferecendo preparação de oportunidades e prévia de e-mail.
+
+
+## Validação autenticada da v2 em 26/10/2026
+
+O usuário autorizou o uso do token operacional existente, condicionado a não contratar recursos ou serviços pagos. A validação usou apenas o projeto de desenvolvimento já existente. Não houve criação de recurso, contratação, ativação de cobrança, cron novo ou envio real.
+
+O token foi utilizado dentro do banco, exclusivamente no cabeçalho da chamada para o URL fixo de desenvolvimento; seu valor não foi retornado, impresso, gravado no repositório nem enviado para outro destino. Essa autorização foi posterior à recusa inicial da revisão automática.
+
+- Requisição 76: HTTP 200, `stage_only`, `sends_email=false`, zero mensagens novas por ausência de fila elegível.
+- Foi criada uma conta sintética com endereço `example.invalid`, organização, perfil, alerta e uma oportunidade fictícia. Nenhuma preferência de usuário real foi alterada.
+- Requisição 77: HTTP 200, uma mensagem preparada. Banco confirmou estado `ready`, um item associado, hash SHA-256 válido e zero tentativas.
+- Requisição 78: HTTP 200, zero mensagens novas. A conta sintética continuou com exatamente uma mensagem e zero tentativas: repetição sem duplicidade.
+- A limpeza conferiu identidade e ausência de tentativas antes de remover apenas os dados sintéticos. Consulta independente confirmou zero conta, organização e oportunidade temporárias, uma mensagem preexistente preservada e zero tentativas no projeto.
+
+A API hospedada da v2 está validada com autenticação e gravação real de prévia. O ciclo não está agendado e a proposta permanece em rascunho; produção não foi alterada. Testes de código do commit 6b051dc continuam aprovados: 102 unitários, tipos, lint, build, navegador, Deno, banco/REST local e concorrência. Esta atualização altera somente a documentação.
