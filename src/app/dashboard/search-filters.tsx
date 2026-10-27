@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import Form from "next/form";
+import Link from "next/link";
 
 export type DashboardFilterValues = {
   query: string;
@@ -19,7 +21,7 @@ export function SearchFilters({ values, activeCount }: { values: DashboardFilter
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
-    <form action="/dashboard" className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800" method="get">
+    <Form action="/dashboard" className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
       <label className="block text-sm font-semibold" htmlFor="opportunity-search">Buscar oportunidades</label>
       <input autoComplete="off" className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-slate-900" defaultValue={values.query} id="opportunity-search" maxLength={200} name="q" placeholder="notebook, suporte técnico..." />
       <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
@@ -65,8 +67,8 @@ export function SearchFilters({ values, activeCount }: { values: DashboardFilter
           <input defaultChecked={values.showClosed} name="showClosed" type="checkbox" value="true" />
           Mostrar encerradas
         </label>
-        <a className="text-sm font-semibold text-blue-700 underline" href="/dashboard">Limpar filtros</a>
+        <Link className="text-sm font-semibold text-blue-700 underline" href="/dashboard">Limpar filtros</Link>
       </div>
-    </form>
+    </Form>
   );
 }

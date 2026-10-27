@@ -58,7 +58,8 @@ function isPncpRecord(value: unknown): value is PublicPncpRecord {
 export async function fetchPublicPncpCatalog(): Promise<PublicPncpCatalog> {
   const response = await fetch(catalogUrl, {
     headers: { accept: "application/json" },
-    next: { revalidate: 900 }
+    cache: "no-store",
+    signal: AbortSignal.timeout(5000)
   });
   if (!response.ok) throw new Error(`O catálogo público respondeu HTTP ${response.status}.`);
 
@@ -75,7 +76,19 @@ export async function fetchPublicPncpCatalog(): Promise<PublicPncpCatalog> {
     atualizadoEm: typeof payload.atualizadoEm === "string" ? payload.atualizadoEm : null,
     status,
     mensagem: typeof payload.mensagem === "string" ? payload.mensagem : null,
-    registros: payload.registros.filter(isPncpRecord)
+    registros: payload.registros.filter(isPncpRecord).map(compactPublicRecord)
+  };
+}
+
+// Drop unused upstream fields before the framework caches the result. The raw response exceeds 2 MB.
+function compactPublicRecord(record: PublicPncpRecord): PublicPncpRecord {
+  return {
+    numeroControlePNCP: record.numeroControlePNCP, objetoCompra: record.objetoCompra,
+    modalidadeId: record.modalidadeId, modalidadeNome: record.modalidadeNome,
+    valorTotalEstimado: record.valorTotalEstimado, dataEncerramentoProposta: record.dataEncerramentoProposta,
+    linkSistemaOrigem: record.linkSistemaOrigem,
+    orgaoEntidade: record.orgaoEntidade ? { razaoSocial: record.orgaoEntidade.razaoSocial, esferaId: record.orgaoEntidade.esferaId } : null,
+    unidadeOrgao: record.unidadeOrgao ? { ufSigla: record.unidadeOrgao.ufSigla, municipioNome: record.unidadeOrgao.municipioNome } : null
   };
 }
 

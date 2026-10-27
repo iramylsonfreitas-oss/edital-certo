@@ -1,0 +1,49 @@
+name: Authenticated navigation integration
+on:
+  pull_request:
+    paths:
+      - 'src/app/**'
+      - 'src/components/**'
+      - 'src/lib/pncp/**'
+      - 'scripts/setup-navigation-test.ts'
+      - 'tests/e2e/navigation.spec.ts'
+      - '.github/workflows/navigation.yml'
+      - 'vercel.json'
+permissions:
+  contents: read
+jobs:
+  navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      NAVIGATION_TEST_API_URL: http://127.0.0.1:54321
+      NAVIGATION_TEST_DB_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      NAVIGATION_TEST_DISPOSABLE: 'true'
+      NAVIGATION_TEST_WORKDIR: /tmp/edital-navigation-ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.121.0
+      - name: Start disposable stack
+        run: |
+          supabase init --help
+          supabase start --help
+          mkdir -p "$NAVIGATION_TEST_WORKDIR"
+          supabase init --workdir "$NAVIGATION_TEST_WORKDIR"
+          cp -r supabase/migrations "$NAVIGATION_TEST_WORKDIR/supabase/"
+          supabase start --workdir "$NAVIGATION_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
+      - run: node --import=tsx scripts/setup-navigation-test.ts
+      - run: npx playwright install --with-deps chromium
+      - run: npm run build
+      - run: npm run test:e2e -- tests/e2e/navigation.spec.ts
+      - name: Print disposable browser failure context
+        if: failure()
+        run: find test-results -name error-context.md -exec cat {} \;
+      - if: always()
+        run: supabase stop --no-backup --workdir "$NAVIGATION_TEST_WORKDIR"
