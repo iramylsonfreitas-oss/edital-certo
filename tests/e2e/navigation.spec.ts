@@ -25,6 +25,9 @@ test("manager blocks and reactivates an existing evaluation session",async({page
    await expect(evaluator.getByRole("heading",{name:"Oportunidades",exact:true})).toBeVisible({timeout:30000});
    await evaluator.goto("/settings/access");
    await expect(evaluator.getByText("Nenhum acesso de avaliação sob sua gestão.",{exact:true})).toBeVisible();
+   await page.reload();
+   await expect(page.getByText("Último uso registrado",{exact:true}).locator("..")).toContainText(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
+   await expect(page.getByText("Último login",{exact:true}).locator("..")).toContainText(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
    const api=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
    const signed=await api.auth.signInWithPassword({email:"navigation-evaluator@example.invalid",password:"local-navigation-only-6419"});
    expect(signed.error).toBeNull();
