@@ -5,6 +5,10 @@ on:
       - 'src/app/**'
       - 'src/components/**'
       - 'src/lib/pncp/**'
+      - 'src/lib/segments/**'
+      - 'supabase/migrations/**'
+      - 'supabase/tests/**'
+      - 'fixtures/pncp/health-review-sample.json'
       - 'scripts/setup-navigation-test.ts'
       - 'tests/e2e/navigation.spec.ts'
       - '.github/workflows/navigation.yml'
@@ -39,6 +43,8 @@ jobs:
           cp -r supabase/migrations "$NAVIGATION_TEST_WORKDIR/supabase/"
           supabase start --workdir "$NAVIGATION_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
       - run: node --import=tsx scripts/setup-navigation-test.ts
+      - name: Verify health SQL classification
+        run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/health-classification.sql
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e -- tests/e2e/navigation.spec.ts

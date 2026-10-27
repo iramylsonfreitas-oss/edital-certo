@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { healthCategories, segmentKey, segmentLabels } from "@/lib/segments/health";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { filterPublicPncpRecords, parsePncpDate, type PublicPncpRecord } from "@/lib/pncp/public-catalog";
@@ -23,6 +24,7 @@ type DatabaseTender = {
   object: string;
   items_search_text: string | null;
   ti_match_source: string;
+  health_categories: string[];
   uf: string | null;
   municipality_name: string | null;
   municipality_code: string | null;
@@ -51,7 +53,7 @@ function parseOptionalNumber(value: string | undefined): number | null {
 
 function pageHref(params: Record<string, string | string[] | undefined>, page: number): string {
   const search = new URLSearchParams();
-  for (const key of ["q", "uf", "modality", "sphere", "minimumValue", "maximumValue", "closesBefore", "sort", "view", "showClosed"]) {
+  for (const key of ["segment", "healthCategory", "q", "uf", "modality", "sphere", "minimumValue", "maximumValue", "closesBefore", "sort", "view", "showClosed"]) {
     const value = parameter(params[key]);
     if (value) search.set(key, value);
   }
@@ -123,6 +125,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   if (!organizations?.length) redirect("/onboarding");
   const organizationId = organizations[0].id;
 
+  const segment = segmentKey(parameter(params.segment));
+  const healthCategory = segment === "health" && healthCategories.some(category => category.key === parameter(params.healthCategory)) ? parameter(params.healthCategory)! : null;
   const queryValue = parameter(params.q)?.trim().slice(0, 200) || null;
   const ufValue = parameter(params.uf)?.trim().toUpperCase() ?? "";
   const uf = /^[A-Z]{2}$/.test(ufValue) ? ufValue : null;
@@ -146,7 +150,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const urgentLimit = new Date(new Date().getTime() + 3 * 86_400_000).toISOString();
 
   const [{ data: rawSearchRows, error: searchError }, { data: latestRun }, { count: sampleCount }, { count: favoriteCount }, { data: rawProfiles }, { data: urgentRows }] = await Promise.all([
-    supabase.rpc("search_tenders_for_list", {
+    supabase.rpc("search_tenders_by_segment", {
+      p_segment: segment, p_health_category: healthCategory,
       p_query: queryValue,
       p_uf: uf,
       p_modality_code: modality,
@@ -168,10 +173,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    supabase.from("tenders").select("id", { count: "exact", head: true }).eq("is_ti", true),
-    supabase.from("tender_feedback").select("tender_id", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite"),
-    supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true),
-    supabase.rpc("search_tenders_for_list", {
+    segment === "health"
+      ? supabase.from("tenders").select("id", { count: "exact", head: true }).not("health_categories", "eq", "{}")
+      : supabase.from("tenders").select("id", { count: "exact", head: true }).eq("is_ti", true),
+    segment === "health"
+      ? supabase.from("tender_feedback").select("tender_id,tenders!inner(health_categories)", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite").not("tenders.health_categories", "eq", "{}")
+      : supabase.from("tender_feedback").select("tender_id,tenders!inner(is_ti)", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite").eq("tenders.is_ti", true),
+    supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true).eq("segment_key", segment),
+    supabase.rpc("search_tenders_by_segment", {
+      p_segment: segment, p_health_category: healthCategory,
       p_query: queryValue, p_uf: uf, p_modality_code: modality, p_minimum_value: minimumValue, p_maximum_value: maximumValue,
       p_closes_before: urgentLimit, p_sort: "deadline", p_page: 1, p_page_size: 1, p_organization_id: organizationId,
       p_list_mode: view, p_sphere: sphere, p_show_closed: false
@@ -187,7 +197,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const [{ data: rawTenderRows }, { data: feedbackRows }, { data: pipelineRows }] = tenderIds.length
     ? await Promise.all([
       supabase.from("tenders")
-        .select("id,title,object,items_search_text,ti_match_source,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
+        .select("id,title,object,items_search_text,ti_match_source,health_categories,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
         .in("id", tenderIds),
       supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", tenderIds),
       supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", tenderIds)
@@ -200,7 +210,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const pipelineTenderIds = new Set((pipelineRows ?? []).map((item) => item.tender_id));
 
   let catalog = null;
-  if (view === "all" && (searchError || databaseTenders.length === 0)) {
+  if (segment === "it" && view === "all" && (searchError || databaseTenders.length === 0)) {
     try {
       catalog = await fetchCachedPublicPncpCatalog();
     } catch {
@@ -227,9 +237,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const publicCount = usePublicCatalog ? filteredPublicRecords.length : 0;
   const totalCount = usePublicCatalog ? publicCount : (searchRows[0]?.total_count ?? 0);
   const pageCount = usePublicCatalog ? publicPageCount : Math.ceil(Number(totalCount) / pageSize);
-  const activeFilterCount = [uf, modality, sphere, minimumValue, maximumValue, closesBefore, view !== "all" ? view : null, showClosed ? "closed" : null].filter((item) => item !== null).length;
+  const activeFilterCount = [healthCategory, uf, modality, sphere, minimumValue, maximumValue, closesBefore, view !== "all" ? view : null, showClosed ? "closed" : null].filter((item) => item !== null).length;
   const filterValues = {
-    query: queryValue ?? "", uf: uf ?? "", modality: modality ?? "", sphere: sphere ?? "",
+    segment, healthCategory: healthCategory ?? "", query: queryValue ?? "", uf: uf ?? "", modality: modality ?? "", sphere: sphere ?? "",
     minimumValue: minimumValue == null ? "" : String(minimumValue), maximumValue: maximumValue == null ? "" : String(maximumValue),
     closesBefore: closesBeforeValue ?? "", sort, view, showClosed
   };
@@ -254,6 +264,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <Link href="/settings/privacy">Privacidade</Link>
         </nav>
       </header>
+      <p className="mt-4 text-sm font-semibold">Segmento: {segmentLabels[segment]}{segment === "health" ? " · Medicamentos, materiais hospitalares e equipamentos médicos" : ""}</p>
       <p className="mt-5 text-sm text-slate-600 dark:text-slate-300">Conectado como {authData.user.email ?? "usuário"}.</p>
       <aside aria-label="Status da fonte PNCP" className="mt-5 rounded-xl border border-slate-200 p-4 text-sm dark:border-slate-700">
         <strong>Fonte PNCP: </strong>
@@ -265,12 +276,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               ? "Catálogo salvo disponível. Não foi possível consultar o status da última coleta agora."
               : "Catálogo PNCP indisponível no momento"}
       </aside>
+      {searchError ? <p role="alert" className="mt-4 rounded-xl bg-amber-50 p-4 text-amber-900">Não foi possível consultar as oportunidades deste segmento agora. Tente novamente.</p> : null}
       {parameter(params.notice) === "saved" ? <p aria-live="polite" className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-800">Alteração salva.</p> : null}
       {parameter(params.notice) === "save-error" || parameter(params.notice) === "invalid-action" ? <p role="alert" className="mt-4 rounded-lg bg-rose-50 p-3 text-sm text-rose-800">Não foi possível concluir essa ação. Atualize a página e tente novamente.</p> : null}
 
       <section aria-label="Resumo das oportunidades" className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "Oportunidades de TI no catálogo", value: (sampleCount ?? catalog?.registros.length ?? 0).toLocaleString("pt-BR") },
+          { label: `Oportunidades de ${segment === "health" ? "Saúde" : "TI"} no catálogo`, value: (sampleCount ?? catalog?.registros.length ?? 0).toLocaleString("pt-BR") },
           { label: "Resultados dos filtros", value: Number(totalCount).toLocaleString("pt-BR") },
           { label: "Encerram em até 3 dias", value: Number(urgentCount).toLocaleString("pt-BR") },
           { label: "Favoritas", value: (favoriteCount ?? 0).toLocaleString("pt-BR") }
@@ -341,7 +353,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
                 <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {tender.ti_match_source === "items" ? <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-950 dark:text-blue-200">TI identificada nos itens</span> : null}
+                  {segment === "health" ? healthCategories.filter(category => tender.health_categories?.includes(category.key)).map(category => <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900" key={category.key}>{category.name}</span>) : null}
+                  {segment === "it" && tender.ti_match_source === "items" ? <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-950 dark:text-blue-200">TI identificada nos itens</span> : null}
                   {bestMatch ? <span className={`rounded-full px-3 py-1 text-xs font-bold ${scoreStyle(bestMatch.score)}`}>{bestMatch.score >= 80 ? "Alta" : bestMatch.score >= 50 ? "Média" : "Baixa"} aderência · {bestMatch.score}/100</span> : null}
                   {deadline ? <span className={`rounded-full px-3 py-1 text-xs font-semibold ${deadline.style}`}>{deadline.text}</span> : null}
                 </div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { segmentLabels, segmentKey } from "@/lib/segments/health";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { AppNavigation } from "@/components/app-navigation";
@@ -25,7 +26,7 @@ export default async function ProfilesPage() {
             <li className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" key={profile.id}>
               <h2 className="font-semibold">{profile.name}</h2>
               <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                Segmento: {profile.segment_key} · UFs: {profile.ufs.length ? profile.ufs.join(", ") : "Brasil"}
+                Segmento: {segmentLabels[segmentKey(profile.segment_key)]} · UFs: {profile.ufs.length ? profile.ufs.join(", ") : "Brasil"}
               </p>
               <div className="mt-4 flex gap-4 text-sm font-semibold text-blue-700">
                 <Link href={`/profiles/new?edit=${profile.id}`}>Editar</Link>

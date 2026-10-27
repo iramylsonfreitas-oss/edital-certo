@@ -56,3 +56,33 @@ test("pagination preserves the document, order and complete result set", async (
  await expect(page.getByRole("heading", { level: 2 }).first()).toHaveText(firstTitle);
  expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("pagination-document");
 });
+
+test("health segment keeps scope across categories, pagination, search and clear", async ({ page }) => {
+ await page.setViewportSize({ width: 360, height: 740 });
+ await login(page);
+ await page.getByRole("combobox",{name:"Segmento", exact:true}).selectOption("health");
+ await page.getByRole("button", {name:"Buscar",exact:true}).click();
+ await expect(page.getByText(/54 oportunidade\(s\) encontradas/)).toBeVisible();
+ await expect(page.getByRole("heading", {level:2})).toHaveCount(50);
+ await expect(page.getByRole("heading", {name:"Nobreak de teste de navegação",exact:true})).toHaveCount(0);
+ await page.getByRole("link", {name:"Próxima →",exact:true}).click();
+ await expect(page.getByText(/página 2 de 2/)).toBeVisible();
+ await expect(page).toHaveURL(/segment=health/);
+ await expect(page.getByRole("heading", {level:2})).toHaveCount(4);
+ await page.getByRole("combobox",{name:"Área de saúde", exact:true}).selectOption("equipment");
+ await page.getByRole("button", {name:"Buscar",exact:true}).click();
+ await expect(page.getByText(/1 oportunidade\(s\) encontradas/)).toBeVisible();
+ await expect(page.getByRole("heading", {name:"Equipamentos médicos de teste de navegação",exact:true})).toBeVisible();
+ await page.getByRole("button", {name:/Filtros/}).click();
+ await page.getByRole("link", {name:"Limpar filtros",exact:true}).click();
+ await expect(page.getByText(/54 oportunidade\(s\) encontradas/)).toBeVisible();
+ await expect(page.getByRole("combobox",{name:"Segmento",exact:true})).toHaveValue("health");
+ await page.getByLabel("Buscar oportunidades",{exact:true}).fill("seringas");
+ await page.getByRole("button", {name:"Buscar",exact:true}).click();
+ await expect(page.getByText(/1 oportunidade\(s\) encontradas/)).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Seringas de teste de navegação",exact:true})).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+ await page.goto("/profiles/new");
+ await page.getByRole("combobox",{name:"Segmento",exact:true}).selectOption("health");
+ await expect(page.getByRole("combobox",{name:"Segmento",exact:true})).toHaveValue("health");
+});
