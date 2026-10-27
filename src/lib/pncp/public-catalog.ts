@@ -1,3 +1,5 @@
+import { refineTiObject } from "@/lib/segments/ti-refinements";
+
 export interface PublicPncpRecord {
   numeroControlePNCP: string;
   objetoCompra: string;
@@ -123,11 +125,12 @@ export function filterPublicPncpRecords(
   const closeLimit = filters.closesBefore ? new Date(`${filters.closesBefore}T23:59:59.999-03:00`) : null;
 
   const filtered = records.filter((record) => {
+    if (refineTiObject(record.objetoCompra) === null) return false;
     const objectText = normalizeText(record.objetoCompra);
     const unit = isRecord(record.unidadeOrgao) ? record.unidadeOrgao : null;
     const uf = typeof unit?.ufSigla === "string" ? unit.ufSigla.toUpperCase() : null;
     const modalityCode = record.modalidadeId == null ? null : String(record.modalidadeId);
-    const value = typeof record.valorTotalEstimado === "number" ? record.valorTotalEstimado : null;
+    const value = typeof record.valorTotalEstimado === "number" && record.valorTotalEstimado > 0 ? record.valorTotalEstimado : null;
     const closeDate = parsePncpDate(record.dataEncerramentoProposta);
     const sphere = typeof record.orgaoEntidade?.esferaId === "string" ? record.orgaoEntidade.esferaId : null;
 

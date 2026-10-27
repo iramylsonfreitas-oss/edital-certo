@@ -57,6 +57,30 @@ test("search and clear filters preserve the document and account session",async(
  await expect(page.getByLabel("Buscar oportunidades",{exact:true})).toHaveValue("");
  expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("same-document");
 });
+
+test("panel separates TI and health and agrees with the unfiltered opportunity list", async({page})=>{
+ await login(page);
+ await page.goto("/panel");
+ await expect(page.getByText("53 oportunidades abertas neste segmento", {exact:true})).toBeVisible();
+ await page.getByRole("navigation", {name:"Segmento do painel",exact:true}).getByRole("link",{name:"Saúde",exact:true}).click();
+ await expect(page.getByText("54 oportunidades abertas neste segmento", {exact:true})).toBeVisible();
+ await page.getByRole("link",{name:"Ver oportunidades",exact:true}).click();
+ await expect(page.getByText(/54 oportunidade\(s\) encontradas/)).toBeVisible();
+});
+
+test("detail follows a tender and blue links retain white text",async({page})=>{
+ await login(page);
+ await page.getByLabel("Buscar oportunidades",{exact:true}).fill("software");
+ await page.getByRole("button",{name:"Buscar",exact:true}).click();
+ await page.getByRole("link",{name:"Software de teste de navegação",exact:true}).click();
+ const actions=page.getByRole("region",{name:"Ações da oportunidade",exact:true});
+ await actions.getByRole("button",{name:"Acompanhar",exact:true}).click();
+ const link=actions.getByRole("link",{name:"Abrir no pipeline",exact:true});
+ await expect(link).toBeVisible();
+ await expect(link).toHaveCSS("color","rgb(255, 255, 255)");
+ await page.emulateMedia({colorScheme:"dark"});
+ await expect(link).toHaveCSS("color","rgb(255, 255, 255)");
+});
 test("mobile page switches keep the session and isolate organization data",async({page})=>{
  await page.setViewportSize({width:360,height:740});
  await login(page);

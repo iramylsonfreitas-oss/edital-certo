@@ -61,6 +61,7 @@ begin
     raise exception 'Blocked account can still read data';
   end if;
   if exists(select 1 from public.search_tenders_by_segment(p_segment=>'it',p_page_size=>1)) then raise exception 'Blocked account can query catalog RPC'; end if;
+  if exists(select 1 from public.tender_it_item_summary(array['e9a5ad63-c82b-4cae-a283-72f7b5d33e05'::uuid])) then raise exception 'Blocked account can query item value summary'; end if;
   begin
     perform public.set_evaluator_access('e9a5ad63-c82b-4cae-a283-72f7b5d33e02',true);
     raise exception 'Blocked account can reactivate itself';

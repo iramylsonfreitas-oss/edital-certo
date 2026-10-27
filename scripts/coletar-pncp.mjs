@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 const SCRIPT_DIRECTORY = dirname(fileURLToPath(import.meta.url));
 const PROJECT_DIRECTORY = resolve(SCRIPT_DIRECTORY, '..');
+const TI_REFINEMENTS = JSON.parse(await readFile(resolve(PROJECT_DIRECTORY, 'src/lib/segments/ti-refinements.json'), 'utf8'));
+const REVIEWED_TI_CASES = JSON.parse(await readFile(resolve(PROJECT_DIRECTORY, 'fixtures/pncp/ti-review-regressions.json'), 'utf8'));
 const DATA_FILE = resolve(PROJECT_DIRECTORY, 'data/dados.json');
 const API_URL = 'https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao';
 const PAGE_SIZE = 50;
@@ -70,6 +72,7 @@ const EXCLUDED_TERMS = [
 ];
 const SERVER_PUBLIC_PHRASES = ['servidor público', 'servidores públicos'];
 const TI_CLASSIFICATION_TEST_CASES = [
+  ...REVIEWED_TI_CASES,
   { expected: true, text: 'Registro de preços para aquisição de Discos Rígidos – HDs para serem utilizados no Storage Server, destinado ao armazenamento de dados dos sistemas corporativos e no Sistema de Monitoramento e Vigilância.' },
   { expected: true, text: 'Aquisição de monitor de vídeo de 24 polegadas' },
   { expected: true, text: 'Aquisição de monitores de vídeo para estações de trabalho' },
@@ -199,7 +202,8 @@ function hasStrongTiEvidence(text) {
   const hasPrinterMaintenance = /\bimpressoras?\b/.test(text) && /\bmanutenc[aã]o\b/.test(text);
   const hasQualifiedManagementSystem = keywordMatchesText(text, 'sistema de gestão')
     && /\b(web|nuvem|software|informatizado)\b/.test(text);
-  return hasSpecificStrongPhrase
+  return new RegExp(TI_REFINEMENTS.specializedIt).test(text)
+    || hasSpecificStrongPhrase
     || hasPrinterServicePhrase
     || hasPrinterMaintenance
     || hasServerAsStrongEvidence(text)
@@ -207,7 +211,14 @@ function hasStrongTiEvidence(text) {
 }
 
 function hasTiKeyword(record) {
-  const text = normalizeText(record?.objetoCompra);
+  let text = normalizeText(record?.objetoCompra);
+  const matches = (pattern) => new RegExp(pattern.replaceAll('[[:space:]]', '\\s')).test(text);
+  if (matches(TI_REFINEMENTS.fleetSupply) && !matches(TI_REFINEMENTS.softwareProcurement)) return false;
+  if (matches(TI_REFINEMENTS.buildingWorks) && !matches(TI_REFINEMENTS.infrastructure)) return false;
+  if (matches(TI_REFINEMENTS.cartridge) && !matches(TI_REFINEMENTS.printing) && !matches(TI_REFINEMENTS.infrastructure)) return false;
+  if (matches(TI_REFINEMENTS.pointCloud) && !matches(TI_REFINEMENTS.infrastructure)) return false;
+  if (!matches(TI_REFINEMENTS.printing)) text = text.replace(new RegExp(TI_REFINEMENTS.cartridge, 'g'), ' ');
+  text = text.replace(new RegExp(TI_REFINEMENTS.pointCloud.replaceAll('[[:space:]]', '\\s'), 'g'), ' ');
   if (hasAbsoluteExcludedTerm(text)) return false;
   if (hasStrongTiEvidence(text)) return true;
   if (hasExcludedTerm(text)) return false;

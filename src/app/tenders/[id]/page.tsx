@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { tenderTitle, tenderValue } from "@/lib/pncp/presentation";
+import { TiItemValue, type TiItemSummary } from "@/components/ti-item-value";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -19,14 +21,16 @@ export default async function TenderDetailPage({ params, searchParams }: { param
   const query = await searchParams;
   const requestedPage = typeof query.itemsPage === "string" ? Number(query.itemsPage) : 1;
   const itemsPage = Number.isSafeInteger(requestedPage) && requestedPage >= 1 && requestedPage <= 1000 ? requestedPage : 1;
-  const [{ data: tender, error }, { data: organizations }, { data: feedback }] = await Promise.all([
+  const [{ data: tender, error }, { data: organizations }, { data: feedback }, { data: pipeline }, { data: itemSummaries }] = await Promise.all([
     supabase
       .from("tenders")
       .select("id,source_key,source_id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,items_complete,items_checked_at,ti_match_source,agencies(name,cnpj,sphere)")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("organizations").select("id,name").order("created_at"),
-    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id)
+    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id),
+    supabase.from("pipeline_cards").select("organization_id").eq("tender_id", id).is("archived_at", null),
+    supabase.rpc("tender_it_item_summary", { p_tender_ids: [id] })
   ]);
 
   if (error || !tender) notFound();
@@ -50,14 +54,15 @@ export default async function TenderDetailPage({ params, searchParams }: { param
           <span aria-hidden="true">·</span>
           <span>{tender.status ?? "Situação não informada"}</span>
         </div>
-        <h1 className="mt-4 text-3xl font-bold">{tender.title}</h1>
+        <h1 className="mt-4 text-3xl font-bold">{tenderTitle(tender.object || tender.title, 512)}</h1>
         <p className="mt-5 whitespace-pre-wrap text-slate-700 dark:text-slate-200">{tender.object}</p>
         {tender.ti_match_source === "items" ? <p className="mt-3 text-sm font-medium text-blue-700 dark:text-blue-300">Oportunidade de TI identificada pela descrição dos itens.</p> : null}
+        <TiItemValue summary={(itemSummaries as TiItemSummary[] | null)?.[0]} />
         <dl className="mt-8 grid gap-5 sm:grid-cols-2">
           <div><dt className="text-sm text-slate-500">Órgão</dt><dd className="mt-1 font-medium">{agency?.name ?? "Não informado"}</dd></div>
           <div><dt className="text-sm text-slate-500">CNPJ do órgão</dt><dd className="mt-1 font-medium">{agency?.cnpj ?? "Não informado"}</dd></div>
           <div><dt className="text-sm text-slate-500">Local</dt><dd className="mt-1 font-medium">{[tender.municipality_name, tender.uf].filter(Boolean).join(" / ") || "Não informado"}</dd></div>
-          <div><dt className="text-sm text-slate-500">Valor estimado</dt><dd className="mt-1 font-medium">{tender.estimated_value == null ? "Não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</dd></div>
+          <div><dt className="text-sm text-slate-500">Valor estimado</dt><dd className="mt-1 font-medium">{tenderValue(tender.estimated_value)}</dd></div>
           <div><dt className="text-sm text-slate-500">Abertura de propostas</dt><dd className="mt-1 font-medium">{date(tender.proposal_open_at)}</dd></div>
           <div><dt className="text-sm text-slate-500">Encerramento de propostas</dt><dd className="mt-1 font-medium">{date(tender.proposal_close_at)}</dd></div>
           <div><dt className="text-sm text-slate-500">Publicação no PNCP</dt><dd className="mt-1 font-medium">{date(tender.published_at)}</dd></div>
@@ -82,7 +87,7 @@ export default async function TenderDetailPage({ params, searchParams }: { param
         ) : (
           <p className="mt-8 text-sm text-slate-500">O registro não informou um link direto para a fonte oficial.</p>
         )}
-        <FeedbackControls tenderId={tender.id} organizations={organizations ?? []} feedback={(feedback ?? []).filter((item) => item.state === "favorite" || item.state === "discarded")} />
+        <FeedbackControls followedOrganizations={(pipeline ?? []).map(row => row.organization_id)} tenderId={tender.id} organizations={organizations ?? []} feedback={(feedback ?? []).filter((item) => item.state === "favorite" || item.state === "discarded")} />
       </article>
     </main>
   );

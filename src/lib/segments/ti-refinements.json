@@ -1,0 +1,11 @@
+{
+  "cartridge": "(^|[^a-z0-9])cartuchos?($|[^a-z0-9])",
+  "printing": "(^|[^a-z0-9])(tinta|toners?|impress[a-z0-9]*|jato)($|[^a-z0-9])",
+  "pointCloud": "nuvem[[:space:]]+de[[:space:]]+pontos",
+  "fleetSupply": "(fornecimento|abastecimento).{0,160}(combustive|lubrificante)|(gestao|gerenciamento).{0,60}frota.{0,250}.{0,250}(manutencao|pecas)|frota.{0,100}(fornecimento|abastecimento)",
+  "softwareProcurement": "(licenciamento|licenca|desenvolvimento|cessao|locacao).{0,60}(software|sistema)|servicos? de uso de software",
+  "buildingWorks": "(reforma|pintura|reparo).{0,90}(predio|predial|sala|piso)",
+  "infrastructure": "notebook|microcomputador|computador|software|cabeamento estruturado|infraestrutura de rede|rede de dados|data[[:space:]]*center|datacenter|nobreak|virtualizacao|mainframe",
+  "incidentalComputerItem": "^[^a-z0-9]*(rotulador|etiquetador|balanca|bomba|analisador|equipamento.{0,15}(medico|hospitalar))",
+  "specializedIt": "virtualizacao.{0,60}(fitas|servidor)|plataforma mainframe"
+}
