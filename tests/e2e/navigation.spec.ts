@@ -68,6 +68,21 @@ test("panel separates TI and health and agrees with the unfiltered opportunity l
  await expect(page.getByText(/54 oportunidade\(s\) encontradas/)).toBeVisible();
 });
 
+test("equivalent publications keep secondary favorites and pipeline history",async({page})=>{
+ await login(page);
+ await expect(page.getByRole("heading",{name:"Notebook de paginação 1 - publicação alternativa",exact:true})).toHaveCount(0);
+ await page.getByRole("link",{name:"2 publicações reunidas · ver fontes",exact:true}).click();
+ const publications=page.getByRole("region",{name:"Publicações do edital",exact:true});
+ await expect(publications.getByRole("listitem")).toHaveCount(2);
+ const actions=page.getByRole("region",{name:"Ações da oportunidade",exact:true});
+ await expect(actions.getByRole("button",{name:"Remover favorito",exact:true})).toBeVisible();
+ await expect(actions.getByRole("link",{name:"Abrir no pipeline",exact:true})).toBeVisible();
+ await actions.getByRole("button",{name:"Remover favorito",exact:true}).click();
+ await expect(actions.getByRole("button",{name:"Favoritar",exact:true})).toBeVisible();
+ await actions.getByRole("link",{name:"Abrir no pipeline",exact:true}).click();
+ expect(await page.getByLabel("Anotações",{exact:true}).evaluateAll(elements => elements.some(element => (element as HTMLTextAreaElement).value === "Anotação de publicação secundária"))).toBe(true);
+});
+
 test("detail follows a tender and blue links retain white text",async({page})=>{
  await login(page);
  await page.getByLabel("Buscar oportunidades",{exact:true}).fill("software");

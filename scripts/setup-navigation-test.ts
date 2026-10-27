@@ -14,6 +14,7 @@ for(const name of ["admin","outsider","evaluator"]) {
  const {data,error}=await client.auth.admin.createUser({email:`navigation-${name}@example.invalid`,password:"local-navigation-only-6419",email_confirm:true,app_metadata:{evaluation_account:name==="evaluator"}});
  assert.ifError(error);actors[name]=data.user!.id;assert.match(actors[name],/^[a-f0-9-]{36}$/);
 }
+const duplicate=crypto.randomUUID(),groupAgency=crypto.randomUUID();
 const org=crypto.randomUUID(),otherOrg=crypto.randomUUID(),evaluationOrg=crypto.randomUUID(),tender=crypto.randomUUID(),second=crypto.randomUUID();
 execFileSync("psql",[db,"-X","-qAt","-v","ON_ERROR_STOP=1","-c",`
  begin;
@@ -40,6 +41,18 @@ execFileSync("psql",[db,"-X","-qAt","-v","ON_ERROR_STOP=1","-c",`
  insert into public.pipeline_cards(organization_id,tender_id,created_by,notes) values
  ('${org}','${tender}','${actors.admin}','Anotação exclusiva da conta de teste'),
  ('${otherOrg}','${second}','${actors.outsider}','Anotação de outra organização');
+ insert into public.agencies(id,source_key,source_agency_id,name) values('${groupAgency}','navigation-ci','${groupAgency}','Synthetic grouping agency');
+ update public.tenders set source_key='pncp',agency_id='${groupAgency}',modality_code='6',municipality_code='4306130',estimated_value=3000,official_url='https://example.com/navigation-fixture',raw_data='{"situacaoCompraId":1,"numeroCompra":"37","anoCompra":2090,"unidadeOrgao":{"codigoUnidade":"01"},"srp":false,"amparoLegal":{"codigo":1}}'
+ where source_id='pagination-1';
+ insert into public.tenders(id,source_key,source_id,agency_id,title,object,modality_code,municipality_code,estimated_value,proposal_close_at,raw_data)
+ select '${duplicate}','pncp','pagination-1-copy',agency_id,'Notebook de paginação 1 - publicação alternativa','[Portal de Compras Públicas] - '||object,modality_code,municipality_code,estimated_value,proposal_close_at,jsonb_set(raw_data,'{unidadeOrgao,codigoUnidade}','"1"') from public.tenders where source_id='pagination-1';
+ insert into public.tender_items(tender_id,source_item_id,item_number,description,unit,quantity,estimated_unit_value,estimated_total_value)
+ select id,'1',1,'Notebook de navegação','UN',1,2000,2000 from public.tenders where source_id in ('pagination-1','pagination-1-copy');
+ insert into public.tender_items(tender_id,source_item_id,item_number,description,unit,quantity,estimated_unit_value,estimated_total_value)
+ select id,'2',2,'Mesa de navegação','UN',1,1000,1000 from public.tenders where source_id in ('pagination-1','pagination-1-copy');
+ update public.tenders set items_complete=true,items_object_hash=md5(object) where source_id in ('pagination-1','pagination-1-copy');
+ insert into public.tender_feedback(organization_id,user_id,tender_id,state) values('${org}','${actors.admin}','${duplicate}','favorite');
+ insert into public.pipeline_cards(organization_id,tender_id,created_by,status,notes) values('${org}','${duplicate}','${actors.admin}','documentation','Anotação de publicação secundária');
  commit;`],{encoding:"utf8"});
 if(process.env.GITHUB_ENV) appendFileSync(process.env.GITHUB_ENV,`NEXT_PUBLIC_SUPABASE_URL=${url}\nNEXT_PUBLIC_SUPABASE_ANON_KEY=${status.ANON_KEY}\n`);
 console.log(JSON.stringify({mode:"disposable_local_only",synthetic_accounts:3,real_emails_sent:0}));

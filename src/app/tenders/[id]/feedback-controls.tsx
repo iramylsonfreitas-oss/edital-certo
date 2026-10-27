@@ -25,7 +25,7 @@ export function FeedbackControls({
   const [feedbackByOrganization, setFeedbackByOrganization] = useState<Record<string, Feedback["state"] | null>>({});
   const currentFeedback = Object.hasOwn(feedbackByOrganization, organizationId)
     ? feedbackByOrganization[organizationId]
-    : feedback.find((item) => item.organization_id === organizationId)?.state ?? null;
+    : feedback.find((item) => item.organization_id === organizationId && item.state === "favorite")?.state ?? feedback.find((item) => item.organization_id === organizationId)?.state ?? null;
 
   async function save(state: "favorite" | "discarded" | null) {
     if (!organizationId) return;
@@ -35,12 +35,9 @@ export function FeedbackControls({
     setFeedbackByOrganization((current) => ({ ...current, [organizationId]: state }));
     try {
       const supabase = createSupabaseBrowserClient();
-      const { data: authData, error: authError } = await supabase.auth.getUser();
-      if (authError || !authData.user) throw new Error("Sua sessão expirou. Entre novamente.");
-      const query = supabase.from("tender_feedback");
-      const result = state
-        ? await query.upsert({ organization_id: organizationId, user_id: authData.user.id, tender_id: tenderId, state }, { onConflict: "organization_id,user_id,tender_id" })
-        : await query.delete().eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("tender_id", tenderId);
+      const result = await supabase.rpc("set_tender_group_feedback", {
+        p_organization_id: organizationId, p_tender_id: tenderId, p_state: state
+      });
       if (result.error) throw result.error;
       setMessage(state === "favorite" ? "Licitação favoritada." : state === "discarded" ? "Licitação descartada." : "Status removido.");
     } catch (error) {

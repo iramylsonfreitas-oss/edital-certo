@@ -26,7 +26,6 @@ export function FavoriteCount({ initialCount }: { initialCount: number }) {
 export function TenderOpportunityCard({
   tenderId,
   organizationId,
-  userId,
   initialFeedback,
   initiallyInPipeline,
   listMode,
@@ -34,7 +33,6 @@ export function TenderOpportunityCard({
 }: {
   tenderId: string;
   organizationId: string;
-  userId: string;
   initialFeedback: FeedbackState;
   initiallyInPipeline: boolean;
   listMode: ListMode;
@@ -62,17 +60,9 @@ export function TenderOpportunityCard({
 
     try {
       const supabase = createSupabaseBrowserClient();
-      const key = {
-        organization_id: organizationId,
-        user_id: userId,
-        tender_id: tenderId
-      };
-      const result = nextState
-        ? await supabase.from("tender_feedback").upsert(
-          { ...key, state: nextState },
-          { onConflict: "organization_id,user_id,tender_id" }
-        )
-        : await supabase.from("tender_feedback").delete().match(key);
+      const result = await supabase.rpc("set_tender_group_feedback", {
+        p_organization_id: organizationId, p_tender_id: tenderId, p_state: nextState
+      });
       if (result.error) throw result.error;
 
       const delta = Number(nextState === "favorite") - Number(previousState === "favorite");

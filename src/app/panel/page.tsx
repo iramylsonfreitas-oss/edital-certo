@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { publicationGroupMap, groupedFeedback, groupPublications, type PublicationGroup } from "@/lib/pncp/publication-groups";
 import { segmentKey, segmentLabels } from "@/lib/segments/health";
 import { redirect } from "next/navigation";
 import { AppNavigation } from "@/components/app-navigation";
@@ -87,15 +88,24 @@ function BarChart({ title, values, format = "count" }: { title: string; values: 
 
 async function openCatalog(supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>, segment: "it" | "health") {
   const all: PanelTender[] = [];
+  const groups: PublicationGroup[] = [];
   const now = new Date().toISOString();
   for (let offset = 0; ; offset += 1000) {
     let query = supabase.from("tenders").select("is_ti,health_categories,id,title,object,items_search_text,uf,municipality_code,modality_code,estimated_value,exclusive_me_epp,proposal_close_at,agencies(name,sphere)")
       .or(`proposal_close_at.is.null,proposal_close_at.gte.${now}`).order("id").range(offset, offset + 999);
     query = segment === "health" ? query.not("health_categories", "eq", "{}") : query.eq("is_ti", true);
     const result = await query;
-    if (result.error) return { data: null, error: result.error };
+    if (result.error) return { data: null, error: result.error, groupMap: new Map<string,string>() };
+    if (result.data.length) {
+      const related = await supabase.rpc("tender_group_members", { p_tender_ids: result.data.map(row => row.id) });
+      if (related.error) return { data: null, error: related.error, groupMap: new Map<string,string>() };
+      groups.push(...((related.data ?? []) as PublicationGroup[]));
+    }
     all.push(...(result.data as unknown as PanelTender[]));
-    if (result.data.length < 1000) return { data: all, error: null };
+    if (result.data.length < 1000) {
+      const groupMap = publicationGroupMap(groups);
+      return { data: groupPublications(all, groupMap), error: null, groupMap };
+    }
   }
 }
 
@@ -106,7 +116,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   if (!authData.user) redirect("/login");
   const { data: organization } = await supabase.from("organizations").select("id").order("created_at").limit(1).maybeSingle();
   if (!organization) redirect("/onboarding");
-  const [{ data: tenders, error: catalogError }, { data: profiles }, { data: cards }, { data: feedback }] = await Promise.all([
+  const [{ data: tenders, error: catalogError, groupMap }, { data: profiles }, { data: cards }, { data: feedback }] = await Promise.all([
     openCatalog(supabase, segment),
     supabase.from("interest_profiles").select("segment_key,required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organization.id).eq("is_active", true).eq("segment_key", segment),
     supabase.from("pipeline_cards").select("tender_id,status,tenders!inner(estimated_value,proposal_close_at)").eq("organization_id", organization.id).is("archived_at", null),
@@ -115,7 +125,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   const tenderRows = (tenders ?? []) as unknown as PanelTender[];
   const profileRows = (profiles ?? []) as unknown as PanelProfile[];
   const cardRows = (cards ?? []) as unknown as Array<{ tender_id: string; status: string; tenders: { estimated_value: number | null; proposal_close_at: string | null } | Array<{ estimated_value: number | null; proposal_close_at: string | null }> | null }>;
-  const favoriteStates = new Map((feedback ?? []).map((row) => [row.tender_id, row.state]));
+  const favoriteStates = groupedFeedback(feedback ?? [], groupMap);
   const openTenders = tenderRows.filter((tender) => favoriteStates.get(tender.id) !== "discarded");
   const compatible = new Set<string>();
   for (const tender of openTenders) {
@@ -139,7 +149,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
   const now = currentTimestamp();
   const trackedTenderIds = new Set([
     ...[...favoriteStates].filter(([, state]) => state === "favorite").map(([tenderId]) => tenderId),
-    ...cardRows.map((card) => card.tender_id)
+    ...cardRows.map((card) => groupMap.get(card.tender_id) ?? card.tender_id)
   ]);
   const weekDeadlineCount = tenderRows.filter((tender) => tender.proposal_close_at && trackedTenderIds.has(tender.id) && new Date(tender.proposal_close_at).getTime() >= now && new Date(tender.proposal_close_at).getTime() <= now + 7 * 86_400_000).length;
   const wonCount = cardRows.filter((card) => card.status === "won").length;
@@ -150,7 +160,7 @@ export default async function PanelPage({ searchParams }: { searchParams: Promis
     <main className="mx-auto min-h-screen max-w-6xl px-4 py-8 pb-28 sm:px-6 md:pb-8">
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 pb-5 dark:border-slate-700"><div><Link className="text-sm font-semibold text-blue-700" href="/">Edital Certo</Link><h1 className="mt-2 text-2xl font-bold">Painel</h1></div><AppNavigation active="/panel" /><Link className="text-sm font-semibold text-blue-700" href={`/dashboard?segment=${segment}`}>Ver oportunidades</Link></header>
       <nav aria-label="Segmento do painel" className="mt-5 flex flex-wrap gap-3">{(["it", "health"] as const).map(key => <Link aria-current={key === segment ? "page" : undefined} className={`rounded-lg px-4 py-2 font-semibold ${key === segment ? "bg-blue-700 text-white" : "border border-slate-300"}`} href={`/panel?segment=${key}`} key={key}>{segmentLabels[key]}</Link>)}</nav>
-      <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">Catálogo de {segmentLabels[segment]}: oportunidades abertas, incluindo as sem prazo informado, sem filtros adicionais e sem as que você descartou. Os indicadores do pipeline abrangem todos os segmentos da organização.</p>
+      <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">Catálogo de {segmentLabels[segment]}: publicações equivalentes reunidas, oportunidades abertas, incluindo as sem prazo informado, sem filtros adicionais e sem as que você descartou. Os indicadores do pipeline abrangem todos os segmentos da organização.</p>
       {catalogError ? <p role="alert" className="mt-4 text-rose-700 dark:text-rose-300">Não foi possível carregar o catálogo completo. Atualize a página para consultar os indicadores.</p> : <p className="mt-3 font-semibold">{openTenders.length.toLocaleString("pt-BR")} oportunidades abertas neste segmento</p>}
       <section aria-label="Indicadores" className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         {[{ label: "Compatíveis com os perfis ativos", value: compatible.size.toLocaleString("pt-BR") }, { label: "Valor estimado no pipeline ativo", value: activePipelineValue.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }) }, { label: "Prazos acompanhados em 7 dias", value: String(weekDeadlineCount) }, { label: "Taxa de ganho", value: winRate === null ? "Sem resultados" : `${winRate}%` }].map((item) => <article className="rounded-2xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" key={item.label}><p className="text-sm text-slate-600 dark:text-slate-300">{item.label}</p><p className="mt-2 text-2xl font-bold">{item.value}</p></article>)}
