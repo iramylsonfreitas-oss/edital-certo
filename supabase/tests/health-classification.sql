@@ -46,6 +46,7 @@ ESPECIALIZADA PARA O FORNECIMENTO PARCELADO DE MEDICAMENTOS COM MAIOR PERCENTUAL
 ('registro de preços para possível aquisição de MEDICAMENTOS E FÓRMULAS NUTRICIONAIS a fim de atender a UPA, SAMU, Rede de Atenção Básica e Rede de Atenção Especializada à Saúde, da Secretaria de Saúde de Itanhaém por um período de 12 meses',true))
  select count(*) into failures from cases where (cardinality(public.classify_health_object(object))>0) is distinct from expected;
  if failures<>0 then raise exception 'Health classification: % reviewed cases failed',failures; end if;
+ if cardinality(public.classify_health_object('Contratação de empresa especializada para instalação de gases medicinais'))<>0 then raise exception 'Medical gas installation service leaked into goods'; end if;
  if exists(select 1 from public.tenders where health_categories is distinct from public.classify_health_object(object)) then raise exception 'Health cache mismatch'; end if;
  if (select count(*) from public.search_tenders_by_segment(p_segment=>'health',p_show_closed=>true,p_page_size=>100))<>54 then raise exception 'Health fixture scope mismatch'; end if;
  if (select count(*) from public.search_tenders_by_segment(p_segment=>'it',p_show_closed=>true,p_page_size=>100))<>53 then raise exception 'TI fixture regression'; end if;

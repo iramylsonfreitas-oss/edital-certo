@@ -1,7 +1,7 @@
 {
   "version": 1,
   "excluded": "(^|[^a-z0-9])(veterinar[a-z]*|animais|animal|caes|gatos|canin[a-z]*|felin[a-z]*)($|[^a-z0-9])|(^|[^a-z0-9])(softwares?|sistema (informatizado|de gestao|web))[^.;]*(medicamentos?|materia(l|is) hospitalar(es)?|equipamentos? medicos?)|(^|[^a-z0-9])seringas?[^.;]*(graxa|lubrificacao)",
-  "services": "(^|[^a-z0-9])(manutencao|reforma|construcao|limpeza|terceirizacao|credenciamento|prestacao de servicos|servicos medicos|exames medicos)($|[^a-z0-9])|(^|[^a-z0-9])locacao($|[^a-z0-9])",
+  "services": "(^|[^a-z0-9])(manutencao|reforma|construcao|limpeza|terceirizacao|credenciamento|prestacao de servicos|servicos medicos|exames medicos)($|[^a-z0-9])|(^|[^a-z0-9])locacao($|[^a-z0-9])|instalacao de gases medicinais",
   "purchase": "(^|[^a-z0-9])(aquisicao|compra|compras)($|[^a-z0-9])",
   "categories": [
     {
