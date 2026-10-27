@@ -21,10 +21,12 @@ describe("health object classification", () => {
    ["Aquisição de luvas cirúrgicas e seringas", ["supplies"]],
    ["Compra de monitores multiparamétricos", ["equipment"]],
    ["Aquisição de medicamentos e equipamentos médicos", ["medicines", "equipment"]],
-   ["Locação de equipamentos médicos", []]
+   ["Locação de equipamentos médicos", []],
+   ["Contratação de empresa especializada para instalação de gases medicinais de acordo com o projeto", []],
+   ["Aquisição de equipamentos médicos com instalação", ["equipment"]]
  ])("%s", (object, expected) => expect(classifyHealthObject(object)).toEqual(expected));
  it("keeps the generated SQL and frontend classification rules in sync", () => {
-   const sql = readFileSync("supabase/migrations/20261027143119_health_catalog_segments.sql", "utf8") + readFileSync("supabase/migrations/20261027144347_refine_health_software_context.sql", "utf8");
+   const sql = readFileSync("supabase/migrations/20261027150654_exclude_medical_gas_installation_service.sql", "utf8") + readFileSync("supabase/migrations/20261027143119_health_catalog_segments.sql", "utf8") + readFileSync("supabase/migrations/20261027144347_refine_health_software_context.sql", "utf8");
    for (const pattern of [rules.excluded, rules.services, rules.purchase, ...rules.categories.map(c => c.pattern)]) expect(sql).toContain(pattern);
  });
  it("defaults old or invalid links to TI", () => {
