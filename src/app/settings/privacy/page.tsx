@@ -15,6 +15,7 @@ export default async function PrivacySettingsPage() {
     <main className="mx-auto min-h-screen max-w-3xl px-4 py-8 sm:px-6">
       <Link className="text-sm text-blue-700" href="/dashboard">← Oportunidades</Link>
       <h1 className="mt-4 text-3xl font-bold">Privacidade e seus dados</h1>
+      <Link className="mt-3 inline-block text-blue-700 underline dark:text-blue-300" href="/settings/access">Gerenciar acessos de avaliação</Link>
       <p className="mt-2 text-slate-600 dark:text-slate-300">Exporte os dados associados à sua conta ou solicite a exclusão.</p>
       <a className="mt-6 inline-flex rounded-lg bg-blue-700 px-4 py-3 font-semibold text-white" href="/api/privacy/export">Baixar meus dados (JSON)</a>
       <PrivacyRequestForm />

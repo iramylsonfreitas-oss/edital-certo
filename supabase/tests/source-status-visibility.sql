@@ -7,6 +7,7 @@ values('pncp','failed',now(),222);
 update public.ingestion_runs set status='succeeded',finished_at=now()+interval '1 day 1 minute'
 where source_key='pncp' and started_at=now()+interval '1 day';
 set local role authenticated;
+select set_config('request.jwt.claim.sub','bdcfba76-366a-4e7a-970b-7134ac359b89',true);
 do $test$
 declare found_status text; found_count integer;
 begin
