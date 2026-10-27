@@ -6,6 +6,7 @@ on:
       - 'src/lib/alerts/**'
       - 'supabase/**'
       - 'scripts/test-email-persistence.ts'
+      - 'scripts/test-email-provider.ts'
       - '.github/workflows/email-persistence.yml'
 
 permissions:
@@ -28,7 +29,9 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Check development staging function with Deno
-        run: npx --yes deno@2.9.6 check --config supabase/functions/stage-email-messages/deno.json supabase/functions/stage-email-messages/index.ts
+        run: |
+          npx --yes deno@2.9.6 check --config supabase/functions/stage-email-messages/deno.json supabase/functions/stage-email-messages/index.ts
+          npx --yes deno@2.9.6 check --config supabase/functions/deliver-email-alerts/deno.json supabase/functions/deliver-email-alerts/index.ts
       - uses: supabase/setup-cli@v1
         with:
           version: 2.121.0
@@ -46,6 +49,7 @@ jobs:
           cp -r supabase/migrations "$EMAIL_TEST_WORKDIR/supabase/"
           find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_persistence.sql' -delete
           find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_operations.sql' -delete
+          find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_provider_integration.sql' -delete
           supabase start --workdir "$EMAIL_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
       - name: SQL regression with rollback before packaging
         run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-persistence-proposal.sql
@@ -64,6 +68,7 @@ jobs:
             cp supabase/ops/drafts/email-message-persistence.sql "$proposal_file"
           fi
           cp supabase/migrations/*_email_message_operations.sql "$EMAIL_TEST_WORKDIR/supabase/migrations/"
+          cp supabase/migrations/*_email_provider_integration.sql "$EMAIL_TEST_WORKDIR/supabase/migrations/"
           supabase db reset --local --no-seed --workdir "$EMAIL_TEST_WORKDIR"
           supabase migration list --local --workdir "$EMAIL_TEST_WORKDIR"
           psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -c "NOTIFY pgrst, 'reload schema'"
@@ -71,10 +76,13 @@ jobs:
         run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-installed.sql
       - name: Verify quarantine and retention with rollback
         run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-operations.sql
+      - name: Verify provider receipts, unsubscribe and suppression with rollback
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-provider-integration.sql
       - name: REST, independent concurrent transactions and stored worker simulation
         run: |
           psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/email-message-local.sql
           node --import=tsx scripts/test-email-persistence.ts
+          node --import=tsx scripts/test-email-provider.ts
       - name: Preserve CLI-generated migration for review
         uses: actions/upload-artifact@v4
         with:

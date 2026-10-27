@@ -4,6 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { AlertForm } from "./alert-form";
 import { AppNavigation } from "@/components/app-navigation";
 import { AlertControls } from "./alert-controls";
+import { EmailBlockControl } from "./email-block-control";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ export default async function AlertsPage() {
   const { data } = await supabase.auth.getUser();
   if (!data.user) redirect("/login");
 
-  const [alertResult, organizationResult, profileResult, membershipResult, queueResult] = await Promise.all([
+  const [alertResult, organizationResult, profileResult, membershipResult, queueResult, blockResult] = await Promise.all([
     supabase
     .from("alerts")
     .select("id,organization_id,profile_id,frequency,minimum_score,email_enabled,timezone,daily_send_time,is_enabled,email_consent_at")
@@ -21,7 +22,8 @@ export default async function AlertsPage() {
     supabase.from("organizations").select("id,name").order("created_at"),
     supabase.from("interest_profiles").select("id,organization_id,name").order("name"),
     supabase.from("memberships").select("organization_id,role").eq("user_id", data.user.id),
-    supabase.from("email_alert_queue").select("id", { count: "exact", head: true }).eq("recipient_user_id", data.user.id).eq("status", "prepared")
+    supabase.from("email_alert_queue").select("id", { count: "exact", head: true }).eq("recipient_user_id", data.user.id).eq("status", "prepared"),
+    supabase.from("email_delivery_blocks").select("reason").eq("recipient_user_id",data.user.id).maybeSingle()
   ]);
   const alerts = alertResult.data ?? [];
   const organizations = organizationResult.data ?? [];
@@ -38,6 +40,7 @@ export default async function AlertsPage() {
         <p className="mt-2 text-sm">O sistema já prepara oportunidades compatíveis com seus perfis de TI e preferências autorizadas. Os e-mails ainda não serão enviados: faltam a configuração do remetente e a conclusão da rotina de entrega.</p>
         <p className="mt-2 text-sm">As preferências são pessoais. O destinatário será o e-mail confirmado da sua própria conta.</p>
       </section>
+      {blockResult.data && <EmailBlockControl reason={blockResult.data.reason} />}
       <section className="mt-4 rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" aria-label="Preparação de alertas">
         <h2 className="font-semibold">Preparação de alertas</h2>
         <Link className="mt-2 inline-block text-sm font-semibold text-blue-700 underline dark:text-blue-300" href="/alerts/preview">Ver prévia do e-mail</Link>

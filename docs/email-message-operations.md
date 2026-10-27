@@ -6,7 +6,7 @@ Escopo: preparação e manutenção em desenvolvimento. Nenhum provedor ou envio
 
 A migração foi criada pelo CLI e aplicada no projeto `afbuozouupuguvkkuvib`. O arquivo foi alinhado ao identificador gerado no banco: `20261026194430_email_message_operations.sql`, MD5 `3d43efdd5c3a4e0c914e50278566c073`. Não houve alteração em produção.
 
-Os testes SQL passaram antes e depois da aplicação, sempre com rollback dos dados sintéticos. A manutenção sobre os dados atuais retornou quatro contadores zerados. A agenda diária foi ativada para 03h20 UTC (23h20 no fuso UTC-4), após simulação com rollback. O comando exato armazenado no job foi executado manualmente e registrou `maintenance_only`, `sends_email=false` e zero alterações. A primeira execução diária pelo relógio ainda precisa ser observada.
+Os testes SQL passaram antes e depois da aplicação, sempre com rollback dos dados sintéticos. A manutenção sobre os dados atuais retornou quatro contadores zerados. A agenda diária foi ativada para 03h20 UTC (23h20 no fuso UTC-4), após simulação com rollback. O comando exato armazenado no job foi executado manualmente e registrou `maintenance_only`, `sends_email=false` e zero alterações. A primeira execução diária pelo relógio foi confirmada com sucesso em 27/10/2026 às 03h20 UTC (26/10 às 23h20 em Boa Vista).
 
 O script `supabase/ops/schedule-email-message-maintenance.sql` registra apenas contagens no histórico operacional, sem endereços ou conteúdo. Não usa rede, token ou credencial de provedor. Usa as extensões e cotas existentes; nenhum serviço pago foi contratado.
 
