@@ -21,16 +21,17 @@ export default async function TenderDetailPage({ params, searchParams }: { param
   const query = await searchParams;
   const requestedPage = typeof query.itemsPage === "string" ? Number(query.itemsPage) : 1;
   const itemsPage = Number.isSafeInteger(requestedPage) && requestedPage >= 1 && requestedPage <= 1000 ? requestedPage : 1;
-  const [{ data: tender, error }, { data: organizations }, { data: feedback }, { data: pipeline }, { data: itemSummaries }] = await Promise.all([
+  const [{ data: tender, error }, { data: organizations }, { data: feedback }, { data: pipeline }, { data: itemSummaries }, { data: publications }] = await Promise.all([
     supabase
       .from("tenders")
       .select("id,source_key,source_id,title,object,uf,municipality_name,municipality_code,estimated_value,proposal_open_at,proposal_close_at,published_at,source_updated_at,official_url,modality_name,status,items_complete,items_checked_at,ti_match_source,agencies(name,cnpj,sphere)")
       .eq("id", id)
       .maybeSingle(),
     supabase.from("organizations").select("id,name").order("created_at"),
-    supabase.from("tender_feedback").select("organization_id,state").eq("tender_id", id).eq("user_id", authData.user.id),
-    supabase.from("pipeline_cards").select("organization_id").eq("tender_id", id).is("archived_at", null),
-    supabase.rpc("tender_it_item_summary", { p_tender_ids: [id] })
+    supabase.rpc("tender_group_feedback", { p_tender_id: id }),
+    supabase.rpc("tender_group_pipeline", { p_tender_id: id }),
+    supabase.rpc("tender_it_item_summary", { p_tender_ids: [id] }),
+    supabase.rpc("tender_group_publications", { p_tender_id: id })
   ]);
 
   if (error || !tender) notFound();
@@ -68,6 +69,22 @@ export default async function TenderDetailPage({ params, searchParams }: { param
           <div><dt className="text-sm text-slate-500">Publicação no PNCP</dt><dd className="mt-1 font-medium">{date(tender.published_at)}</dd></div>
           <div><dt className="text-sm text-slate-500">Última atualização da fonte</dt><dd className="mt-1 font-medium">{date(tender.source_updated_at)}</dd></div>
         </dl>
+        {publications?.length > 1 ? <section aria-label="Publicações do edital" className="mt-8 rounded-xl border border-blue-200 p-4 dark:border-blue-800" id="publicacoes">
+          <h2 className="text-lg font-bold">{publications.length} publicações reunidas</h2>
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">Mesma compra, com quantidades e valores de itens equivalentes. Você pode consultar cada publicação e seus documentos originais. Favoritos e acompanhamento valem para o conjunto.</p>
+          <ul className="mt-3 grid gap-3">{publications.map((publication: {tender_id:string;source_key:string;source_id:string;official_url:string|null}) => {
+            const source = publication.source_key === "pncp" ? tenderReference(publication.source_id)?.portalUrl : null;
+            const origin = toSafeHttpUrl(publication.official_url);
+            return <li className="min-w-0 rounded-lg border border-slate-200 p-3 dark:border-slate-700" key={publication.tender_id}>
+              <p className="break-all text-sm font-semibold">PNCP: {publication.source_id}</p>
+              <div className="mt-2 flex flex-wrap gap-3 text-sm font-semibold text-blue-700 dark:text-blue-300">
+                <Link className="underline" href={`/tenders/${publication.tender_id}`}>{publication.tender_id === tender.id ? "Publicação aberta" : "Ver esta publicação"}</Link>
+                {source ? <a className="underline" href={source} rel="noopener noreferrer" target="_blank">Abrir no PNCP</a> : null}
+                {origin ? <a className="underline" href={origin} rel="noopener noreferrer" target="_blank">Portal de origem</a> : null}
+              </div>
+            </li>;
+          })}</ul>
+        </section> : null}
         <section className="mt-8 border-t border-slate-200 pt-6 dark:border-slate-700" id="itens">
           <h2 className="text-xl font-bold">Itens da licitação</h2>
           <Suspense key={`${sourceId}:${itemsPage}`} fallback={<p role="status" className="mt-3 text-sm text-slate-500">Consultando itens no PNCP…</p>}>
@@ -87,7 +104,7 @@ export default async function TenderDetailPage({ params, searchParams }: { param
         ) : (
           <p className="mt-8 text-sm text-slate-500">O registro não informou um link direto para a fonte oficial.</p>
         )}
-        <FeedbackControls followedOrganizations={(pipeline ?? []).map(row => row.organization_id)} tenderId={tender.id} organizations={organizations ?? []} feedback={(feedback ?? []).filter((item) => item.state === "favorite" || item.state === "discarded")} />
+        <FeedbackControls followedOrganizations={(pipeline ?? []).map((row: {organization_id:string}) => row.organization_id)} tenderId={tender.id} organizations={organizations ?? []} feedback={(feedback ?? []).filter((item: {organization_id:string;state:string}) => item.state === "favorite" || item.state === "discarded")} />
       </article>
     </main>
   );

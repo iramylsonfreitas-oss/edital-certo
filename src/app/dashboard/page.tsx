@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { publicationGroupMap, groupedFeedback } from "@/lib/pncp/publication-groups";
 import { tenderTitle, tenderValue } from "@/lib/pncp/presentation";
 import { TiItemValue, type TiItemSummary } from "@/components/ti-item-value";
 import { healthCategories, segmentKey, segmentLabels } from "@/lib/segments/health";
@@ -19,7 +20,7 @@ export const dynamic = "force-dynamic";
 
 const sortSchema = z.enum(["relevance", "deadline", "value"]);
 const numericFilterSchema = z.coerce.number().finite().nonnegative();
-type TenderSearchRow = { tender_id: string; search_rank: number; total_count: number };
+type TenderSearchRow = { tender_id: string; search_rank: number; total_count: number; related_ids: string[] };
 type DatabaseTender = {
   id: string;
   title: string;
@@ -151,8 +152,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const pageSize = 50;
   const urgentLimit = new Date(new Date().getTime() + 3 * 86_400_000).toISOString();
 
-  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }, { count: sampleCount }, { count: favoriteCount }, { data: rawProfiles }, { data: urgentRows }] = await Promise.all([
-    supabase.rpc("search_tenders_by_segment", {
+  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }, { data: groupCounts }, { data: rawProfiles }, { data: urgentRows }] = await Promise.all([
+    supabase.rpc("search_tenders_grouped", {
       p_segment: segment, p_health_category: healthCategory,
       p_query: queryValue,
       p_uf: uf,
@@ -175,14 +176,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       .order("started_at", { ascending: false })
       .limit(1)
       .maybeSingle(),
-    segment === "health"
-      ? supabase.from("tenders").select("id", { count: "exact", head: true }).not("health_categories", "eq", "{}")
-      : supabase.from("tenders").select("id", { count: "exact", head: true }).eq("is_ti", true),
-    segment === "health"
-      ? supabase.from("tender_feedback").select("tender_id,tenders!inner(health_categories)", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite").not("tenders.health_categories", "eq", "{}")
-      : supabase.from("tender_feedback").select("tender_id,tenders!inner(is_ti)", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite").eq("tenders.is_ti", true),
+    supabase.rpc("tender_group_counts", { p_segment: segment, p_organization_id: organizationId }),
     supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true).eq("segment_key", segment),
-    supabase.rpc("search_tenders_by_segment", {
+    supabase.rpc("search_tenders_grouped", {
       p_segment: segment, p_health_category: healthCategory,
       p_query: queryValue, p_uf: uf, p_modality_code: modality, p_minimum_value: minimumValue, p_maximum_value: maximumValue,
       p_closes_before: urgentLimit, p_sort: "deadline", p_page: 1, p_page_size: 1, p_organization_id: organizationId,
@@ -190,7 +186,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     })
   ]);
 
+  const sampleCount = groupCounts?.[0]?.catalog_count ?? 0;
+  const favoriteCount = groupCounts?.[0]?.favorite_count ?? 0;
   const searchRows = (rawSearchRows ?? []) as TenderSearchRow[];
+  const groupMap = publicationGroupMap(searchRows);
+  const publicationCounts = new Map(searchRows.map(row => [row.tender_id, row.related_ids.length]));
+  const allRelatedIds = [...new Set(searchRows.flatMap(row => row.related_ids))];
   const searchOrder = new Map<string, number>();
   searchRows.forEach((row, index) => searchOrder.set(row.tender_id, index));
   const tenderIds = [...searchOrder.keys()];
@@ -201,8 +202,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       supabase.from("tenders")
         .select("id,title,object,items_search_text,ti_match_source,health_categories,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
         .in("id", tenderIds),
-      supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", tenderIds),
-      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", tenderIds),
+      supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", allRelatedIds),
+      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", allRelatedIds),
       supabase.rpc("tender_it_item_summary", { p_tender_ids: tenderIds })
     ])
     : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
@@ -210,8 +211,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     .sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
   const itemSummaryById = new Map<string, TiItemSummary>(((itemSummaries ?? []) as TiItemSummary[]).map(row => [row.tender_id, row]));
   const scoringProfiles = ((rawProfiles ?? []) as ProfileRow[]).map(profileForScoring);
-  const feedbackByTender = new Map((feedbackRows ?? []).map((item) => [item.tender_id, item.state]));
-  const pipelineTenderIds = new Set((pipelineRows ?? []).map((item) => item.tender_id));
+  const feedbackByTender = groupedFeedback(feedbackRows ?? [], groupMap);
+  const pipelineTenderIds = new Set((pipelineRows ?? []).map((item) => groupMap.get(item.tender_id) ?? item.tender_id));
 
   let catalog = null;
   if (segment === "it" && view === "all" && (searchError || databaseTenders.length === 0)) {
@@ -346,7 +347,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 key={tender.id}
                 tenderId={tender.id}
                 organizationId={organizationId}
-                userId={authData.user.id}
                 initialFeedback={feedbackByTender.get(tender.id) ?? null}
                 initiallyInPipeline={pipelineTenderIds.has(tender.id)}
                 listMode={view}
@@ -357,6 +357,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 </div>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
                 <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tenderValue(tender.estimated_value)}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
+                {(publicationCounts.get(tender.id) ?? 1) > 1 ? <Link className="mt-2 inline-block text-sm font-semibold text-blue-700 underline dark:text-blue-300" href={`/tenders/${tender.id}#publicacoes`}>{publicationCounts.get(tender.id)} publicações reunidas · ver fontes</Link> : null}
                 {segment === "it" ? <TiItemValue summary={itemSummaryById.get(tender.id)} /> : null}
                 <div className="mt-3 flex flex-wrap gap-2">
                   {segment === "health" ? healthCategories.filter(category => tender.health_categories?.includes(category.key)).map(category => <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900" key={category.key}>{category.name}</span>) : null}

@@ -37,25 +37,12 @@ export async function updateTenderFeedbackAction(formData: FormData): Promise<vo
   });
   if (!parsed.success) redirect("/dashboard?notice=invalid-action");
 
-  const { supabase, user, organization } = await getUserOrganization();
-  const key = {
-    organization_id: organization.id,
-    user_id: user.id,
-    tender_id: parsed.data.tenderId
-  };
-
-  if (parsed.data.state === "clear") {
-    const { error } = await supabase
-      .from("tender_feedback")
-      .delete()
-      .match(key);
-    if (error) redirect("/dashboard?notice=save-error");
-  } else {
-    const { error } = await supabase
-      .from("tender_feedback")
-      .upsert({ ...key, state: parsed.data.state }, { onConflict: "organization_id,user_id,tender_id" });
-    if (error) redirect("/dashboard?notice=save-error");
-  }
+  const { supabase, organization } = await getUserOrganization();
+  const { error } = await supabase.rpc("set_tender_group_feedback", {
+    p_organization_id: organization.id, p_tender_id: parsed.data.tenderId,
+    p_state: parsed.data.state === "clear" ? null : parsed.data.state
+  });
+  if (error) redirect("/dashboard?notice=save-error");
 
   revalidatePath("/dashboard");
   const destination = parsed.data.listMode === "all" ? "/dashboard" : `/dashboard?view=${parsed.data.listMode}`;

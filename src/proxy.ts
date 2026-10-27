@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { shouldRecordEvaluatorAccess } from "@/lib/evaluation-activity";
 
 export async function proxy(request: NextRequest) {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -23,7 +24,8 @@ export async function proxy(request: NextRequest) {
   // enforces access for every account, independently of this signed JWT flag.
   const publicPath = /^\/(?:$|login(?:\/|$)|signup(?:\/|$)|auth(?:\/|$)|privacy(?:\/|$)|terms(?:\/|$)|access-blocked(?:\/|$))/;
   if (data?.claims?.app_metadata?.evaluation_account === true && !publicPath.test(request.nextUrl.pathname)) {
-    const access = await supabase.rpc("current_account_access");
+    const access = await supabase.rpc(shouldRecordEvaluatorAccess(request.method, request.headers)
+      ? "record_evaluator_access" : "current_account_access");
     if (access.error || access.data !== true) {
       const blocked = NextResponse.redirect(new URL("/access-blocked", request.url));
       for (const cookie of response.cookies.getAll()) blocked.cookies.set(cookie);

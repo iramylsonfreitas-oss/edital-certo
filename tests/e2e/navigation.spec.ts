@@ -25,6 +25,9 @@ test("manager blocks and reactivates an existing evaluation session",async({page
    await expect(evaluator.getByRole("heading",{name:"Oportunidades",exact:true})).toBeVisible({timeout:30000});
    await evaluator.goto("/settings/access");
    await expect(evaluator.getByText("Nenhum acesso de avaliação sob sua gestão.",{exact:true})).toBeVisible();
+   await page.reload();
+   await expect(page.getByText("Último uso registrado",{exact:true}).locator("..")).toContainText(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
+   await expect(page.getByText("Último login",{exact:true}).locator("..")).toContainText(/\d{2}\/\d{2}\/\d{4}, \d{2}:\d{2}/);
    const api=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
    const signed=await api.auth.signInWithPassword({email:"navigation-evaluator@example.invalid",password:"local-navigation-only-6419"});
    expect(signed.error).toBeNull();
@@ -68,6 +71,21 @@ test("panel separates TI and health and agrees with the unfiltered opportunity l
  await expect(page.getByText(/54 oportunidade\(s\) encontradas/)).toBeVisible();
 });
 
+test("equivalent publications keep secondary favorites and pipeline history",async({page})=>{
+ await login(page);
+ await expect(page.getByRole("heading",{name:"Notebook de paginação 1 - publicação alternativa",exact:true})).toHaveCount(0);
+ await page.getByRole("link",{name:"2 publicações reunidas · ver fontes",exact:true}).click();
+ const publications=page.getByRole("region",{name:"Publicações do edital",exact:true});
+ await expect(publications.getByRole("listitem")).toHaveCount(2);
+ const actions=page.getByRole("region",{name:"Ações da oportunidade",exact:true});
+ await expect(actions.getByRole("button",{name:"Remover favorito",exact:true})).toBeVisible();
+ await expect(actions.getByRole("link",{name:"Abrir no pipeline",exact:true})).toBeVisible();
+ await actions.getByRole("button",{name:"Remover favorito",exact:true}).click();
+ await expect(actions.getByRole("button",{name:"Favoritar",exact:true})).toBeVisible();
+ await actions.getByRole("link",{name:"Abrir no pipeline",exact:true}).click();
+ await expect(page.getByRole("article").filter({hasText:"Notebook de paginação 1 - publicação alternativa"}).getByRole("textbox",{name:"Anotações",exact:true})).toHaveValue("Anotação de publicação secundária");
+});
+
 test("detail follows a tender and blue links retain white text",async({page})=>{
  await login(page);
  await page.getByLabel("Buscar oportunidades",{exact:true}).fill("software");
@@ -93,8 +111,9 @@ test("mobile page switches keep the session and isolate organization data",async
    await expect(page.locator("main[aria-busy=true]")).toHaveCount(0);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
    if(title==="Pipeline") {
-     await expect(page.getByRole("textbox",{name:"Anotações",exact:true})).toHaveValue("Anotação exclusiva da conta de teste");
-     await expect(page.getByText("Software de teste de navegação",{exact:true})).toHaveCount(0);
+     await expect(page.getByRole("article").filter({hasText:"Nobreak de teste de navegação"}).getByRole("textbox",{name:"Anotações",exact:true})).toHaveValue("Anotação exclusiva da conta de teste");
+     const notes=await page.getByRole("textbox",{name:"Anotações",exact:true}).evaluateAll(elements=>elements.map(element=>(element as HTMLTextAreaElement).value));
+     expect(notes).not.toContain("Anotação de outra organização");
    }
  }
 });
