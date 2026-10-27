@@ -83,7 +83,7 @@ test("equivalent publications keep secondary favorites and pipeline history",asy
  await actions.getByRole("button",{name:"Remover favorito",exact:true}).click();
  await expect(actions.getByRole("button",{name:"Favoritar",exact:true})).toBeVisible();
  await actions.getByRole("link",{name:"Abrir no pipeline",exact:true}).click();
- expect(await page.getByLabel("Anotações",{exact:true}).evaluateAll(elements => elements.some(element => (element as HTMLTextAreaElement).value === "Anotação de publicação secundária"))).toBe(true);
+ await expect(page.getByRole("article").filter({hasText:"Notebook de paginação 1 - publicação alternativa"}).getByRole("textbox",{name:"Anotações",exact:true})).toHaveValue("Anotação de publicação secundária");
 });
 
 test("detail follows a tender and blue links retain white text",async({page})=>{
@@ -111,8 +111,9 @@ test("mobile page switches keep the session and isolate organization data",async
    await expect(page.locator("main[aria-busy=true]")).toHaveCount(0);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
    if(title==="Pipeline") {
-     await expect(page.getByRole("textbox",{name:"Anotações",exact:true})).toHaveValue("Anotação exclusiva da conta de teste");
-     await expect(page.getByText("Software de teste de navegação",{exact:true})).toHaveCount(0);
+     await expect(page.getByRole("article").filter({hasText:"Nobreak de teste de navegação"}).getByRole("textbox",{name:"Anotações",exact:true})).toHaveValue("Anotação exclusiva da conta de teste");
+     const notes=await page.getByRole("textbox",{name:"Anotações",exact:true}).evaluateAll(elements=>elements.map(element=>(element as HTMLTextAreaElement).value));
+     expect(notes).not.toContain("Anotação de outra organização");
    }
  }
 });
