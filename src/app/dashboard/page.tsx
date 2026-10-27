@@ -262,6 +262,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <Link href="/profiles">Perfis</Link>
           <Link href="/alerts">Alertas</Link>
           <Link href="/settings/privacy">Privacidade</Link>
+          <Link href="/settings/access">Acessos</Link>
         </nav>
       </header>
       <p className="mt-4 text-sm font-semibold">Segmento: {segmentLabels[segment]}{segment === "health" ? " · Medicamentos, materiais hospitalares e equipamentos médicos" : ""}</p>

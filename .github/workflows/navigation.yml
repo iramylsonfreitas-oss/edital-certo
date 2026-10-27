@@ -6,6 +6,8 @@ on:
       - 'src/components/**'
       - 'src/lib/pncp/**'
       - 'src/lib/segments/**'
+      - 'proxy.ts'
+      - 'src/proxy.ts'
       - 'supabase/migrations/**'
       - 'supabase/tests/**'
       - 'fixtures/pncp/health-review-sample.json'
@@ -47,6 +49,8 @@ jobs:
         run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/health-classification.sql
       - name: Verify collection status visibility
         run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/source-status-visibility.sql
+      - name: Verify evaluation access and tenant isolation
+        run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/evaluation-access.sql
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e -- tests/e2e/navigation.spec.ts

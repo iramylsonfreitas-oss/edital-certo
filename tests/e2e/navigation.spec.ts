@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { createClient } from "@supabase/supabase-js";
 
 const enabled=process.env.NAVIGATION_TEST_DISPOSABLE==="true" && process.env.NEXT_PUBLIC_SUPABASE_URL==="http://127.0.0.1:54321";
 test.skip(!enabled,"Requires disposable local navigation accounts.");
@@ -9,6 +10,40 @@ async function login(page:Page) {
  await page.getByRole("button",{name:"Entrar com senha"}).click();
  await expect(page.getByText(/53 oportunidade\(s\) encontradas/)).toBeVisible({timeout:30000});
 }
+
+test("manager blocks and reactivates an existing evaluation session",async({page,browser})=>{
+ await login(page);
+ await page.goto("/settings/access");
+ await expect(page.getByText("Avaliador sintético",{exact:true})).toBeVisible();
+ const context=await browser.newContext({viewport:{width:360,height:740}});
+ try {
+   const evaluator=await context.newPage();
+   await evaluator.goto("/login");
+   await evaluator.getByLabel("E-mail",{exact:true}).fill("navigation-evaluator@example.invalid");
+   await evaluator.getByLabel("Senha",{exact:true}).fill("local-navigation-only-6419");
+   await evaluator.getByRole("button",{name:"Entrar com senha"}).click();
+   await expect(evaluator.getByRole("heading",{name:"Oportunidades",exact:true})).toBeVisible({timeout:30000});
+   await evaluator.goto("/settings/access");
+   await expect(evaluator.getByText("Nenhum acesso de avaliação sob sua gestão.",{exact:true})).toBeVisible();
+   const api=createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!,process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,{auth:{persistSession:false,autoRefreshToken:false}});
+   const signed=await api.auth.signInWithPassword({email:"navigation-evaluator@example.invalid",password:"local-navigation-only-6419"});
+   expect(signed.error).toBeNull();
+   expect((await api.from("tenders").select("id").limit(1)).data).toHaveLength(1);
+   await page.getByRole("button",{name:"Bloquear acesso",exact:true}).click();
+   await expect(page.getByText("Status: Bloqueado",{exact:true})).toBeVisible();
+   expect((await api.from("tenders").select("id").limit(1)).data).toHaveLength(0);
+   const escalation=await api.rpc("set_evaluator_access",{target_user:signed.data.user!.id,access_enabled:true});
+   expect(escalation.error?.code).toBe("42501");
+   await evaluator.goto("/dashboard?segment=health");
+   await expect(evaluator.getByRole("heading",{name:"Acesso de avaliação bloqueado",exact:true})).toBeVisible();
+   await page.getByRole("button",{name:"Reativar acesso",exact:true}).click();
+   await expect(page.getByText("Status: Ativo",{exact:true})).toBeVisible();
+   expect((await api.from("tenders").select("id").limit(1)).data).toHaveLength(1);
+   await evaluator.goto("/dashboard");
+   await expect(evaluator.getByRole("heading",{name:"Oportunidades",exact:true})).toBeVisible();
+   expect(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)).toBe(false);
+ } finally { await context.close(); }
+});
 test("search and clear filters preserve the document and account session",async({page})=>{
  await login(page);
  await page.evaluate(()=>{document.documentElement.dataset.navigationMarker="same-document";});
