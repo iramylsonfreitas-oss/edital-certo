@@ -1,0 +1,94 @@
+name: Email persistence database integration
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/alerts/**'
+      - 'supabase/**'
+      - 'scripts/test-email-persistence.ts'
+      - 'scripts/test-email-provider.ts'
+      - '.github/workflows/email-persistence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  database-rest-concurrency:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EMAIL_TEST_API_URL: http://127.0.0.1:54321
+      EMAIL_TEST_DB_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      EMAIL_TEST_DISPOSABLE: 'true'
+      EMAIL_TEST_WORKDIR: /tmp/edital-certo-email-ci
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Check development staging function with Deno
+        run: |
+          npx --yes deno@2.9.6 check --config supabase/functions/stage-email-messages/deno.json supabase/functions/stage-email-messages/index.ts
+          npx --yes deno@2.9.6 check --config supabase/functions/deliver-email-alerts/deno.json supabase/functions/deliver-email-alerts/index.ts
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.121.0
+      - name: Discover CLI commands and initialize disposable stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase --version
+          supabase --help
+          supabase migration new --help
+          supabase db reset --help
+          supabase start --help
+          mkdir -p "$EMAIL_TEST_WORKDIR"
+          supabase init --workdir "$EMAIL_TEST_WORKDIR"
+          cp -r supabase/migrations "$EMAIL_TEST_WORKDIR/supabase/"
+          find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_persistence.sql' -delete
+          find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_operations.sql' -delete
+          find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_provider_integration.sql' -delete
+          supabase start --workdir "$EMAIL_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
+      - name: SQL regression with rollback before packaging
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-persistence-proposal.sql
+      - name: Generate and apply proposal with Supabase CLI locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          committed_file=$(find supabase/migrations -maxdepth 1 -name '*_email_message_persistence.sql')
+          if [ -n "$committed_file" ]; then
+            cmp supabase/ops/drafts/email-message-persistence.sql "$committed_file"
+            cp "$committed_file" "$EMAIL_TEST_WORKDIR/supabase/migrations/"
+          else
+            supabase migration new email_message_persistence --workdir "$EMAIL_TEST_WORKDIR"
+            proposal_file=$(find "$EMAIL_TEST_WORKDIR/supabase/migrations" -maxdepth 1 -name '*_email_message_persistence.sql')
+            test -n "$proposal_file"
+            cp supabase/ops/drafts/email-message-persistence.sql "$proposal_file"
+          fi
+          cp supabase/migrations/*_email_message_operations.sql "$EMAIL_TEST_WORKDIR/supabase/migrations/"
+          cp supabase/migrations/*_email_provider_integration.sql "$EMAIL_TEST_WORKDIR/supabase/migrations/"
+          supabase db reset --local --no-seed --workdir "$EMAIL_TEST_WORKDIR"
+          supabase migration list --local --workdir "$EMAIL_TEST_WORKDIR"
+          psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -c "NOTIFY pgrst, 'reload schema'"
+      - name: Verify installed schema with rollback
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-installed.sql
+      - name: Verify quarantine and retention with rollback
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-message-operations.sql
+      - name: Verify provider receipts, unsubscribe and suppression with rollback
+        run: psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/email-provider-integration.sql
+      - name: REST, independent concurrent transactions and stored worker simulation
+        run: |
+          psql "$EMAIL_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/fixtures/email-message-local.sql
+          node --import=tsx scripts/test-email-persistence.ts
+          node --import=tsx scripts/test-email-provider.ts
+      - name: Preserve CLI-generated migration for review
+        uses: actions/upload-artifact@v4
+        with:
+          name: email-message-persistence-migration
+          path: /tmp/edital-certo-email-ci/supabase/migrations/*_email_message_persistence.sql
+          if-no-files-found: error
+      - name: Stop disposable services
+        if: always()
+        run: supabase stop --no-backup --workdir "$EMAIL_TEST_WORKDIR"

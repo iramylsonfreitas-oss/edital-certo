@@ -1,0 +1,114 @@
+{
+  "project": "afbuozouupuguvkkuvib",
+  "date": "2026-10-26",
+  "mapping": [
+    {
+      "name": "initial_schema",
+      "from": "20261018221212",
+      "to": "20261018071000",
+      "installed_md5": "6ae81a47d79645687c8e187004d0fc79",
+      "repository_md5": "6ae81a47d79645687c8e187004d0fc79"
+    },
+    {
+      "name": "harden_tenant_access",
+      "from": "20261018221321",
+      "to": "20261018143000",
+      "installed_md5": "3fd875560a7515e3f0be9862e79f5333",
+      "repository_md5": "3fd875560a7515e3f0be9862e79f5333"
+    },
+    {
+      "name": "secure_source_status_view",
+      "from": "20261018234200",
+      "to": "20261018234200",
+      "installed_md5": "9a2c9fadd7a1bb05b3fd9837c3bf2452",
+      "repository_md5": "2f8d3b2963724e613dc1787c2349e973"
+    },
+    {
+      "name": "prototype_feedback_and_pipeline_fields",
+      "from": "20261019014041",
+      "to": "20261019014500",
+      "installed_md5": "d5d0f0732039d16becd581d6909cad7f",
+      "repository_md5": "d5d0f0732039d16becd581d6909cad7f"
+    },
+    {
+      "name": "complete_prototype_search_filters",
+      "from": "20261019102842",
+      "to": "20261019023000",
+      "installed_md5": "e24d5fbd17e265d57a75046cf4936207",
+      "repository_md5": "e24d5fbd17e265d57a75046cf4936207"
+    },
+    {
+      "name": "secure_ingestion_scheduler",
+      "from": "20261019120921",
+      "to": "20261019121500",
+      "installed_md5": "fd57e16b07badfe3464c3eb42b02983c",
+      "repository_md5": "fd57e16b07badfe3464c3eb42b02983c"
+    },
+    {
+      "name": "classify_ti_catalog",
+      "from": "20261020113735",
+      "to": "20261020113516",
+      "installed_md5": "b8d6d0380b02e4ae55c6664a1da20944",
+      "repository_md5": "42ab282bbc0938b6c5df64409e9f793f"
+    },
+    {
+      "name": "batch_pncp_items",
+      "from": "20261020123031",
+      "to": "20261020122421",
+      "installed_md5": "6df59272ea7f4606416fee71bdb0f9ab",
+      "repository_md5": "02d35b7f4929737552b00f61d336f62b"
+    },
+    {
+      "name": "activate_batch_pncp_items",
+      "from": "20261020123130",
+      "to": "20261020123015",
+      "installed_md5": "81412fb4eae4bdc773cabc875456e6ed",
+      "repository_md5": "81412fb4eae4bdc773cabc875456e6ed"
+    },
+    {
+      "name": "archive_pipeline_cards",
+      "from": "20261020140502",
+      "to": "20261020140334",
+      "installed_md5": "39cec10223e1e96118319d8c75ac979d",
+      "repository_md5": "39cec10223e1e96118319d8c75ac979d"
+    },
+    {
+      "name": "audit_pipeline_archive_changes",
+      "from": "20261020140642",
+      "to": "20261020140616",
+      "installed_md5": "ad561a276ab4e81c6ea52a3721d85b77",
+      "repository_md5": "ad561a276ab4e81c6ea52a3721d85b77"
+    },
+    {
+      "name": "personal_email_alert_preferences",
+      "from": "20261020181651",
+      "to": "20261020180434",
+      "installed_md5": "92537d67b0532c0700a4cde0499e0a4d",
+      "repository_md5": "92537d67b0532c0700a4cde0499e0a4d"
+    },
+    {
+      "name": "prepare_email_alert_queue",
+      "from": "20261020183856",
+      "to": "20261020182944",
+      "installed_md5": "65d26f7af154b35b61f527981769f726",
+      "repository_md5": "65d26f7af154b35b61f527981769f726"
+    },
+    {
+      "name": "email_message_persistence",
+      "from": "20261020204133",
+      "to": "20261020203247",
+      "installed_md5": "ad8e2bf99b281bf0b17e1733f4a09e76",
+      "repository_md5": "ad8e2bf99b281bf0b17e1733f4a09e76"
+    }
+  ],
+  "already_installed_view_setting": {
+    "version": "20261019134000",
+    "name": "set_source_status_security_invoker"
+  },
+  "notes": [
+    "Only history identifiers are reconciled; original stored SQL is preserved.",
+    "Three historical bodies differ: view formatting, tender classification and item classification/priority.",
+    "Current function source fingerprints and view security settings were verified against repository code before reconciliation.",
+    "This is not a full schema diff or permission to run db push on production."
+  ]
+}
