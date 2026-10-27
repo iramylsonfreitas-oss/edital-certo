@@ -1,10 +1,13 @@
 "use client";
 
+import { healthCategories } from "@/lib/segments/health";
 import { useState } from "react";
 import Form from "next/form";
 import Link from "next/link";
 
 export type DashboardFilterValues = {
+  segment: "it" | "health";
+  healthCategory: string;
   query: string;
   uf: string;
   modality: string;
@@ -18,10 +21,21 @@ export type DashboardFilterValues = {
 };
 
 export function SearchFilters({ values, activeCount }: { values: DashboardFilterValues; activeCount: number }) {
+  const [segment, setSegment] = useState(values.segment);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (
     <Form action="/dashboard" className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+      <label className="mb-4 block text-sm font-semibold">Segmento
+        <select className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-slate-900" name="segment" value={segment} onChange={event => setSegment(event.target.value === "health" ? "health" : "it")}>
+          <option value="it">Tecnologia da Informação</option><option value="health">Saúde</option>
+        </select>
+      </label>
+      {segment === "health" ? <label className="mb-4 block text-sm font-semibold">Área de saúde
+        <select className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-slate-900" name="healthCategory" defaultValue={values.healthCategory}>
+          <option value="">Todas as áreas</option>{healthCategories.map(category => <option key={category.key} value={category.key}>{category.name}</option>)}
+        </select>
+      </label> : null}
       <label className="block text-sm font-semibold" htmlFor="opportunity-search">Buscar oportunidades</label>
       <input autoComplete="off" className="mt-2 block w-full rounded-lg border border-slate-300 bg-white px-3 py-3 text-slate-900" defaultValue={values.query} id="opportunity-search" maxLength={200} name="q" placeholder="notebook, suporte técnico..." />
       <div className="mt-3 grid grid-cols-[1fr_auto] gap-2">
@@ -67,7 +81,7 @@ export function SearchFilters({ values, activeCount }: { values: DashboardFilter
           <input defaultChecked={values.showClosed} name="showClosed" type="checkbox" value="true" />
           Mostrar encerradas
         </label>
-        <Link className="text-sm font-semibold text-blue-700 underline" href="/dashboard">Limpar filtros</Link>
+        <Link className="text-sm font-semibold text-blue-700 underline" href={values.segment === "health" ? "/dashboard?segment=health" : "/dashboard"}>Limpar filtros</Link>
       </div>
     </Form>
   );

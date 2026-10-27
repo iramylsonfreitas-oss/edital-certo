@@ -8,7 +8,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 const profileFormSchema = z.object({
   organizationId: z.string().uuid(),
   name: z.string().trim().min(2).max(120),
-  segmentKey: z.string().min(1),
+  segmentKey: z.enum(["it", "health"]),
   requiredKeywords: z.array(z.string()),
   optionalKeywords: z.array(z.string()),
   excludedKeywords: z.array(z.string()),
@@ -74,7 +74,7 @@ export function InterestProfileForm({
 
   const [organizationId, setOrganizationId] = useState(initialProfile?.organization_id ?? organizations[0]?.id ?? "");
   const [name, setName] = useState(initialProfile ? `${initialProfile.name}${editableProfile ? "" : " (cópia)"}` : "");
-  const [segmentKey, setSegmentKey] = useState(initialProfile?.segment_key ?? segments[0]?.segment_key ?? "it");
+  const [segmentKey, setSegmentKey] = useState(initialProfile?.segment_key ?? "it");
   const [requiredKeywords, setRequiredKeywords] = useState(initialProfile?.required_keywords.join(", ") ?? "");
   const [optionalKeywords, setOptionalKeywords] = useState(initialProfile?.optional_keywords.join(", ") ?? "");
   const [excludedKeywords, setExcludedKeywords] = useState(initialProfile?.excluded_keywords.join(", ") ?? "");

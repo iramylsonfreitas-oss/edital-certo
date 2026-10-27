@@ -1,0 +1,245 @@
+{
+  "method": "Primeiros 40 objetos por md5(id), entre candidatos com termos de saúde no catálogo existente. Amostra de desenvolvimento revisada, não estimativa de precisão nacional.",
+  "records": [
+    {
+      "id": "5afe4ddc-37bf-4c05-83ba-c7ee3a00d75c",
+      "object": "Aquisição de material de consumo médico-hospitalar e de insumos de radiodiagnóstico por imagem (FIO, para sutura, CONJUNTO, para cateterizacao, ETC), para compor o sistema de registro de preços.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "aa4d816a-c2d9-47b4-a841-f22680360117",
+      "object": "Registro de preços para aquisição de mobiliário, eletrodomésticos e material médico, tendo como órgão gerenciador a Justiça Federal em Alagoas e como participante o Instituto Federal da Paraíba.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "6291ba0f-5f2c-4f0c-af89-e57727e4bfe0",
+      "object": "Contratação de empresa especializada para a prestação de serviços de manejo populacional de cães e gatos, por meio de procedimentos cirúrgicos de esterilização reprodutiva (castração), em regime de mutirão, visando atender às ações de controle populacional e bem-estar animal do Município de Cajamar, conforme condições estabelecidas no instrumento convocatório e seus anexos.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "d8de4595-e44c-4763-879c-0c3d3896528c",
+      "object": "REGISTRO DE PREÇOS PARA FUTURA E EVENTUAL COMPRA DE CORRELATOS HOSPITALARES - MATERIAL DE SUTURA CIRÚRGICA",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "ca0ac6d2-8106-4efb-b50b-f54d2ec5ad28",
+      "object": "Formação de Registro de Preços para o fornecimento eventual de dispositivos médicos, do tipo equipamentos médico-hospitalares com instalação para o Item 3 – Ultrassom Portátil Digital, visando atender às necessidades do Hospital dos Servidores do Estado de Pernambuco (HSE-PE),",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "022ac237-4f36-40e3-8cf7-215e83f1d31e",
+      "object": "ABERTURA DE PROCESSO LICITATÓRIO PARA AQUISIÇÃO DE ITENS PARA REABILITAÇÃO, FISIOTERAPIA, EQUIPAMENTOS E MOBILIARIOS DE USO HOSPITALAR PARA ATENDER A SECRETARIA DA SAUDE COM RECURSOS DAS EMENDAS IMPOSITIVAS Nº10,43,54,69,74,90,101,105,106,113,129 E 154 -SECRETARIA MUNICIPAL DE SAÚDE-CONTRATO",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "329bac72-5f86-4222-bd2f-521b42867833",
+      "object": "Aquisição de medicamentos de uso humano, destinados ao atendimento das necessidades assistenciais da instituição, visando garantir o abastecimento da farmácia hospitalar e a continuidade dos tratamentos dos pacientes, conforme especificações técnicas e quantitativas definidos no planejamento da contratação.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "632bb760-ef7a-4d01-ad0b-00dbfd3baec0",
+      "object": "AQUISIÇÃO MEDICAMENTOS CONTROLADOS ADESIVOS - 2027",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "40c4c363-77da-46d3-8594-f2da9ea907ad",
+      "object": "Aquisição de Cânulas arteriais e venosas para cirurgias cardiológicas (Parte II).",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "0b909df5-0462-4868-89a4-b72e16950de9",
+      "object": "SRP: MATERIAL MÉDICO - CAPSULA ENDOSCOPICA",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "2d637d5e-563c-4863-ae44-8335cb6bb935",
+      "object": "Aquisição de equipamentos médico-hospitalares: Cama elástica, Sistema de Campo Livre, Armário vitrine Cabine audiométrica e outros para o Setor de Reabilitação do Centro Estadual de Reabilitação e Atenção Ambulatorial Especializada - CERAE/RN por Pregão Eletrônico - Lei 14.133/2021. Esta aquisição será executada pelo recurso da Emenda Parlamentar relacionada a Proposta nº 1403.1955000.1190-29",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "299bfc87-d891-4acc-8a2d-89f787417c6c",
+      "object": "AQUISIÇÃO DE 02 (DUAS) UNIDADES DE TRATAMENTO DE AR (UTA), DESTINADAS AO ATENDIMENTO DAS NECESSIDADES DE CLIMATIZAÇÃO E CONTROLE DA QUALIDADE DO AR DE 02 (DUAS) SALAS CIRÚRGICAS DA SANTA CASA DE MISERICÓRDIA SÃO VICENTE DE PAULO, LOCALIZADA NO MUNICÍPIO DE BOA ESPERANÇA DO SUL/SP",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "73dad57e-6476-426d-88db-4fdaa6a8d167",
+      "object": "CONSTITUIÇÃO DE SISTEMA DE REGISTRO DE PREÇOS PARA AQUISIÇÃO FUTURA DE MATERIAIS MÉDICO-HOSPITALARES (ATADURA ELASTICA POROSA, ETC), PARA ATENDER AS NECESSIDADES DO NÚCLEO DE SUPRIMENTOS",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "45dd1987-b159-450b-92a0-f20a3815a001",
+      "object": "AQUISIÇÃO DE INSUMOS PARA CIRURGIA  (BUCOMAXILO -PROTESE DE ATM TOTAL TIPO STANDART)",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "1eeb0cfa-234b-4f38-a64b-01106c60dec8",
+      "object": "Serviços de Manutenção preventiva e/ou corretiva, com fornecimento de peças, de equipamentos hospitalares, odontológicos, de fisioterapia e câmaras refrigeradoras de vacina, pertencentes a Secretaria de Saúde do Município de Maripá/PR.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "8d6dc62b-e78c-4480-a821-153b58692e45",
+      "object": "AQUISIÇÃO DE MEDICAMENTOS - SMS - SEI 43.206008.000034/2026-69 (Portal de Compras Públicas)",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "2fa7c33c-e895-46f7-85fb-53d2bb821fab",
+      "object": "Registro de preços para fornecimento parcelado de MATERIAIS DE CONSUMO ODONTOLÓGICO COMPLEMENTAR, conforme as características, condições, obrigações e requisitos técnicos contidos no Termo de Referência – Anexo I do Edital.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "2480757d-e08a-4851-8582-de20f1b9c2d9",
+      "object": "Aquisição de medicamento(s) com marca específica não contemplados em ata de registro de preços em cumprimento a determinação judicial. ",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "bd0682fc-93c1-4b4b-afed-cad301339787",
+      "object": "[Portal de Compras Públicas] - REGISTRO DE PREÇOS PARA AQUISIÇÃO DE MATERIAL HOSPITALAR (FREESTYLE LIBRE PLUS 2) PARA ATENDIMENTO DE DEMANDA JUDICIAL (AÇÃO JUDICIAL), conforme condições, quantidades e exigências estabelecidas neste Edital e seus anexos.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "8ddc15d1-031f-4a13-a1c6-3aa93cb53b09",
+      "object": "ABERTURA DE PROCESSO LICITATÓRIO PARA CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA PRESTAÇÃO DE SERVIÇOS ODONTOLÓGICOS AFIM DE ATENDER A DEMANDA REPRIMIDA DO MUNICÍPIO  COM RECURSO DE EMENDA PARLAMENTAR IMPOSITIVA N.º 68 - SECRETARIA MUNICIPAL DE SAÚDE; COM APLICAÇÃO DAS COTAS ABERTAS E RESERVADAS, NOS TERMOS DO ARTIGO 48, INCISO III DA LEI COMPLEMENTAR Nº 123/2006 EM CONFORMIDADE COM A LEI Nº 14.133/2021 - CONTRATO.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "be40a03f-448d-4322-b548-9b0921f5c209",
+      "object": "O objeto da licitação é a prestação dos Serviços Continuados em horas/ano de profissionais de saúde na área de Técnico de Enfermagem de Atendimento Pré-Hospitalar Móvel, para atender as necessidades do Serviço de Atendimento Pré-Hospitalar Móvel/SAMU 192 CE, nas Regiões de Saúde: Fortaleza, Sertão Central, Litoral Leste/Jaguaribe, Cariri e Sobral, pelo período de até 12 (doze) meses, nas condições estabelecidas neste edital e seus anexos.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "dbd36510-072b-4149-bdbd-071322b16e1f",
+      "object": "AQUISIÇÃO DE EQUIPAMENTOS DE PROTEÇÃO INDIVIDUAL (EPIS) — JOELHEIRAS ARTICULADAS, COTOVELEIRAS ARTICULADAS, CAPACETES INTEGRAIS E LUVAS TÁTICAS — PARA O AGRUPAMENTO DE MOTOCICLISTAS DA GUARDA MUNICIPAL DE CHAPECÓ/SC.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "e5515ded-b931-4cff-a423-4a662baf49d7",
+      "object": "AQUISIÇÃO DE MEDICAMENTOS EM ATENDIMENTO A DEMANDAS JUDICIAIS DE PACIENTES DA REGIÃO DO DEPARTAMENTO REGIONAL DE SAÚDE DE SÃO JOSÉ DO RIO PRETO - DRS.XV.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "9b008254-cce1-4d0f-9863-1354027fd570",
+      "object": "[Portal de Compras Públicas] - SRP Aquisição de medicamentos padronizados do Grupo dos Medicamentos Controlados. SS",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "29069ee5-b2bd-48ff-9a22-23b1f0a0e6a5",
+      "object": "MEDICAMENTOS E CORRELATOS",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "b5ed8454-e745-4b46-a8af-803696da0f04",
+      "object": "Aquisição de equipamentos médico-hospitalares, a fim de atender às necessidades do Hospital Universitário de Brasília (HUB).",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "ce4c82a8-65ed-4b94-abe0-b390242e9ad5",
+      "object": "[Portal de Compras Públicas] - Registro de Preços para futura e eventual aquisição de materiais odontológicos, para atender as demandas habituais da Secretaria Municipal de Saúde de Coimbra-MG.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "e6e71273-9704-4349-b09f-2a04d065addc",
+      "object": "Contratação de empresa especializada para o fornceimento de medicamentos (DIPIRIDAMOL 10 MG 2 ML), para atender as necessidades do Consórcio Público Interfederativo de Saúde da Chapada Norte – CONSAN.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "60458cbb-e7b2-4d1b-821f-15e75bdf8851",
+      "object": "Aquisição de itens diversos e de consumo hospitalar, para garantir as condições adequadas de funcionamento das ambulâncias do município de Estrela Dalva/MG, conforme especificações mínimas estabelecidas no Apêndice A do Termo de Referência.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "ab367b6b-9aed-4591-80da-6f467beffe39",
+      "object": "REGISTRO DE PREÇOS PARA EVENTUAL AQUISIÇÃO DE MATERIAIS DE ENFERMAGEM E CORRELATOS MÉDICO-HOSPITALARES, VISANDO O ABASTECIMENTO DA REDE MUNICIPAL DE SAÚDE E AO ATENDIMENTO DAS NECESSIDADES DOS USUÁRIOS DO SISTEMA PÚBLICO DE SAÚDE.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "d552f4f8-46fe-4c2b-a828-40e59afd514a",
+      "object": "Contratação de empresa especializada para prestação de serviços de limpeza hospitalar, higienização, conservação, jardinagem,asseio e desinfecção de bens móveis e imóveis, incluso desinfecção de superfícies e equipamentos, manutenção e limpeza de áreasverdes, além da limpeza e conservação de piscina. A prestação dos serviços deve abranger a disponibilização de mão de obra comdedicação exclusiva, bem como todos os insumos necessários para a execução adequada das atividades, conforme as condições eexigências estabelecidas neste instrumento.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "4ddb6ee1-32a1-42b6-b49f-e9b15813b1c4",
+      "object": "Aquisição de 06 (seis) aparelhos de ar-condicionado e contratação dos respectivos serviços de instalação, incluindo o fornecimento de todos os materiais, insumos e demais componentes necessários à sua completa execução, destinados ao Escritório Administrativo do Conselho Federal de Enfermagem – Cofen, localizado na cidade do Rio de Janeiro/RJ, conforme especificações, condições e exigências estabelecidas no Edital e seus anexos.",
+      "expectedHealth": false,
+      "review": "Fora do recorte inicial: serviço, veterinária ou compra sem produto médico explícito."
+    },
+    {
+      "id": "90b043a0-632f-4518-a3db-5a7002946d61",
+      "object": "REGISTRO DE PREÇOS PARA FUTURA E EVENTUAL CONTRATAÇÃO DE EMPRESA\r\nESPECIALIZADA PARA O FORNECIMENTO PARCELADO DE MEDICAMENTOS COM MAIOR PERCENTUAL DESCONTO SOBRE OS PREÇOS FIXADOS NO BANCO DE PREÇOS EM SAUDE (BPS) DO MINISTÉRIO DA SAUDE PARA ATENDIMENTO DAS NECESSIDADES DA SECRETARIA MUNICIPAL DE SAUDE DE RIO NOVO-MG, de acordo com o Edital.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "34236693-159d-43c7-a9d6-0cf1e07a53a3",
+      "object": "AQUISIÇÃO MATERIAL MÉDICO HOSPITALAR COM COMODATO",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "dd71ea45-2994-4f25-8b21-fcc900315839",
+      "object": "AQUISIÇÃO DE MEDICAMENTOS",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "0986959b-0133-42b0-bea3-5921e33f3e7b",
+      "object": " Materiais Respiratórios, de UTI, Centro Cirúrgico, Anestesia e Outros para a Central de Equipamentos",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "287bdd5b-a509-44ee-9692-857ccd14ae1c",
+      "object": "Registro de Preços para Aquisição de Dispositivos Médicos: Órteses, Próteses e Materiais Especiais (OPME) para o serviço de Ortopedia, especialidade Ombro, a fim de atender às necessidades do Hospital Universitário Maria Aparecida Pedrossian - Humap/UFMS, por um período estimado de 12 (doze) meses.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "bf016612-b57c-488c-867e-10cec1a69547",
+      "object": "REGISTRO DE PREÇOS PARA FUTURA E EVENTUAL AQUISIÇÃO DE PRÓTESES ODONTOLÓGICAS DESTINADAS AO ATENDIMENTO DA POPULAÇÃO MUNICIPAL, NO ÂMBITO DAS AÇÕES DE SAÚDE BUCAL DO SUS.",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "a3fb4dbb-a935-492b-a858-f5b50b27a936",
+      "object": "Aquisição de medicamento por marca específica para continuidade no atendimento de paciente(s) em cumprimento à determinação judicial. ",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    },
+    {
+      "id": "ab86742c-c468-42cb-88e6-afd29a4e9090",
+      "object": "registro de preços para possível aquisição de MEDICAMENTOS E FÓRMULAS NUTRICIONAIS a fim de atender a UPA, SAMU, Rede de Atenção Básica e Rede de Atenção Especializada à Saúde, da Secretaria de Saúde de Itanhaém por um período de 12 meses",
+      "expectedHealth": true,
+      "review": "Compra com produto de saúde explícito; objetos mistos exigem conferir os itens."
+    }
+  ]
+}

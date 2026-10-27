@@ -7,6 +7,8 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 export const dynamic = "force-dynamic";
 
 type PanelTender = {
+  is_ti: boolean;
+  health_categories: string[];
   id: string;
   title: string;
   object: string;
@@ -20,6 +22,7 @@ type PanelTender = {
   agencies: { name: string; sphere: string | null }[] | { name: string; sphere: string | null } | null;
 };
 type PanelProfile = {
+  segment_key: string;
   required_keywords: string[];
   optional_keywords: string[];
   excluded_keywords: string[];
@@ -88,8 +91,8 @@ export default async function PanelPage() {
   const { data: organization } = await supabase.from("organizations").select("id").order("created_at").limit(1).maybeSingle();
   if (!organization) redirect("/onboarding");
   const [{ data: tenders }, { data: profiles }, { data: cards }, { data: feedback }] = await Promise.all([
-    supabase.from("tenders").select("id,title,object,items_search_text,uf,municipality_code,modality_code,estimated_value,exclusive_me_epp,proposal_close_at,agencies(name,sphere)").eq("is_ti", true).not("proposal_close_at", "lt", new Date().toISOString()).order("proposal_close_at").limit(2000),
-    supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organization.id).eq("is_active", true),
+    supabase.from("tenders").select("is_ti,health_categories,id,title,object,items_search_text,uf,municipality_code,modality_code,estimated_value,exclusive_me_epp,proposal_close_at,agencies(name,sphere)").or("is_ti.eq.true,health_categories.neq.{}").not("proposal_close_at", "lt", new Date().toISOString()).order("proposal_close_at").limit(2000),
+    supabase.from("interest_profiles").select("segment_key,required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organization.id).eq("is_active", true),
     supabase.from("pipeline_cards").select("tender_id,status,tenders!inner(estimated_value,proposal_close_at)").eq("organization_id", organization.id).is("archived_at", null),
     supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organization.id).eq("user_id", authData.user.id)
   ]);
@@ -99,7 +102,7 @@ export default async function PanelPage() {
   const favoriteStates = new Map((feedback ?? []).map((row) => [row.tender_id, row.state]));
   const compatible = new Set<string>();
   for (const tender of tenderRows) {
-    if (profileRows.some((profile) => scoreTender(asProfile(profile), candidateOf(tender)).matched)) compatible.add(tender.id);
+    if (profileRows.some((profile) => (profile.segment_key === "health" ? tender.health_categories.length > 0 : tender.is_ti) && scoreTender(asProfile(profile), candidateOf(tender)).matched)) compatible.add(tender.id);
   }
   const openTenders = tenderRows.filter((tender) => !favoriteStates.has(tender.id) || favoriteStates.get(tender.id) !== "discarded");
   const ufCounts = new Map<string, number>();
