@@ -96,6 +96,7 @@ export default async function PipelinePage({ searchParams }: { searchParams: Pro
                         <Link className="font-semibold hover:text-blue-700" href={`/tenders/${tender.id}`}>{tender.title}</Link>
                         <p className="mt-2 text-xs text-slate-500">{agencyOf(tender)} · {tender.uf ?? "UF não informada"}</p>
                         <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">{tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo ${new Date(tender.proposal_close_at).toLocaleDateString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
+                        <Link className="mt-3 inline-flex text-sm font-semibold text-blue-700" href={`/pipeline/${card.id}`}>Ver comentários</Link>
                         <PipelineCardEditor
                           isArchived={archived}
                           cardId={card.id}
