@@ -41,5 +41,8 @@ jobs:
       - run: node --import=tsx scripts/setup-navigation-test.ts
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e -- tests/e2e/navigation.spec.ts
+      - name: Print disposable browser failure context
+        if: failure()
+        run: find test-results -name error-context.md -exec cat {} \;
       - if: always()
         run: supabase stop --no-backup --workdir "$NAVIGATION_TEST_WORKDIR"
