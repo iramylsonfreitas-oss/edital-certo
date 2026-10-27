@@ -19,7 +19,7 @@ begin
     raise exception 'Unexpected field in safe status projection';
   end if;
   begin
-    perform 1 from public.ingestion_runs limit 1;
+    perform checkpoint,error_message,metadata from public.ingestion_runs limit 1;
     raise exception 'Detailed collection history became readable';
   exception when insufficient_privilege then null;
   end;
