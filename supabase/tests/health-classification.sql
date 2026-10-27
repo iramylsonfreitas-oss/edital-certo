@@ -49,7 +49,9 @@ ESPECIALIZADA PARA O FORNECIMENTO PARCELADO DE MEDICAMENTOS COM MAIOR PERCENTUAL
  if cardinality(public.classify_health_object('Contratação de empresa especializada para instalação de gases medicinais'))<>0 then raise exception 'Medical gas installation service leaked into goods'; end if;
  if exists(select 1 from public.tenders where health_categories is distinct from public.classify_health_object(object)) then raise exception 'Health cache mismatch'; end if;
  if (select count(*) from public.search_tenders_by_segment(p_segment=>'health',p_show_closed=>true,p_page_size=>100))<>54 then raise exception 'Health fixture scope mismatch'; end if;
- if (select count(*) from public.search_tenders_by_segment(p_segment=>'it',p_show_closed=>true,p_page_size=>100))<>53 then raise exception 'TI fixture regression'; end if;
+ -- The two equivalent PNCP publications remain distinct in the original RPC.
+ if (select count(*) from public.search_tenders_by_segment(p_segment=>'it',p_show_closed=>true,p_page_size=>100))<>54 then raise exception 'TI source fixture regression'; end if;
+ if (select count(*) from public.search_tenders_grouped(p_segment=>'it',p_show_closed=>true,p_page_size=>100))<>53 then raise exception 'TI grouped fixture regression'; end if;
  if (select count(*) from public.search_tenders_by_segment(p_segment=>'health',p_health_category=>'equipment',p_show_closed=>true))<>1 then raise exception 'Equipment filter mismatch'; end if;
  if exists(select 1 from public.search_tenders_by_segment(p_segment=>'bad')) then raise exception 'Invalid segment returned rows'; end if;
 end;
