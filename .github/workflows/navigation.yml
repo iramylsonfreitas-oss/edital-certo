@@ -45,6 +45,8 @@ jobs:
       - run: node --import=tsx scripts/setup-navigation-test.ts
       - name: Verify health SQL classification
         run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/health-classification.sql
+      - name: Verify collection status visibility
+        run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/source-status-visibility.sql
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e -- tests/e2e/navigation.spec.ts
