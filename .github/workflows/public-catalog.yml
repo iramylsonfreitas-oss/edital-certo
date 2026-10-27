@@ -1,0 +1,32 @@
+name: Public catalog quality and mobile performance
+on:
+  pull_request:
+    paths:
+      - 'index.html'
+      - 'scripts/serve-public-validation.mjs'
+      - 'playwright.public.config.ts'
+      - 'tests/public/**'
+      - '.github/workflows/public-catalog.yml'
+permissions:
+  contents: read
+jobs:
+  mobile-catalog:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PUBLIC_BASELINE_SHA: 3caa4abea74032b5b3fb109384781e7b516579eb
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: git fetch --depth=1 origin "$PUBLIC_BASELINE_SHA"
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx playwright test --config playwright.public.config.ts
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-catalog-validation
+          path: test-results/

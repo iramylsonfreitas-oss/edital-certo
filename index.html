@@ -314,6 +314,11 @@
         <section class="results-area" aria-label="Lista de oportunidades">
           <div class="results-toolbar"><div class="results-count" id="resultCount" aria-live="polite"></div><div class="field sort-field"><label class="sr-only" for="sortBy">Ordenar por</label><select id="sortBy"><option value="score">Maior aderência</option><option value="deadline">Prazo mais próximo</option><option value="value">Maior valor estimado</option></select></div></div>
           <div class="cards" id="tenderList" aria-live="polite" aria-busy="false"></div>
+          <nav id="resultPagination" class="results-toolbar" aria-label="Paginação das oportunidades" hidden>
+            <button id="prevResultsPage" class="button secondary small" type="button">Anterior</button>
+            <span id="resultPageStatus" role="status"></span>
+            <button id="nextResultsPage" class="button secondary small" type="button">Próxima</button>
+          </nav>
         </section>
       </div>
     </section>
@@ -362,6 +367,9 @@
     let dataset = { atualizadoEm: null, status: "erro", mensagem: "Aguardando o primeiro carregamento.", parametros: {}, total: 0, registros: [] };
     const DATA_CACHE_KEY = "edital-certo-data-cache-v1";
     const AUTO_REFRESH_INTERVAL_MS = 30 * 60 * 1000;
+    const RESULTS_PAGE_SIZE = 50;
+    const CALENDAR_FORMATTER = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" });
+    const DATE_FORMATTER = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" });
     const STORAGE_KEYS = {
       profile: "edital-certo-profile-v1",
       favorites: "edital-certo-favorites-v1",
@@ -390,6 +398,7 @@
     let lastRefreshResult = "pending";
     let lastRefreshError = "";
     let refreshInProgress = false;
+    let resultsPage = 1;
     const byId = (id) => document.getElementById(id);
     const isExample = (raw) => raw.exemplo === true;
 
@@ -466,22 +475,21 @@
     }
     function formatDate(value) {
       const date = dateToInstant(value);
-      return date ? new Intl.DateTimeFormat("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" }).format(date) : "Não informado";
+      return date ? DATE_FORMATTER.format(date) : "Não informado";
     }
-    function daysUntil(value) {
+    function calendarDay(date) {
+      const parts = Object.fromEntries(CALENDAR_FORMATTER.formatToParts(date).map((part) => [part.type, part.value]));
+      return Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day));
+    }
+    function daysUntil(value, reference = new Date(), today = calendarDay(reference)) {
       const date = dateToInstant(value);
       if (!date) return null;
-      const nowParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
-      const targetParts = new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(date);
-      const dateKey = (parts) => parts.filter((part) => ["year", "month", "day"].includes(part.type)).map((part) => part.value).join("-");
-      const today = new Date(`${dateKey(nowParts)}T00:00:00-03:00`);
-      const target = new Date(`${dateKey(targetParts)}T00:00:00-03:00`);
-      return Math.floor((target.getTime() - today.getTime()) / 86400000);
+      return Math.floor((calendarDay(date) - today) / 86400000);
     }
-    function deadlineInfo(record) {
-      const days = daysUntil(record.closesAt);
+    function deadlineInfo(record, reference = new Date(), today = calendarDay(reference)) {
+      const days = daysUntil(record.closesAt, reference, today);
       if (days == null) return { label: "Prazo não informado", className: "deadline-closed", closed: true };
-      if (days < 0 || (days === 0 && dateToInstant(record.closesAt).getTime() < Date.now())) return { label: "Encerrada", className: "deadline-closed", closed: true };
+      if (days < 0 || (days === 0 && dateToInstant(record.closesAt).getTime() < reference.getTime())) return { label: "Encerrada", className: "deadline-closed", closed: true };
       if (days === 0) return { label: "Encerra hoje", className: "deadline-urgent", closed: false };
       if (days <= 3) return { label: `Faltam ${days} ${days === 1 ? "dia" : "dias"}`, className: "deadline-urgent", closed: false };
       if (days <= 7) return { label: `Faltam ${days} dias`, className: "deadline-soon", closed: false };
@@ -497,6 +505,9 @@
     }
     function getMatch(record) {
       const profile = state.profile;
+      if (!profile.requiredKeywords.length && !profile.optionalKeywords.length && !profile.excludedKeywords.length && !profile.ufs.length) {
+        return { matched: true, score: null, reasons: [] };
+      }
       const searchText = normalizeText(`${record.title} ${record.object} ${record.agency}`);
       const excluded = profile.excludedKeywords.filter((term) => searchText.includes(normalizeText(term)));
       if (excluded.length) return { matched: false, score: 0, reasons: [`Excluída por: ${excluded.join(", ")}`] };
@@ -622,17 +633,17 @@
       if (mode === "over2m") return value > 2000000;
       return true;
     }
-    function getFilteredRecords() {
+    function getFilteredRecords(evaluated) {
       const query = normalizeText(state.search);
-      return records.map((record) => ({ record, match: getMatch(record), deadline: deadlineInfo(record) }))
+      return evaluated
         .filter(({ record }) => {
           if (state.listMode === "discarded") return state.discarded.has(record.id);
           if (state.discarded.has(record.id)) return false;
           if (state.listMode === "favorites" && !state.favorites.has(record.id)) return false;
           return true;
         })
-        .filter(({ record, match }) => {
-          if (!state.showClosed && deadlineInfo(record).closed && !record.outsideCurrent) return false;
+        .filter(({ record, match, deadline }) => {
+          if (!state.showClosed && deadline.closed && !record.outsideCurrent) return false;
           if (!match.matched) return false;
           if (query && !normalizeText(`${record.title} ${record.agency} ${record.uf}`).includes(query)) return false;
           if (state.uf && record.uf !== state.uf) return false;
@@ -658,14 +669,26 @@
       button.setAttribute("aria-label", isOpen ? "Fechar filtros avançados" : "Abrir filtros avançados");
       button.setAttribute("aria-label", `${isOpen ? "Fechar" : "Abrir"} filtros avançados, ${activeCount} ativos`);
     }
-    function renderOpportunities() {
+    function renderOpportunities(keepPage = false) {
       updateFilterToggle();
       const list = byId("tenderList");
       list.setAttribute("aria-busy", "true");
-      const items = getFilteredRecords();
+      const reference = new Date();
+      const today = calendarDay(reference);
+      const evaluated = records.map((record) => ({ record, match: getMatch(record), deadline: deadlineInfo(record, reference, today) }));
+      const items = getFilteredRecords(evaluated);
+      const pages = Math.max(1, Math.ceil(items.length / RESULTS_PAGE_SIZE));
+      resultsPage = keepPage ? Math.max(1, Math.min(resultsPage, pages)) : 1;
+      const start = (resultsPage - 1) * RESULTS_PAGE_SIZE;
       list.replaceChildren();
-      byId("resultCount").replaceChildren(createElement("strong", "", `${items.length} de ${records.length} oportunidades`), document.createTextNode(state.listMode === "discarded" ? " · descartadas" : " · após filtros"));
-      for (const item of items) list.append(renderTenderCard(item.record, item.match, item.deadline));
+      byId("resultCount").replaceChildren(createElement("strong", "", `${items.length} de ${records.length} oportunidades`), document.createTextNode((state.listMode === "discarded" ? " · descartadas" : " · após filtros") + (items.length ? ` · exibindo ${start + 1} a ${Math.min(start + RESULTS_PAGE_SIZE, items.length)}` : "")));
+      const fragment = document.createDocumentFragment();
+      for (const item of items.slice(start, start + RESULTS_PAGE_SIZE)) fragment.append(renderTenderCard(item.record, item.match, item.deadline));
+      list.append(fragment);
+      byId("resultPagination").hidden = pages <= 1;
+      byId("prevResultsPage").disabled = resultsPage <= 1;
+      byId("nextResultsPage").disabled = resultsPage >= pages;
+      byId("resultPageStatus").textContent = `Página ${resultsPage} de ${pages}`;
       if (!items.length) {
         const empty = createElement("div", "empty");
         empty.append(createElement("strong", "", state.listMode === "discarded" ? "Nenhum descarte para mostrar" : "Nenhuma oportunidade encontrada"));
@@ -690,15 +713,13 @@
         || profile.excludedKeywords.length > 0
         || profile.ufs.length > 0;
       byId("compatibleLabel").textContent = hasConfiguredProfile ? "Oportunidades compatíveis" : "Oportunidades no segmento";
-      byId("compatibleTotal").textContent = String(records.filter((record) => {
-        const isOpen = !deadlineInfo(record).closed;
-        return isOpen && (!hasConfiguredProfile || getMatch(record).matched);
-      }).length);
-      byId("urgentTotal").textContent = String(records.filter((record) => { const info = deadlineInfo(record); return !info.closed && daysUntil(record.closesAt) <= 3; }).length);
+      byId("compatibleTotal").textContent = String(evaluated.filter(({ match, deadline }) => !deadline.closed && (!hasConfiguredProfile || match.matched)).length);
+      byId("urgentTotal").textContent = String(evaluated.filter(({ record, deadline }) => !deadline.closed && daysUntil(record.closesAt, reference, today) <= 3).length);
       byId("favoriteTotal").textContent = String(state.favorites.size);
     }
     function renderTenderCard(record, match, deadline) {
       const card = createElement("article", "tender-card");
+      card.dataset.tenderId = record.id;
       const top = createElement("div", "card-top");
       top.append(createElement("h2", "tender-title", record.title));
       const badge = scoreBadge(match);
@@ -1280,6 +1301,8 @@
       }
     }
     function wireEvents() {
+      byId("prevResultsPage").addEventListener("click", () => { resultsPage -= 1; renderOpportunities(true); byId("resultCount").scrollIntoView({ block: "start" }); });
+      byId("nextResultsPage").addEventListener("click", () => { resultsPage += 1; renderOpportunities(true); byId("resultCount").scrollIntoView({ block: "start" }); });
       for (const button of document.querySelectorAll("[data-view]")) button.addEventListener("click", () => activateView(button.dataset.view));
       byId("openProfile").addEventListener("click", openProfile);
       byId("editProfileInline").addEventListener("click", openProfile);
