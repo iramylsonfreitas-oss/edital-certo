@@ -40,6 +40,7 @@ jobs:
           supabase start --workdir "$NAVIGATION_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
       - run: node --import=tsx scripts/setup-navigation-test.ts
       - run: npx playwright install --with-deps chromium
+      - run: npm run build
       - run: npm run test:e2e -- tests/e2e/navigation.spec.ts
       - name: Print disposable browser failure context
         if: failure()

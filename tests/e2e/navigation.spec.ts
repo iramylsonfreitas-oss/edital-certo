@@ -23,13 +23,14 @@ test("search and clear filters preserve the document and account session",async(
  expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("same-document");
 });
 test("mobile page switches keep the session and isolate organization data",async({page})=>{
- test.setTimeout(90_000); // Four routes compile lazily in the disposable Next development server.
  await page.setViewportSize({width:360,height:740});
  await login(page);
  for(const title of ["Pipeline","Prazos","Painel","Oportunidades"]) {
    console.log(`Navigating to ${title}`);
    await page.getByRole("navigation",{name:"Navegação móvel",exact:true}).getByRole("link",{name:title,exact:true}).click();
+   console.log(`Clicked ${title}: ${page.url()}`);
    await expect(page.getByRole("heading",{name:title,exact:true})).toBeVisible();
+   console.log(`Ready ${title}`);
    await expect(page.locator("main[aria-busy=true]")).toHaveCount(0);
    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
    if(title==="Pipeline") {
