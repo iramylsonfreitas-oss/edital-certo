@@ -263,11 +263,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <h1 className="mt-2 text-2xl font-bold">Oportunidades</h1>
         </div>
         <AppNavigation active="/dashboard" />
-        <nav className="hidden flex-wrap gap-3 text-sm font-medium md:flex">
-          <Link href="/profiles">Perfis</Link>
-          <Link href="/alerts">Alertas</Link>
-          <Link href="/settings/privacy">Privacidade</Link>
-          <Link href="/settings/access">Acessos</Link>
+        <nav aria-label="Configurações e acessos" className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium md:w-auto">
+          <Link className="inline-flex min-h-11 items-center" href="/profiles">Perfis</Link>
+          <Link className="inline-flex min-h-11 items-center" href="/alerts">Alertas</Link>
+          <Link className="inline-flex min-h-11 items-center" href="/settings/privacy">Privacidade</Link>
+          <Link className="inline-flex min-h-11 items-center rounded-lg border border-slate-300 px-3 py-2 dark:border-slate-600" href="/settings/access">Acessos de avaliação</Link>
         </nav>
       </header>
       <p className="mt-4 text-sm font-semibold">Segmento: {segmentLabels[segment]}{segment === "health" ? " · Medicamentos, materiais hospitalares e equipamentos médicos" : ""}</p>
