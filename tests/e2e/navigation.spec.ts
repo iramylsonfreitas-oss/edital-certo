@@ -7,7 +7,7 @@ async function login(page:Page) {
  await page.getByLabel("E-mail",{exact:true}).fill("navigation-admin@example.invalid");
  await page.getByLabel("Senha",{exact:true}).fill("local-navigation-only-6419");
  await page.getByRole("button",{name:"Entrar com senha"}).click();
- await expect(page.getByText(/2 oportunidade\(s\) encontradas/)).toBeVisible({timeout:30000});
+ await expect(page.getByText(/53 oportunidade\(s\) encontradas/)).toBeVisible({timeout:30000});
 }
 test("search and clear filters preserve the document and account session",async({page})=>{
  await login(page);
@@ -18,7 +18,7 @@ test("search and clear filters preserve the document and account session",async(
  await expect(page.getByText(/1 oportunidade\(s\) encontradas/)).toBeVisible();
  expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("same-document");
  await page.getByRole("link",{name:"Limpar filtros",exact:true}).click();
- await expect(page.getByText(/2 oportunidade\(s\) encontradas/)).toBeVisible();
+ await expect(page.getByText(/53 oportunidade\(s\) encontradas/)).toBeVisible();
  await expect(page.getByLabel("Buscar oportunidades",{exact:true})).toHaveValue("");
  expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("same-document");
 });
@@ -38,4 +38,21 @@ test("mobile page switches keep the session and isolate organization data",async
      await expect(page.getByText("Software de teste de navegação",{exact:true})).toHaveCount(0);
    }
  }
+});
+
+test("pagination preserves the document, order and complete result set", async ({ page }) => {
+ await login(page);
+ await page.evaluate(() => { document.documentElement.dataset.navigationMarker = "pagination-document"; });
+ const firstTitle = await page.getByRole("heading", { level: 2 }).first().innerText();
+ await expect(page.getByRole("heading", { level: 2 })).toHaveCount(50);
+ await page.getByRole("navigation", { name: "Paginação", exact: true }).getByRole("link", { name: "Próxima →", exact: true }).click();
+ await expect(page.getByText(/página 2 de 2/)).toBeVisible();
+ await expect(page.getByRole("heading", { level: 2 })).toHaveCount(3);
+ await expect(page.getByRole("link", { name: "Próxima →", exact: true })).toHaveCount(0);
+ expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("pagination-document");
+ await page.getByRole("link", { name: "← Anterior", exact: true }).click();
+ await expect(page.getByText(/página 1 de 2/)).toBeVisible();
+ await expect(page.getByRole("heading", { level: 2 })).toHaveCount(50);
+ await expect(page.getByRole("heading", { level: 2 }).first()).toHaveText(firstTitle);
+ expect(await page.locator("html").getAttribute("data-navigation-marker")).toBe("pagination-document");
 });

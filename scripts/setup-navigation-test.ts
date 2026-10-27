@@ -24,6 +24,9 @@ execFileSync("psql",[db,"-X","-qAt","-v","ON_ERROR_STOP=1","-c",`
  insert into public.tenders(id,source_key,source_id,title,object,proposal_close_at,raw_data) values
  ('${tender}','navigation-ci','${tender}','Nobreak de teste de navegação','Aquisição de nobreak',now()+interval '10 days','{"situacaoCompraId":1}'),
  ('${second}','navigation-ci','${second}','Software de teste de navegação','Licença de software',now()+interval '12 days','{"situacaoCompraId":1}');
+ insert into public.tenders(id,source_key,source_id,title,object,proposal_close_at,raw_data)
+ select gen_random_uuid(),'navigation-ci','pagination-'||n,'Notebook de paginação '||n,'Aquisição de notebook',now()+interval '15 days'+n*interval '1 minute','{"situacaoCompraId":1}'::jsonb
+ from generate_series(1,51) n;
  insert into public.pipeline_cards(organization_id,tender_id,created_by,notes) values
  ('${org}','${tender}','${actors.admin}','Anotação exclusiva da conta de teste'),
  ('${otherOrg}','${second}','${actors.outsider}','Anotação de outra organização');

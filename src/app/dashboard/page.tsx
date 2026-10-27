@@ -182,22 +182,20 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const searchOrder = new Map<string, number>();
   searchRows.forEach((row, index) => searchOrder.set(row.tender_id, index));
   const tenderIds = [...searchOrder.keys()];
-  const { data: rawTenderRows } = tenderIds.length
-    ? await supabase
-      .from("tenders")
-      .select("id,title,object,items_search_text,ti_match_source,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
-      .in("id", tenderIds)
-    : { data: [] };
+  // All three reads depend only on the search IDs, not on each other's results.
+  // Keep the authenticated client and tenant/user scopes for private state.
+  const [{ data: rawTenderRows }, { data: feedbackRows }, { data: pipelineRows }] = tenderIds.length
+    ? await Promise.all([
+      supabase.from("tenders")
+        .select("id,title,object,items_search_text,ti_match_source,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
+        .in("id", tenderIds),
+      supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", tenderIds),
+      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", tenderIds)
+    ])
+    : [{ data: [] }, { data: [] }, { data: [] }];
   const databaseTenders = ((rawTenderRows ?? []) as DatabaseTender[])
     .sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
   const scoringProfiles = ((rawProfiles ?? []) as ProfileRow[]).map(profileForScoring);
-  const currentTenderIds = databaseTenders.map((tender) => tender.id);
-  const [{ data: feedbackRows }, { data: pipelineRows }] = currentTenderIds.length
-    ? await Promise.all([
-      supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", currentTenderIds),
-      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", currentTenderIds)
-    ])
-    : [{ data: [] }, { data: [] }];
   const feedbackByTender = new Map((feedbackRows ?? []).map((item) => [item.tender_id, item.state]));
   const pipelineTenderIds = new Set((pipelineRows ?? []).map((item) => item.tender_id));
 
