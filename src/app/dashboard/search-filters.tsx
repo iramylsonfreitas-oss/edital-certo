@@ -74,9 +74,10 @@ export function SearchFilters({ values, activeCount }: { values: DashboardFilter
         </label>
         <label className="text-sm font-medium">Ordenar por
           <select className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900" defaultValue={values.sort} name="sort">
-            <option value="relevance">Maior aderência</option><option value="deadline">Prazo</option><option value="value">Maior valor</option>
+            <option value="relevance">Relevância da busca</option><option value="deadline">Prazo</option><option value="value">Maior valor</option>
           </select>
         </label>
+        <p className="text-xs text-slate-600 dark:text-slate-300">A relevância usa o texto pesquisado. Sem busca, a ordem é por prazo. A nota de aderência aparece nos resultados quando há um perfil configurado.</p>
         <label className="flex items-center gap-2 text-sm font-medium">
           <input defaultChecked={values.showClosed} name="showClosed" type="checkbox" value="true" />
           Mostrar encerradas

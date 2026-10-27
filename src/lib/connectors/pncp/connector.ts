@@ -2,6 +2,7 @@ import { z } from "zod";
 import type { NormalizedTender, ProcurementConnector, SourcePage, SourceQuery } from "@/lib/connectors/types";
 import { pncpPageSchema, pncpTenderSchema } from "./schema";
 import { normalizePncpDateTime } from "./date-time";
+import { tenderTitle } from "@/lib/pncp/presentation";
 
 const pncpBaseUrl = process.env.PNCP_BASE_URL ?? "https://pncp.gov.br/api/consulta";
 const pageSizeMaximum = 500;
@@ -101,7 +102,7 @@ export class PncpConnector implements ProcurementConnector {
             municipalityName: unit?.municipioNome ?? null
           }
         : null,
-      title: record.objetoCompra.trim().slice(0, 512) || record.numeroControlePNCP,
+      title: tenderTitle(record.objetoCompra, 512) || record.numeroControlePNCP,
       object: record.objetoCompra,
       modalityCode: record.modalidadeId == null ? null : String(record.modalidadeId),
       modalityName: record.modalidadeNome ?? null,
@@ -109,7 +110,7 @@ export class PncpConnector implements ProcurementConnector {
       uf: unit?.ufSigla ?? null,
       municipalityCode: municipalityCode == null ? null : String(municipalityCode),
       municipalityName: unit?.municipioNome ?? null,
-      estimatedValue: record.valorTotalEstimado ?? null,
+      estimatedValue: typeof record.valorTotalEstimado === "number" && record.valorTotalEstimado > 0 ? record.valorTotalEstimado : null,
       publishedAt: normalizePncpDateTime(record.dataPublicacaoPncp),
       proposalOpenAt: normalizePncpDateTime(record.dataAberturaProposta),
       proposalCloseAt: normalizePncpDateTime(record.dataEncerramentoProposta),

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { tenderTitle, tenderValue } from "@/lib/pncp/presentation";
+import { TiItemValue, type TiItemSummary } from "@/components/ti-item-value";
 import { healthCategories, segmentKey, segmentLabels } from "@/lib/segments/health";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -194,17 +196,19 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const tenderIds = [...searchOrder.keys()];
   // All three reads depend only on the search IDs, not on each other's results.
   // Keep the authenticated client and tenant/user scopes for private state.
-  const [{ data: rawTenderRows }, { data: feedbackRows }, { data: pipelineRows }] = tenderIds.length
+  const [{ data: rawTenderRows }, { data: feedbackRows }, { data: pipelineRows }, { data: itemSummaries }] = tenderIds.length
     ? await Promise.all([
       supabase.from("tenders")
         .select("id,title,object,items_search_text,ti_match_source,health_categories,uf,municipality_name,municipality_code,estimated_value,modality_code,proposal_close_at,modality_name,exclusive_me_epp,agencies(name,sphere)")
         .in("id", tenderIds),
       supabase.from("tender_feedback").select("tender_id,state").eq("organization_id", organizationId).eq("user_id", authData.user.id).in("tender_id", tenderIds),
-      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", tenderIds)
+      supabase.from("pipeline_cards").select("tender_id").is("archived_at", null).eq("organization_id", organizationId).in("tender_id", tenderIds),
+      supabase.rpc("tender_it_item_summary", { p_tender_ids: tenderIds })
     ])
-    : [{ data: [] }, { data: [] }, { data: [] }];
+    : [{ data: [] }, { data: [] }, { data: [] }, { data: [] }];
   const databaseTenders = ((rawTenderRows ?? []) as DatabaseTender[])
     .sort((first, second) => (searchOrder.get(first.id) ?? 0) - (searchOrder.get(second.id) ?? 0));
+  const itemSummaryById = new Map<string, TiItemSummary>(((itemSummaries ?? []) as TiItemSummary[]).map(row => [row.tender_id, row]));
   const scoringProfiles = ((rawProfiles ?? []) as ProfileRow[]).map(profileForScoring);
   const feedbackByTender = new Map((feedbackRows ?? []).map((item) => [item.tender_id, item.state]));
   const pipelineTenderIds = new Set((pipelineRows ?? []).map((item) => item.tender_id));
@@ -310,7 +314,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               return (
                 <article className="rounded-xl border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-800" key={record.numeroControlePNCP}>
                   <div className="flex flex-wrap justify-between gap-3">
-                    <h2 className="max-w-3xl font-semibold">{record.objetoCompra.slice(0, 512)}</h2>
+                    <h2 className="max-w-3xl font-semibold">{tenderTitle(record.objetoCompra)}</h2>
                     <span className="text-sm text-slate-600 dark:text-slate-300">{record.unidadeOrgao?.ufSigla ?? "UF não informada"}</span>
                   </div>
                   <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{agencyName(record)}</p>
@@ -348,11 +352,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 listMode={view}
               >
                 <div className="flex flex-wrap justify-between gap-3">
-                  <h2 className="max-w-3xl font-semibold"><Link className="hover:text-blue-700" href={`/tenders/${tender.id}`}>{tender.title}</Link></h2>
+                  <h2 className="max-w-3xl font-semibold"><Link className="hover:text-blue-700" href={`/tenders/${tender.id}`}>{tenderTitle(tender.title || tender.object)}</Link></h2>
                   <span className="text-sm text-slate-600 dark:text-slate-300">{tender.uf ?? "UF não informada"}</span>
                 </div>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{tender.agencies && Array.isArray(tender.agencies) ? tender.agencies.map((agency) => agency.name).join(", ") : tender.agencies?.name ?? ""}</p>
-                <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tender.estimated_value == null ? "Valor não informado" : tender.estimated_value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
+                <p className="mt-3 text-sm">{tender.modality_name ?? "Modalidade não informada"} · {tenderValue(tender.estimated_value)}{tender.proposal_close_at ? ` · Prazo: ${new Date(tender.proposal_close_at).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" })}` : ""}</p>
+                {segment === "it" ? <TiItemValue summary={itemSummaryById.get(tender.id)} /> : null}
                 <div className="mt-3 flex flex-wrap gap-2">
                   {segment === "health" ? healthCategories.filter(category => tender.health_categories?.includes(category.key)).map(category => <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-900" key={category.key}>{category.name}</span>) : null}
                   {segment === "it" && tender.ti_match_source === "items" ? <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-800 dark:bg-blue-950 dark:text-blue-200">TI identificada nos itens</span> : null}

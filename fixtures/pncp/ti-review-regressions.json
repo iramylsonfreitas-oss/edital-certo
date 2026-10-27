@@ -1,0 +1,86 @@
+[
+  {
+    "expected": false,
+    "text": "Aquisição de Cartucho de Vacina Meningocócica ACWY (Atenuada)"
+  },
+  {
+    "expected": false,
+    "text": "Aquisição de cartuchos para aplicação de graxa em máquinas"
+  },
+  {
+    "expected": false,
+    "text": "Levantamento topográfico e geração de nuvem de pontos"
+  },
+  {
+    "expected": false,
+    "text": "Serviço de fornecimento de combustível e lubrificantes, com sistema informatizado e cartões eletrônicos"
+  },
+  {
+    "expected": false,
+    "text": "Gestão da frota de veículos com serviços de manutenção, peças e operação de sistema informatizado"
+  },
+  {
+    "expected": false,
+    "text": "Reforma da sala da diretoria de tecnologia da informação"
+  },
+  {
+    "expected": false,
+    "text": "Aquisição de medicamentos e insumos farmacêuticos"
+  },
+  {
+    "expected": false,
+    "text": "Aquisição de gêneros alimentícios para a rede escolar"
+  },
+  {
+    "expected": false,
+    "text": "Recapagem de pneus para veículos"
+  },
+  {
+    "expected": true,
+    "text": "Aquisição de cartuchos de tinta para impressoras"
+  },
+  {
+    "expected": true,
+    "text": "Fornecimento de toner para impressoras laser"
+  },
+  {
+    "expected": true,
+    "text": "Licenciamento de software para gestão da frota de veículos"
+  },
+  {
+    "expected": true,
+    "text": "Desenvolvimento de software para processamento de nuvem de pontos"
+  },
+  {
+    "expected": true,
+    "text": "Aquisição de medicamentos e notebooks para o hospital municipal"
+  },
+  {
+    "expected": true,
+    "text": "Aquisição de computadores desktop para unidade básica de saúde"
+  },
+  {
+    "expected": true,
+    "text": "Reforma de sala com instalação de cabeamento estruturado e rede de dados"
+  },
+  {
+    "expected": true,
+    "text": "Aquisição de mobiliário, eletrodomésticos e equipamentos de informática"
+  },
+  {
+    "expected": true,
+    "text": "Locação de sistema web de gestão pública municipal em nuvem"
+  },
+  {
+    "expected": true,
+    "text": "Serviços de atualização tecnológica da solução de virtualização de fitas cartucho para plataforma mainframe"
+  },
+  {
+    "expected": true,
+    "text": "Prestação de serviço de uso de software para gerenciamento e controle do abastecimento dos combustíveis para a frota municipal"
+  },
+  {
+    "expected": true,
+    "text": "Serviços de rastreamento e telemetria veicular, incluindo sistema informatizado para gerenciamento da frota de veículos"
+  }
+]

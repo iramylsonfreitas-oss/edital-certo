@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -9,13 +10,16 @@ type Feedback = { organization_id: string; state: "favorite" | "discarded" };
 export function FeedbackControls({
   tenderId,
   organizations,
-  feedback
+  feedback,
+  followedOrganizations
 }: {
   tenderId: string;
   organizations: OrganizationOption[];
   feedback: Feedback[];
+  followedOrganizations: string[];
 }) {
   const [organizationId, setOrganizationId] = useState(organizations[0]?.id ?? "");
+  const [followed, setFollowed] = useState(followedOrganizations);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
   const [feedbackByOrganization, setFeedbackByOrganization] = useState<Record<string, Feedback["state"] | null>>({});
@@ -47,6 +51,18 @@ export function FeedbackControls({
     }
   }
 
+  async function follow() {
+    if (busy || !organizationId) return;
+    setBusy(true); setMessage("");
+    try {
+      const { error } = await createSupabaseBrowserClient().rpc("follow_tender", { p_organization_id: organizationId, p_tender_id: tenderId });
+      if (error) throw new Error("Não foi possível acompanhar este edital. Verifique sua sessão e permissão.");
+      setFollowed(current => [...current, organizationId]);
+      setMessage("Acompanhamento ativado na etapa Triagem.");
+    } catch (error) { setMessage(error instanceof Error ? error.message : "Não foi possível acompanhar."); }
+    finally { setBusy(false); }
+  }
+
   return (
     <section aria-label="Ações da oportunidade" className="mt-8 rounded-xl border border-slate-200 p-4 dark:border-slate-700">
       <div className="flex flex-wrap items-end gap-3">
@@ -57,6 +73,9 @@ export function FeedbackControls({
             </select>
           </label>
         )}
+        {followed.includes(organizationId)
+          ? <Link className="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white" href="/pipeline">Abrir no pipeline</Link>
+          : <button className="rounded-lg bg-blue-700 px-4 py-2 font-semibold text-white disabled:opacity-50" disabled={busy || !organizationId} onClick={() => void follow()} type="button">Acompanhar</button>}
         <button className={`rounded-lg px-4 py-2 font-semibold disabled:opacity-50 ${currentFeedback === "favorite" ? "bg-amber-100 text-amber-900" : "border border-slate-300"}`} disabled={busy || !organizationId} onClick={() => void save(currentFeedback === "favorite" ? null : "favorite")} type="button">{currentFeedback === "favorite" ? "Remover favorito" : "Favoritar"}</button>
         <button className={`rounded-lg px-4 py-2 font-semibold disabled:opacity-50 ${currentFeedback === "discarded" ? "bg-red-100 text-red-900" : "border border-slate-300"}`} disabled={busy || !organizationId} onClick={() => void save(currentFeedback === "discarded" ? null : "discarded")} type="button">{currentFeedback === "discarded" ? "Reincluir" : "Descartar"}</button>
       </div>

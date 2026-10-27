@@ -6,6 +6,8 @@ on:
       - 'src/components/**'
       - 'src/lib/pncp/**'
       - 'src/lib/segments/**'
+      - 'src/lib/pncp/presentation*'
+      - 'fixtures/pncp/ti-review-regressions.json'
       - 'proxy.ts'
       - 'src/proxy.ts'
       - 'supabase/migrations/**'
@@ -51,6 +53,8 @@ jobs:
         run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/source-status-visibility.sql
       - name: Verify evaluation access and tenant isolation
         run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/evaluation-access.sql
+      - name: Verify reviewed catalog classification and values
+        run: psql "$NAVIGATION_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/catalog-review-quality.sql
       - run: npx playwright install --with-deps chromium
       - run: npm run build
       - run: npm run test:e2e -- tests/e2e/navigation.spec.ts
