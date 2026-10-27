@@ -2,6 +2,18 @@
 
 Estimativas em story points. Cada item liga requisito, entrega prevista e critério verificável.
 
+## Entregas recentes e sequência de continuidade — 27/10/2026
+
+| Item | Situação verificável | O que falta |
+|---|---|---|
+| E5-03 — Alertas de e-mail | Integração, persistência, cancelamento e recibos assinados implementados no PR #26; envio desativado em desenvolvimento | Domínio remetente verificado, DNS, credenciais e validação de um piloto real antes de ativar |
+| E6-02 — Comentários | Interface e auditoria implementadas no PR #27; migração e regressão SQL validadas em desenvolvimento | Concluir as verificações do PR e publicar a interface com a migração correspondente no ambiente de destino |
+| E6-02 — Anexos privados | Modelo de documentos existe; upload privado ainda não tem fluxo de uso | Próxima entrega que pode avançar sem depender do remetente: armazenamento privado, limites, permissões e testes de isolamento |
+| E1-02 — Convites | Organização e papéis existem; convite não tem fluxo completo | Implementar aceite seguro; envio de convite depende do remetente |
+| E6-03 — Lembretes | Calendário com lembretes opcionais e exportação .ics implementados | Disparo por e-mail continua sujeito à ativação do remetente |
+
+Os PRs #26 e #27 não equivalem a funcionalidades publicadas em produção. Os critérios completos abaixo continuam sendo a referência de aceite; concluir comentários não conclui o item de anexos. Cobrança, IA e canais adicionais permanecem posteriores ao fluxo principal de descoberta e acompanhamento.
+
 ## Épico E1 — Identidade, organizações e acesso
 
 ### E1-01 — Entrar com senha ou magic link (5 pts)

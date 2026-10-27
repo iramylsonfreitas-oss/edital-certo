@@ -100,6 +100,7 @@ O arquivo `fixtures/pncp/real-response.json` contém a resposta real da captura.
 - A página de detalhe consulta itens e documentos nas rotas oficiais do PNCP, com paginação e tratamento de falhas. A carga em lote e o matching por itens exigem as migrations adicionais descritas em `docs/batch-items-validation.md`.
 - Consentimento fica registrado no cadastro; os textos legais são iniciais e exigem dados do controlador, retenção definida e revisão jurídica.
 - O acompanhamento possui etapas, checklist, arquivamento e restauração. A tela de prazos exporta calendário com lembretes opcionais; consulte `docs/deadline-calendar.md`. Alertas enviados, preços, concorrência, IA, cobrança e WhatsApp continuam pendentes.
+- O pipeline tem histórico paginado de comentários, autoria, exclusão com confirmação e auditoria sem cópia do texto. Leitores consultam; analistas e administradores comentam conforme as permissões da organização. Consulte `docs/pipeline-comments.md`; aplique a migração de comentários antes de publicar essa interface.
 
 ## Documentação do projeto
 
