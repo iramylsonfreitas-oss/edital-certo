@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { fetchPublicPncpCatalog, filterPublicPncpRecords, parsePncpDate, type PublicPncpRecord } from "@/lib/pncp/public-catalog";
+import { filterPublicPncpRecords, parsePncpDate, type PublicPncpRecord } from "@/lib/pncp/public-catalog";
+import { fetchCachedPublicPncpCatalog } from "@/lib/pncp/public-catalog-cache";
 import { toSafeHttpUrl } from "@/lib/security/safe-url";
 import { AppNavigation } from "@/components/app-navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -142,8 +143,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const requestedPage = Number(parameter(params.page) ?? "1");
   const page = Number.isInteger(requestedPage) && requestedPage > 0 ? Math.min(requestedPage, 100_000) : 1;
   const pageSize = 50;
+  const urgentLimit = new Date(new Date().getTime() + 3 * 86_400_000).toISOString();
 
-  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }, { count: sampleCount }, { count: favoriteCount }, { data: rawProfiles }] = await Promise.all([
+  const [{ data: rawSearchRows, error: searchError }, { data: latestRun }, { count: sampleCount }, { count: favoriteCount }, { data: rawProfiles }, { data: urgentRows }] = await Promise.all([
     supabase.rpc("search_tenders_for_list", {
       p_query: queryValue,
       p_uf: uf,
@@ -168,16 +170,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       .maybeSingle(),
     supabase.from("tenders").select("id", { count: "exact", head: true }).eq("is_ti", true),
     supabase.from("tender_feedback").select("tender_id", { count: "exact", head: true }).eq("organization_id", organizationId).eq("user_id", authData.user.id).eq("state", "favorite"),
-    supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true)
+    supabase.from("interest_profiles").select("required_keywords,optional_keywords,excluded_keywords,ufs,municipality_codes,modality_codes,agency_terms,spheres,minimum_value,maximum_value,exclusive_me_epp,cnae_codes").eq("organization_id", organizationId).eq("is_active", true),
+    supabase.rpc("search_tenders_for_list", {
+      p_query: queryValue, p_uf: uf, p_modality_code: modality, p_minimum_value: minimumValue, p_maximum_value: maximumValue,
+      p_closes_before: urgentLimit, p_sort: "deadline", p_page: 1, p_page_size: 1, p_organization_id: organizationId,
+      p_list_mode: view, p_sphere: sphere, p_show_closed: false
+    })
   ]);
 
   const searchRows = (rawSearchRows ?? []) as TenderSearchRow[];
-  const urgentLimit = new Date(new Date().getTime() + 3 * 86_400_000).toISOString();
-  const { data: urgentRows } = await supabase.rpc("search_tenders_for_list", {
-    p_query: queryValue, p_uf: uf, p_modality_code: modality, p_minimum_value: minimumValue, p_maximum_value: maximumValue,
-    p_closes_before: urgentLimit, p_sort: "deadline", p_page: 1, p_page_size: 1, p_organization_id: organizationId,
-    p_list_mode: view, p_sphere: sphere, p_show_closed: false
-  });
   const searchOrder = new Map<string, number>();
   searchRows.forEach((row, index) => searchOrder.set(row.tender_id, index));
   const tenderIds = [...searchOrder.keys()];
@@ -203,7 +204,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   let catalog = null;
   if (view === "all" && (searchError || databaseTenders.length === 0)) {
     try {
-      catalog = await fetchPublicPncpCatalog();
+      catalog = await fetchCachedPublicPncpCatalog();
     } catch {
       catalog = null;
     }
@@ -279,7 +280,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       </section>
 
       <div className="mt-6 grid items-start gap-5 md:grid-cols-[260px_minmax(0,1fr)]">
-        <aside aria-label="Filtros das oportunidades" className="md:sticky md:top-4"><SearchFilters activeCount={activeFilterCount} values={filterValues} /></aside>
+        <aside aria-label="Filtros das oportunidades" className="md:sticky md:top-4"><SearchFilters key={JSON.stringify(filterValues)} activeCount={activeFilterCount} values={filterValues} /></aside>
         <div className="min-w-0">
 
       {usePublicCatalog ? (
