@@ -21,3 +21,5 @@ O histórico usa páginas de 20 comentários, com ordenação por data e UUID. O
 A CI `Pipeline comments integration` cria um Supabase local descartável e contas sintéticas com e-mail já confirmado, sem enviar mensagens. Verifica as permissões também por REST e abre o navegador para testar publicação, texto escapado, persistência, confirmação de exclusão, paginação de 23 comentários e acesso de outra organização. As credenciais privilegiadas ficam somente no script local de preparação; o navegador recebe apenas a chave pública com RLS.
 
 Aplique a migração antes de publicar a interface. A entrega não configura armazenamento de anexos, convites ou envio de notificações. Esses itens permanecem no backlog e não são necessários para usar os comentários.
+
+A migração `20261027104720_pipeline_comments_audit.sql` foi aplicada somente no desenvolvimento (`afbuozouupuguvkkuvib`) em 27/10/2026. O corpo instalado foi conferido por MD5 `0809ed71c44d6cb19f7ff70de30cff6a`. A regressão SQL passou também nesse ambiente, com rollback. A conferência independente confirmou zero comentários persistidos pelos testes. Não houve alteração no banco de produção.

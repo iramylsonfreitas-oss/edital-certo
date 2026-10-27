@@ -43,6 +43,8 @@ test("reader browses stable pages without posting or moderation controls",async(
  const first=await page.getByRole("listitem").allTextContents();
  expect(first).toHaveLength(20);
  await page.getByRole("link",{name:"Comentários anteriores"}).click();
+ await expect(page).toHaveURL(/\?before=/);
+ await expect(page.getByRole("listitem")).toHaveCount(3);
  const second=await page.getByRole("listitem").allTextContents();
  expect(second).toHaveLength(3);
  expect(new Set([...first,...second]).size).toBe(23);
