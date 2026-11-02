@@ -1,12 +1,12 @@
 {
-  "atualizadoEm": "2026-11-01T21:42:54.047Z",
+  "atualizadoEm": "2026-11-02T04:31:56.523Z",
   "status": "ok",
-  "mensagem": "Coleta concluída: 0 novas, 1450 mantidas (1450 no total), 0 removidas por prazo encerrado e 647 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
+  "mensagem": "Coleta concluída: 0 novas, 1449 mantidas (1449 no total), 1 removidas por prazo encerrado e 579 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
   "parametros": {
     "endpoint": "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
     "criterio": "Contratações publicadas nos últimos 3 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.",
-    "dataInicial": "20261029",
-    "dataFinal": "20261101",
+    "dataInicial": "20261030",
+    "dataFinal": "20261102",
     "tamanhoPagina": 50,
     "modalidades": [
       4,
@@ -14,9 +14,9 @@
       8
     ],
     "paginasPorModalidade": {
-      "4": 9,
-      "6": 42,
-      "8": 76
+      "4": 2,
+      "6": 7,
+      "8": 20
     },
     "tentativasPorChamada": 3,
     "timeoutSegundos": 30,
@@ -28,69 +28,16 @@
     "paginasPendentesRetentativa": [],
     "contagens": {
       "novas": 0,
-      "mantidas": 1450,
-      "removidasPorPrazoEncerrado": 0,
-      "ignoradasPeloFiltro": 647,
-      "totalFinal": 1450,
+      "mantidas": 1449,
+      "removidasPorPrazoEncerrado": 1,
+      "ignoradasPeloFiltro": 579,
+      "totalFinal": 1449,
       "paginasPendentesRetentativa": 0,
       "paginasPendentesExpiradas": 0
     }
   },
-  "total": 1450,
+  "total": 1449,
   "registros": [
-    {
-      "valorTotalHomologado": null,
-      "orgaoEntidade": {
-        "cnpj": "18661189000129",
-        "razaoSocial": "CONSORCIO INTERMUNICIPAL DO MEDIO RIO DAS CONTAS",
-        "poderId": "E",
-        "esferaId": "N"
-      },
-      "dataInclusao": "2026-10-20T09:33:53",
-      "dataAtualizacao": "2026-10-20T09:33:53",
-      "anoCompra": 2026,
-      "srp": false,
-      "sequencialCompra": 7,
-      "emendaParlamentar": null,
-      "numeroCompra": "DP009/2026",
-      "processo": "017/2026",
-      "objetoCompra": "CONTRATAÇÃO DE EMPRESA (S) ESPECIALIZADA (S) PARA O FORNECIMENTO DE MOBILIÁRIO, EQUIPAMENTOS ELETRÔNICOS, EQUIPAMENTOS DE INFORMÁTICA E APARELHOS DE AR-CONDICIONADO, DESTINADOS À ESTRUTURAÇÃO E AO ADEQUADO FUNCIONAMENTO DO CONSÓRCIO INTERMUNICIPAL DO MÉDIO RIO DAS CONTAS – CIMURC, EM ATENDIMENTO AO CONVÊNIO Nº 004/2025, FIRMADO ENTRE O CIMURC E O GOVERNO DO ESTADO DA BAHIA",
-      "informacaoComplementar": null,
-      "dataAberturaProposta": "2026-10-21T00:00:00",
-      "dataEncerramentoProposta": "2026-10-26T00:00:00",
-      "dataPublicacaoPncp": "2026-10-20T09:33:53",
-      "dataAtualizacaoGlobal": "2026-10-20T09:33:53",
-      "unidadeOrgao": {
-        "ufNome": "Bahia",
-        "ufSigla": "BA",
-        "municipioNome": "Ipiaú",
-        "nomeUnidade": "CONSÓRCIO INTERMUNICIPAL DO MÉDIO RIO DAS CONTAS – CIMURC",
-        "codigoIbge": "2913903",
-        "codigoUnidade": "1"
-      },
-      "orgaoSubRogado": null,
-      "unidadeSubRogada": null,
-      "amparoLegal": {
-        "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
-        "codigo": 19
-      },
-      "linkSistemaOrigem": "sai.io.org.br/site/PublicadoPncp/172516?localConsulta=2&title=2&cod=6488",
-      "linkProcessoEletronico": null,
-      "justificativaPresencial": null,
-      "numeroControlePNCP": "18661189000129-1-000007/2026",
-      "valorTotalEstimado": 61820.45,
-      "modalidadeId": 8,
-      "modalidadeNome": "Dispensa",
-      "modoDisputaId": 4,
-      "modoDisputaNome": "Dispensa Com Disputa",
-      "fontesOrcamentarias": [],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP",
-      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
-      "tipoInstrumentoConvocatorioCodigo": 2
-    },
     {
       "anoCompra": 2026,
       "srp": false,
@@ -33724,6 +33671,7 @@
       "usuarioNome": "Portal de Compras do Estado de Minas Gerais"
     },
     {
+      "numeroControlePNCP": "16695025000197-1-001194/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "16695025000197",
@@ -33731,9 +33679,8 @@
         "poderId": "E",
         "esferaId": "E"
       },
-      "dataInclusao": "2026-10-30T07:30:48",
       "dataAtualizacao": "2026-10-30T07:30:48",
-      "numeroControlePNCP": "16695025000197-1-001194/2026",
+      "dataInclusao": "2026-10-30T07:30:48",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 1194,
@@ -33764,8 +33711,8 @@
       "linkSistemaOrigem": "https://www1.compras.mg.gov.br/n/procedimentolei14133/consulta/eletronico/visualizar/2026/41/1253826",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "valorTotalEstimado": 61954.74,
       "modalidadeId": 8,
+      "valorTotalEstimado": 61954.74,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
@@ -38316,6 +38263,7 @@
       },
       "dataInclusao": "2026-10-30T16:32:35",
       "dataAtualizacao": "2026-10-30T16:32:35",
+      "numeroControlePNCP": "01641472000196-1-000022/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 22,
@@ -38332,9 +38280,9 @@
         "ufNome": "São Paulo",
         "ufSigla": "SP",
         "municipioNome": "Bom Sucesso de Itararé",
+        "codigoIbge": "3507159",
         "nomeUnidade": "Câmara de Bom Sucesso de Itararé",
-        "codigoUnidade": "33",
-        "codigoIbge": "3507159"
+        "codigoUnidade": "33"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -38346,7 +38294,6 @@
       "linkSistemaOrigem": "http://pncpmap.jelastic.saveincloud.net",
       "linkProcessoEletronico": null,
       "justificativaPresencial": "",
-      "numeroControlePNCP": "01641472000196-1-000022/2026",
       "valorTotalEstimado": 47494.22,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -38978,8 +38925,9 @@
         "poderId": "N",
         "esferaId": "N"
       },
-      "dataAtualizacao": "2026-10-30T14:33:42",
       "dataInclusao": "2026-10-30T14:33:40",
+      "dataAtualizacao": "2026-10-30T14:33:42",
+      "numeroControlePNCP": "05881372000198-1-000011/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 11,
@@ -38996,21 +38944,20 @@
         "ufNome": "Tocantins",
         "ufSigla": "TO",
         "municipioNome": "Bernardo Sayão",
-        "codigoUnidade": "00",
         "codigoIbge": "1703206",
+        "codigoUnidade": "00",
         "nomeUnidade": "Associação de Apoio da Escola Municipal Bernardo Sayão"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
       "amparoLegal": {
-        "codigo": 19,
         "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras"
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "codigo": 19
       },
       "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/TO/Associacao-de-Apoio-da-Escola-Municipal-Bernardo-Sayao-4205/DE-12-2026-2026-522328",
       "linkProcessoEletronico": null,
       "justificativaPresencial": "",
-      "numeroControlePNCP": "05881372000198-1-000011/2026",
       "valorTotalEstimado": 12720.19,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -39084,8 +39031,8 @@
         "poderId": "E",
         "esferaId": "M"
       },
-      "dataAtualizacao": "2026-10-30T18:33:16",
       "dataInclusao": "2026-10-30T18:33:16",
+      "dataAtualizacao": "2026-10-30T18:33:16",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 408,
@@ -39103,15 +39050,15 @@
         "ufSigla": "SP",
         "municipioNome": "Franca",
         "codigoUnidade": "030100",
-        "codigoIbge": "3516200",
-        "nomeUnidade": "CENTRO UNIVERSITARIO DE FRANCA"
+        "nomeUnidade": "CENTRO UNIVERSITARIO DE FRANCA",
+        "codigoIbge": "3516200"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
       "amparoLegal": {
-        "codigo": 19,
         "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras"
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "codigo": 19
       },
       "linkSistemaOrigem": null,
       "linkProcessoEletronico": null,
@@ -39122,12 +39069,12 @@
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
       "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "fontesOrcamentarias": [],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "EDDYDATA SERVICOS DE INFORMATICA LTDA"
+      "usuarioNome": "EDDYDATA SERVICOS DE INFORMATICA LTDA",
+      "tipoInstrumentoConvocatorioCodigo": 2
     },
     {
       "valorTotalHomologado": null,
@@ -39492,12 +39439,13 @@
         "ufNome": "Pernambuco",
         "ufSigla": "PE",
         "municipioNome": "Lagoa dos Gatos",
-        "nomeUnidade": "FUNDO MUNICIPAL DE EDUCAÇÃO DE LAGOA DOS GATOS",
         "codigoUnidade": "1",
-        "codigoIbge": "2608701"
+        "codigoIbge": "2608701",
+        "nomeUnidade": "FUNDO MUNICIPAL DE EDUCAÇÃO DE LAGOA DOS GATOS"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
+      "numeroControlePNCP": "11480848000181-1-000023/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 75, II",
         "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
@@ -39506,7 +39454,6 @@
       "linkSistemaOrigem": null,
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "numeroControlePNCP": "11480848000181-1-000023/2026",
       "valorTotalEstimado": 44236.8,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -41196,7 +41143,6 @@
       "usuarioNome": "Compras.gov.br"
     },
     {
-      "numeroControlePNCP": "00394502000144-1-014843/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00394502000144",
@@ -41222,22 +41168,23 @@
         "ufNome": "Rio de Janeiro",
         "ufSigla": "RJ",
         "municipioNome": "Rio de Janeiro",
-        "codigoIbge": "3304557",
         "codigoUnidade": "713000",
+        "codigoIbge": "3304557",
         "nomeUnidade": "COMISSAO DE PROMOCOES DE OFICIAIS"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
       "amparoLegal": {
+        "codigo": 19,
         "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
-        "codigo": 19
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras"
       },
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=71300006001122026",
       "linkProcessoEletronico": "https://licitacoescontratos.dadm.mb/admin/contratacaodireta/36450",
       "justificativaPresencial": null,
-      "modalidadeId": 8,
+      "numeroControlePNCP": "00394502000144-1-014843/2026",
       "valorTotalEstimado": 3186.92,
+      "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
@@ -41265,6 +41212,7 @@
       },
       "dataInclusao": "2026-10-30T10:14:39",
       "dataAtualizacao": "2026-10-30T14:53:37",
+      "numeroControlePNCP": "00394502000144-1-014847/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 14847,
@@ -41281,9 +41229,9 @@
         "ufNome": "Bahia",
         "ufSigla": "BA",
         "municipioNome": "Ilhéus",
+        "codigoIbge": "2913606",
         "codigoUnidade": "782311",
-        "nomeUnidade": "DELEG.CAPITANIA PORTOS EST.DA BAHIA EM ILHEUS",
-        "codigoIbge": "2913606"
+        "nomeUnidade": "DELEG.CAPITANIA PORTOS EST.DA BAHIA EM ILHEUS"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -41295,12 +41243,12 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=78231106000222026",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "numeroControlePNCP": "00394502000144-1-014847/2026",
       "valorTotalEstimado": 8638.1,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
+      "tipoInstrumentoConvocatorioCodigo": 2,
       "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "fontesOrcamentarias": [
         {
@@ -41312,8 +41260,7 @@
       ],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br",
-      "tipoInstrumentoConvocatorioCodigo": 2
+      "usuarioNome": "Compras.gov.br"
     },
     {
       "valorTotalHomologado": null,
@@ -41325,6 +41272,7 @@
       },
       "dataInclusao": "2026-10-30T10:30:43",
       "dataAtualizacao": "2026-10-30T10:30:43",
+      "numeroControlePNCP": "00394452000103-1-023356/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 23356,
@@ -41341,9 +41289,9 @@
         "ufNome": "Amazonas",
         "ufSigla": "AM",
         "municipioNome": "Manaus",
+        "codigoIbge": "1302603",
         "codigoUnidade": "160011",
-        "nomeUnidade": "4 DIVISAO DE LEVANTAMENTO/MEX/AM",
-        "codigoIbge": "1302603"
+        "nomeUnidade": "4 DIVISAO DE LEVANTAMENTO/MEX/AM"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -41355,12 +41303,12 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=16001106000682026",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "numeroControlePNCP": "00394452000103-1-023356/2026",
       "valorTotalEstimado": 10000,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
+      "tipoInstrumentoConvocatorioCodigo": 2,
       "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "fontesOrcamentarias": [
         {
@@ -41372,11 +41320,9 @@
       ],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br",
-      "tipoInstrumentoConvocatorioCodigo": 2
+      "usuarioNome": "Compras.gov.br"
     },
     {
-      "numeroControlePNCP": "00394502000144-1-014857/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00394502000144",
@@ -41384,8 +41330,8 @@
         "poderId": "E",
         "esferaId": "F"
       },
-      "dataAtualizacao": "2026-10-30T10:56:20",
       "dataInclusao": "2026-10-30T10:56:20",
+      "dataAtualizacao": "2026-10-30T10:56:20",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 14857,
@@ -41402,9 +41348,9 @@
         "ufNome": "Rio de Janeiro",
         "ufSigla": "RJ",
         "municipioNome": "São Pedro da Aldeia",
-        "codigoIbge": "3305208",
+        "nomeUnidade": "PRIMEIRO ESQUAD.DE AVIOES DE INTERC.E ATAQUES",
         "codigoUnidade": "791160",
-        "nomeUnidade": "PRIMEIRO ESQUAD.DE AVIOES DE INTERC.E ATAQUES"
+        "codigoIbge": "3305208"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -41416,8 +41362,9 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=79116006000402026",
       "linkProcessoEletronico": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-artefatos-web/execucao/edit?id=629832",
       "justificativaPresencial": null,
-      "modalidadeId": 8,
+      "numeroControlePNCP": "00394502000144-1-014857/2026",
       "valorTotalEstimado": 1931.32,
+      "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
@@ -41445,7 +41392,6 @@
       },
       "dataInclusao": "2026-10-30T11:15:05",
       "dataAtualizacao": "2026-10-30T11:15:05",
-      "numeroControlePNCP": "00394452000103-1-023384/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 23384,
@@ -41462,9 +41408,9 @@
         "ufNome": "Mato Grosso do Sul",
         "ufSigla": "MS",
         "municipioNome": "Campo Grande",
-        "codigoIbge": "5002704",
+        "codigoUnidade": "160136",
         "nomeUnidade": "9º GRUPAMENTO LOGISTICO",
-        "codigoUnidade": "160136"
+        "codigoIbge": "5002704"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -41476,12 +41422,12 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=16013606001152026",
       "linkProcessoEletronico": "http://sped.9gptlog.eb.mil.br/#/manter-processo/gerenciar/2399",
       "justificativaPresencial": null,
+      "numeroControlePNCP": "00394452000103-1-023384/2026",
       "valorTotalEstimado": 11830.23,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
       "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "fontesOrcamentarias": [
         {
@@ -41493,9 +41439,11 @@
       ],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br"
+      "usuarioNome": "Compras.gov.br",
+      "tipoInstrumentoConvocatorioCodigo": 2
     },
     {
+      "numeroControlePNCP": "00394502000144-1-014882/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00394502000144",
@@ -41503,8 +41451,8 @@
         "poderId": "E",
         "esferaId": "F"
       },
-      "dataInclusao": "2026-10-30T12:38:28",
       "dataAtualizacao": "2026-10-30T12:38:28",
+      "dataInclusao": "2026-10-30T12:38:28",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 14882,
@@ -41521,9 +41469,9 @@
         "ufNome": "Rio de Janeiro",
         "ufSigla": "RJ",
         "municipioNome": "São Pedro da Aldeia",
+        "codigoIbge": "3305208",
         "codigoUnidade": "791180",
-        "nomeUnidade": "BASE AEREA NAVAL DE SAO PEDRO DA ALDEIA/RJ",
-        "codigoIbge": "3305208"
+        "nomeUnidade": "BASE AEREA NAVAL DE SAO PEDRO DA ALDEIA/RJ"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -41535,12 +41483,12 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=79118006001512026",
       "linkProcessoEletronico": "https://licitacoescontratos.dadm.mb/contratacaodireta/36323",
       "justificativaPresencial": null,
-      "numeroControlePNCP": "00394502000144-1-014882/2026",
-      "valorTotalEstimado": 22697.83,
       "modalidadeId": 8,
+      "valorTotalEstimado": 22697.83,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
+      "tipoInstrumentoConvocatorioCodigo": 2,
       "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "fontesOrcamentarias": [
         {
@@ -41552,8 +41500,7 @@
       ],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br",
-      "tipoInstrumentoConvocatorioCodigo": 2
+      "usuarioNome": "Compras.gov.br"
     },
     {
       "valorTotalHomologado": null,
@@ -41641,12 +41588,13 @@
         "ufNome": "Paraná",
         "ufSigla": "PR",
         "municipioNome": "Atalaia",
-        "nomeUnidade": "PREFEITURA MUNICIPAL DE ATALAIA - PR",
         "codigoUnidade": "1",
-        "codigoIbge": "4102208"
+        "codigoIbge": "4102208",
+        "nomeUnidade": "PREFEITURA MUNICIPAL DE ATALAIA - PR"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
+      "numeroControlePNCP": "75731018000162-1-000104/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 75, I",
         "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 100.000,00 (cem mil reais), no caso de obras e serviços de engenharia ou de serviços de manutenção de veículos automotores",
@@ -41655,7 +41603,6 @@
       "linkSistemaOrigem": "https://bnccompras.com/Process/ProcessView?param1=[gkz]YehkXKWBEya3ZzvHvLyFOXFxo_woD8dlLFV3ND3dli48Oyz8KuVnh0ukjF1SD2dThbeCvfS/afjdEcEJu29qZrUnHHtyEYSeqSR/VM5Qr4Y=",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "numeroControlePNCP": "75731018000162-1-000104/2026",
       "valorTotalEstimado": 60100,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -41743,8 +41690,8 @@
         "poderId": "E",
         "esferaId": "F"
       },
-      "dataAtualizacao": "2026-10-30T18:59:12",
       "dataInclusao": "2026-10-30T18:59:12",
+      "dataAtualizacao": "2026-10-30T18:59:12",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 190,
@@ -41762,15 +41709,15 @@
         "ufSigla": "PE",
         "municipioNome": "Recife",
         "codigoUnidade": "153355",
-        "codigoIbge": "2611606",
-        "nomeUnidade": "DEPTO.DE INFORMATICA DA UFPE"
+        "nomeUnidade": "DEPTO.DE INFORMATICA DA UFPE",
+        "codigoIbge": "2611606"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
       "amparoLegal": {
-        "codigo": 19,
         "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras"
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "codigo": 19
       },
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=15335506000132026",
       "linkProcessoEletronico": "https://sipac.ufpe.br/public/jsp/portal.jsf",
@@ -41781,7 +41728,6 @@
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
       "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "fontesOrcamentarias": [
         {
@@ -41793,7 +41739,8 @@
       ],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br"
+      "usuarioNome": "Compras.gov.br",
+      "tipoInstrumentoConvocatorioCodigo": 2
     },
     {
       "valorTotalHomologado": null,
@@ -44477,7 +44424,6 @@
       "usuarioNome": "Licitanet Licitações Eletrônicas LTDA"
     },
     {
-      "numeroControlePNCP": "04485030000196-1-000014/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "04485030000196",
@@ -44485,8 +44431,8 @@
         "poderId": "E",
         "esferaId": "F"
       },
-      "dataAtualizacao": "2026-10-30T10:53:38",
       "dataInclusao": "2026-10-30T10:53:38",
+      "dataAtualizacao": "2026-10-30T10:53:38",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 14,
@@ -44503,9 +44449,9 @@
         "ufNome": "Paraná",
         "ufSigla": "PR",
         "municipioNome": "Curitiba",
-        "codigoIbge": "4106902",
+        "nomeUnidade": "CONSELHO REG. DE EDUCACAO FISICA DA 9ª REGIAO",
         "codigoUnidade": "927925",
-        "nomeUnidade": "CONSELHO REG. DE EDUCACAO FISICA DA 9ª REGIAO"
+        "codigoIbge": "4106902"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -44517,8 +44463,9 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=92792506000182026",
       "linkProcessoEletronico": "https://transparencia.confef.org.br/spw/PortalTransparencia/Consulta.aspx",
       "justificativaPresencial": null,
-      "modalidadeId": 8,
+      "numeroControlePNCP": "04485030000196-1-000014/2026",
       "valorTotalEstimado": 27336,
+      "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
@@ -50336,6 +50283,7 @@
       "usuarioNome": "Compras.gov.br"
     },
     {
+      "numeroControlePNCP": "00394502000144-1-014828/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00394502000144",
@@ -50343,9 +50291,8 @@
         "poderId": "E",
         "esferaId": "F"
       },
-      "dataInclusao": "2026-10-30T08:13:44",
       "dataAtualizacao": "2026-10-30T08:13:44",
-      "numeroControlePNCP": "00394502000144-1-014828/2026",
+      "dataInclusao": "2026-10-30T08:13:44",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 14828,
@@ -50376,8 +50323,8 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=73200006000652026",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "valorTotalEstimado": 62399.59,
       "modalidadeId": 8,
+      "valorTotalEstimado": 62399.59,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
@@ -50396,6 +50343,7 @@
       "usuarioNome": "Compras.gov.br"
     },
     {
+      "numeroControlePNCP": "00394502000144-1-014830/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00394502000144",
@@ -50403,9 +50351,8 @@
         "poderId": "E",
         "esferaId": "F"
       },
-      "dataInclusao": "2026-10-30T08:31:45",
       "dataAtualizacao": "2026-10-30T08:31:45",
-      "numeroControlePNCP": "00394502000144-1-014830/2026",
+      "dataInclusao": "2026-10-30T08:31:45",
       "anoCompra": 2026,
       "srp": true,
       "sequencialCompra": 14830,
@@ -50436,8 +50383,8 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=73200006000612026",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "valorTotalEstimado": 63273.1,
       "modalidadeId": 8,
+      "valorTotalEstimado": 63273.1,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
@@ -66289,13 +66236,12 @@
         "ufNome": "Rio de Janeiro",
         "ufSigla": "RJ",
         "municipioNome": "Rio de Janeiro",
+        "nomeUnidade": "INDUSTRIAS NUCLEARES DO BRASIL S/A",
         "codigoUnidade": "113206",
-        "codigoIbge": "3304557",
-        "nomeUnidade": "INDUSTRIAS NUCLEARES DO BRASIL S/A"
+        "codigoIbge": "3304557"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "37115383000153-1-000146/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -66304,6 +66250,7 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=11320605000532026",
       "linkProcessoEletronico": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-area-trabalho-web/seguro",
       "justificativaPresencial": null,
+      "numeroControlePNCP": "37115383000153-1-000146/2026",
       "valorTotalEstimado": 0,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
@@ -66875,13 +66822,12 @@
         "ufNome": "Maranhão",
         "ufSigla": "MA",
         "municipioNome": "Presidente Vargas",
+        "nomeUnidade": "Unidade Única",
         "codigoUnidade": "348",
-        "codigoIbge": "2109304",
-        "nomeUnidade": "Unidade Única"
+        "codigoIbge": "2109304"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "06124739000191-1-000050/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -66890,6 +66836,7 @@
       "linkSistemaOrigem": "https://app2.licitardigital.com.br/pesquisa/117977",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "numeroControlePNCP": "06124739000191-1-000050/2026",
       "valorTotalEstimado": 0,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
@@ -67479,13 +67426,12 @@
         "ufNome": "Ceará",
         "ufSigla": "CE",
         "municipioNome": "Saboeiro",
+        "nomeUnidade": "Secretaria Municipal de Administração e Planejamento",
         "codigoUnidade": "4406",
-        "codigoIbge": "2311900",
-        "nomeUnidade": "Secretaria Municipal de Administração e Planejamento"
+        "codigoIbge": "2311900"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "07811946000187-1-000140/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -67494,6 +67440,7 @@
       "linkSistemaOrigem": null,
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "numeroControlePNCP": "07811946000187-1-000140/2026",
       "valorTotalEstimado": 478771.44,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
@@ -70081,13 +70028,12 @@
         "ufNome": "Paraná",
         "ufSigla": "PR",
         "municipioNome": "São Pedro do Ivaí",
+        "nomeUnidade": "MUNICIPIO DE SAO PEDRO DO IVAI",
         "codigoUnidade": "75771311000153",
-        "codigoIbge": "4125803",
-        "nomeUnidade": "MUNICIPIO DE SAO PEDRO DO IVAI"
+        "codigoIbge": "4125803"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "75771311000153-1-000093/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -70096,6 +70042,7 @@
       "linkSistemaOrigem": null,
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "numeroControlePNCP": "75771311000153-1-000093/2026",
       "valorTotalEstimado": 894230.81,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
@@ -70118,6 +70065,7 @@
       },
       "dataInclusao": "2026-10-30T11:00:43",
       "dataAtualizacao": "2026-10-30T11:00:43",
+      "numeroControlePNCP": "04262432000121-1-000169/2026",
       "anoCompra": 2026,
       "srp": true,
       "sequencialCompra": 169,
@@ -70134,13 +70082,12 @@
         "ufNome": "Amazonas",
         "ufSigla": "AM",
         "municipioNome": "Coari",
-        "codigoUnidade": "2882",
         "codigoIbge": "1301209",
+        "codigoUnidade": "2882",
         "nomeUnidade": "MUNICIPIO DE COARI - AM "
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "04262432000121-1-000169/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -70171,7 +70118,6 @@
       },
       "dataInclusao": "2026-10-31T14:34:11",
       "dataAtualizacao": "2026-10-31T14:34:11",
-      "numeroControlePNCP": "46377800000127-1-004806/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 4806,
@@ -70188,12 +70134,13 @@
         "ufNome": "São Paulo",
         "ufSigla": "SP",
         "municipioNome": "Jacupiranga",
+        "codigoUnidade": "180316",
         "codigoIbge": "3524600",
-        "nomeUnidade": "ESP-DELEG.SECC.POLICIA DE JACUPIRANGA",
-        "codigoUnidade": "180316"
+        "nomeUnidade": "ESP-DELEG.SECC.POLICIA DE JACUPIRANGA"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
+      "numeroControlePNCP": "46377800000127-1-004806/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -71776,6 +71723,7 @@
       "usuarioNome": "Compras.gov.br"
     },
     {
+      "numeroControlePNCP": "02319394000170-1-000087/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "02319394000170",
@@ -71783,9 +71731,8 @@
         "poderId": "E",
         "esferaId": "N"
       },
-      "dataInclusao": "2026-10-30T15:52:19",
       "dataAtualizacao": "2026-10-30T15:52:19",
-      "numeroControlePNCP": "02319394000170-1-000087/2026",
+      "dataInclusao": "2026-10-30T15:52:19",
       "anoCompra": 2026,
       "srp": true,
       "sequencialCompra": 87,
@@ -71816,8 +71763,8 @@
       "linkSistemaOrigem": "https://licitanet.com.br/sessao/206644",
       "linkProcessoEletronico": null,
       "justificativaPresencial": "",
-      "valorTotalEstimado": 18540004.65,
       "modalidadeId": 6,
+      "valorTotalEstimado": 18540004.65,
       "modalidadeNome": "Pregão - Eletrônico",
       "modoDisputaId": 1,
       "modoDisputaNome": "Aberto",
@@ -75680,8 +75627,8 @@
         "poderId": "N",
         "esferaId": "M"
       },
-      "dataInclusao": "2026-10-30T09:30:43",
       "dataAtualizacao": "2026-10-30T09:30:43",
+      "dataInclusao": "2026-10-30T09:30:43",
       "anoCompra": 2026,
       "srp": true,
       "sequencialCompra": 59,
@@ -75704,15 +75651,15 @@
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "01612269000191-1-000059/2026",
       "amparoLegal": {
+        "codigo": 1,
         "nome": "Lei 14.133/2021, Art. 28, I",
-        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
-        "codigo": 1
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns"
       },
       "linkSistemaOrigem": null,
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "numeroControlePNCP": "01612269000191-1-000059/2026",
       "valorTotalEstimado": 651551.74,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
@@ -76657,6 +76604,7 @@
       },
       "dataInclusao": "2026-10-30T11:08:54",
       "dataAtualizacao": "2026-10-30T11:08:54",
+      "numeroControlePNCP": "21072657000134-1-000024/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 24,
@@ -76673,13 +76621,12 @@
         "ufNome": "Minas Gerais",
         "ufSigla": "MG",
         "municipioNome": "Sabinópolis",
-        "codigoUnidade": "1422",
         "codigoIbge": "3156809",
+        "codigoUnidade": "1422",
         "nomeUnidade": "Unidade Única"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "21072657000134-1-000024/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -78024,6 +77971,7 @@
       },
       "dataInclusao": "2026-10-30T10:57:27",
       "dataAtualizacao": "2026-10-30T10:57:27",
+      "numeroControlePNCP": "06554018000111-1-000024/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 24,
@@ -78040,13 +77988,12 @@
         "ufNome": "Piauí",
         "ufSigla": "PI",
         "municipioNome": "Antônio Almeida",
-        "codigoUnidade": "21767",
         "codigoIbge": "2200806",
+        "codigoUnidade": "21767",
         "nomeUnidade": "Antônio Almeida"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "06554018000111-1-000024/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -78077,6 +78024,7 @@
       },
       "dataInclusao": "2026-10-30T11:20:14",
       "dataAtualizacao": "2026-10-30T11:20:14",
+      "numeroControlePNCP": "95587648000112-1-000091/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 91,
@@ -78093,13 +78041,12 @@
         "ufNome": "Paraná",
         "ufSigla": "PR",
         "municipioNome": "Nova Laranjeiras",
-        "codigoUnidade": "1",
         "codigoIbge": "4117057",
+        "codigoUnidade": "1",
         "nomeUnidade": "PREFEITURA MUNICIPAL DE NOVA LARANJEIRAS - PR"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
-      "numeroControlePNCP": "95587648000112-1-000091/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -79919,8 +79866,8 @@
         "ufNome": "Rio Grande do Sul",
         "ufSigla": "RS",
         "municipioNome": "Nova Boa Vista",
-        "nomeUnidade": "Município de Nova Boa Vista",
         "codigoUnidade": "1",
+        "nomeUnidade": "Município de Nova Boa Vista",
         "codigoIbge": "4312955"
       },
       "orgaoSubRogado": null,
@@ -79939,14 +79886,15 @@
       "modalidadeNome": "Pregão - Eletrônico",
       "modoDisputaId": 1,
       "modoDisputaNome": "Aberto",
-      "tipoInstrumentoConvocatorioCodigo": 1,
       "tipoInstrumentoConvocatorioNome": "Edital",
       "fontesOrcamentarias": [],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Tchê Informática Ltda"
+      "usuarioNome": "Tchê Informática Ltda",
+      "tipoInstrumentoConvocatorioCodigo": 1
     },
     {
+      "numeroControlePNCP": "94704061000183-1-000305/2026",
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "94704061000183",
@@ -79954,8 +79902,8 @@
         "poderId": "N",
         "esferaId": "M"
       },
-      "dataInclusao": "2026-10-30T14:26:08",
       "dataAtualizacao": "2026-10-30T14:26:13",
+      "dataInclusao": "2026-10-30T14:26:08",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 305,
@@ -79972,9 +79920,9 @@
         "ufNome": "Rio Grande do Sul",
         "ufSigla": "RS",
         "municipioNome": "Nova Boa Vista",
-        "nomeUnidade": "Prefeitura Municipal de Nova Boa Vista",
+        "codigoIbge": "4312955",
         "codigoUnidade": "01",
-        "codigoIbge": "4312955"
+        "nomeUnidade": "Prefeitura Municipal de Nova Boa Vista"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -79986,9 +79934,8 @@
       "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/RS/Prefeitura-Municipal-de-Nova-Boa-Vista-2614/PE-49-2026-2026-522342",
       "linkProcessoEletronico": null,
       "justificativaPresencial": "",
-      "numeroControlePNCP": "94704061000183-1-000305/2026",
-      "valorTotalEstimado": 0,
       "modalidadeId": 6,
+      "valorTotalEstimado": 0,
       "modalidadeNome": "Pregão - Eletrônico",
       "modoDisputaId": 1,
       "modoDisputaNome": "Aberto",
@@ -81122,12 +81069,13 @@
         "ufNome": "Minas Gerais",
         "ufSigla": "MG",
         "municipioNome": "Carmópolis de Minas",
-        "nomeUnidade": "CODEMM - Consórcio de Desenvolvimento dos Municípios Mineiros",
         "codigoUnidade": "02001",
-        "codigoIbge": "3114501"
+        "codigoIbge": "3114501",
+        "nomeUnidade": "CODEMM - Consórcio de Desenvolvimento dos Municípios Mineiros"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
+      "numeroControlePNCP": "55071775000140-1-000059/2026",
       "amparoLegal": {
         "nome": "Lei 14.133/2021, Art. 28, I",
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
@@ -81136,7 +81084,6 @@
       "linkSistemaOrigem": "https://licitar.digital",
       "linkProcessoEletronico": "https://licitar.digital",
       "justificativaPresencial": null,
-      "numeroControlePNCP": "55071775000140-1-000059/2026",
       "valorTotalEstimado": 6,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
