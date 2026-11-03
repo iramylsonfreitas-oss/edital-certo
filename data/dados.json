@@ -1,12 +1,12 @@
 {
-  "atualizadoEm": "2026-11-02T22:59:35.402Z",
+  "atualizadoEm": "2026-11-03T05:25:38.033Z",
   "status": "ok",
-  "mensagem": "Coleta concluída: 2 novas, 1378 mantidas (1380 no total), 17 removidas por prazo encerrado e 72 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
+  "mensagem": "Coleta concluída: 1 novas, 1378 mantidas (1379 no total), 2 removidas por prazo encerrado e 76 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
   "parametros": {
     "endpoint": "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
     "criterio": "Contratações publicadas nos últimos 3 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.",
-    "dataInicial": "20261030",
-    "dataFinal": "20261102",
+    "dataInicial": "20261031",
+    "dataFinal": "20261103",
     "tamanhoPagina": 50,
     "modalidades": [
       4,
@@ -14,9 +14,9 @@
       8
     ],
     "paginasPorModalidade": {
-      "4": 2,
-      "6": 8,
-      "8": 21
+      "4": 1,
+      "6": 2,
+      "8": 3
     },
     "tentativasPorChamada": 3,
     "timeoutSegundos": 30,
@@ -27,123 +27,17 @@
     "paginasPendentesExpiradas": 0,
     "paginasPendentesRetentativa": [],
     "contagens": {
-      "novas": 2,
+      "novas": 1,
       "mantidas": 1378,
-      "removidasPorPrazoEncerrado": 17,
-      "ignoradasPeloFiltro": 72,
-      "totalFinal": 1380,
+      "removidasPorPrazoEncerrado": 2,
+      "ignoradasPeloFiltro": 76,
+      "totalFinal": 1379,
       "paginasPendentesRetentativa": 0,
       "paginasPendentesExpiradas": 0
     }
   },
-  "total": 1380,
+  "total": 1379,
   "registros": [
-    {
-      "anoCompra": 2026,
-      "srp": false,
-      "sequencialCompra": 468,
-      "valorTotalHomologado": null,
-      "orgaoEntidade": {
-        "cnpj": "92123926000192",
-        "esferaId": "M",
-        "razaoSocial": "MUNICIPIO DE ALTO FELIZ",
-        "poderId": "N"
-      },
-      "dataInclusao": "2026-10-20T14:09:56",
-      "dataAtualizacao": "2026-10-20T14:09:57",
-      "emendaParlamentar": null,
-      "numeroCompra": "336",
-      "processo": "516",
-      "objetoCompra": "[Portal de Compras Públicas] - contratação de empresa para prestação de serviços gerenciados de segurança de endpoints (modelo MSP   Managed Service Provider), compreendendo o fornecimento de 80 (oitenta) licenças de solução corporativa de proteção de endpoints com recursos de detecção avançada e análise de causa raiz (EDR), console de gerenciamento em nuvem, implantação, administração contínua, monitoramento, suporte técnico e relatórios.",
-      "informacaoComplementar": "",
-      "dataAberturaProposta": "2026-10-22T00:01:00",
-      "dataEncerramentoProposta": "2026-10-26T23:59:00",
-      "dataPublicacaoPncp": "2026-10-20T14:09:56",
-      "dataAtualizacaoGlobal": "2026-10-20T14:09:57",
-      "unidadeOrgao": {
-        "ufNome": "Rio Grande do Sul",
-        "ufSigla": "RS",
-        "municipioNome": "Alto Feliz",
-        "nomeUnidade": "Município de Alto Feliz",
-        "codigoUnidade": "1",
-        "codigoIbge": "4300570"
-      },
-      "orgaoSubRogado": null,
-      "unidadeSubRogada": null,
-      "amparoLegal": {
-        "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
-        "codigo": 19
-      },
-      "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/RS/Municipio-de-Alto-Feliz-2011/DE-336-2026-2026-519713",
-      "linkProcessoEletronico": null,
-      "justificativaPresencial": "",
-      "numeroControlePNCP": "92123926000192-1-000468/2026",
-      "valorTotalEstimado": 13600,
-      "modalidadeId": 8,
-      "modalidadeNome": "Dispensa",
-      "modoDisputaId": 4,
-      "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
-      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
-      "fontesOrcamentarias": [],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "ECustomize Consultoria em Software S.A"
-    },
-    {
-      "valorTotalHomologado": null,
-      "orgaoEntidade": {
-        "cnpj": "08162869000144",
-        "razaoSocial": "MUNICIPIO DE LAGOA SALGADA",
-        "poderId": "N",
-        "esferaId": "M"
-      },
-      "dataInclusao": "2026-10-21T10:44:24",
-      "dataAtualizacao": "2026-10-21T10:44:24",
-      "justificativaPresencial": "",
-      "numeroControlePNCP": "08162869000144-1-000060/2026",
-      "anoCompra": 2026,
-      "srp": false,
-      "sequencialCompra": 60,
-      "emendaParlamentar": null,
-      "numeroCompra": "30",
-      "processo": "60",
-      "objetoCompra": "Contratação de empresa especializada para prestação de serviços de manutenção preventiva e corretiva, com reposição de peças, para impressoras, computadores, notebooks e tablets pertencentes ao Município de Lagoa Salgada/RN.",
-      "informacaoComplementar": "",
-      "dataAberturaProposta": "2026-10-22T08:00:00",
-      "dataEncerramentoProposta": "2026-10-26T23:59:00",
-      "dataPublicacaoPncp": "2026-10-21T10:44:24",
-      "dataAtualizacaoGlobal": "2026-10-21T10:44:25",
-      "unidadeOrgao": {
-        "ufNome": "Rio Grande do Norte",
-        "ufSigla": "RN",
-        "municipioNome": "Lagoa Salgada",
-        "codigoUnidade": "08162869000144",
-        "codigoIbge": "2406601",
-        "nomeUnidade": "MUNICIPIO DE LAGOA SALGADA"
-      },
-      "orgaoSubRogado": null,
-      "unidadeSubRogada": null,
-      "amparoLegal": {
-        "nome": "Lei 14.133/2021, Art. 75, II",
-        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
-        "codigo": 19
-      },
-      "linkSistemaOrigem": "",
-      "linkProcessoEletronico": null,
-      "valorTotalEstimado": 43149.44,
-      "modalidadeId": 8,
-      "modalidadeNome": "Dispensa",
-      "modoDisputaId": 4,
-      "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
-      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
-      "fontesOrcamentarias": [],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "TOP DOWN CONSULTORIA LTDA"
-    },
     {
       "valorTotalHomologado": null,
       "orgaoEntidade": {
@@ -37701,32 +37595,23 @@
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00394502000144",
+        "esferaId": "F",
         "razaoSocial": "COMANDO DA MARINHA",
-        "poderId": "E",
-        "esferaId": "F"
+        "poderId": "E"
       },
       "dataInclusao": "2026-11-02T11:55:42",
       "dataAtualizacao": "2026-11-02T11:55:42",
-      "emendaParlamentar": null,
-      "numeroCompra": "36",
-      "processo": "63998.004009/2026-71",
-      "objetoCompra": "Aquisição de bens permanentes destinados ao atendimento das necessidades administrativas e operacionais do Centro de Hidrografia da Marinha (CHM), compreendendo cadeiras ergonômicas, equipamentos de alimentação ininterrupta de energia (nobreaks) e aparelhos de ar-condicionado, conforme quantitativos e especificações técnicas definidos nos documentos da contratação.\n\nOs itens deverão ser novos, de primeiro uso, não recondicionados, acompanhados dos respectivos manuais, acessórios e demais componentes necessários ao seu pleno funcionamento. Deverão atender integralmente aos requisitos técnicos, padrões de qualidade, segurança, desempenho e eficiência estabelecidos nas especificações de cada item, bem como às normas técnicas e regulamentações aplicáveis.\n\nA contratação tem por finalidade proporcionar melhores condições de trabalho, ergonomia e conforto aos usuários, assegurar maior proteção e continuidade da alimentação elétrica dos equipamentos eletrônicos e garantir condições adequadas de climatização dos ambientes de trabalho, contribuindo para a preservação dos equipamentos e para a continuidade das atividades institucionais do CHM.\n\nO fornecimento deverá ocorrer de acordo com as condições, os prazos, os quantitativos e os locais de entrega estabelecidos no Termo de Referência, incluindo todos os custos necessários ao perfeito cumprimento da obrigação.",
-      "informacaoComplementar": null,
-      "srp": false,
       "numeroControlePNCP": "00394502000144-1-014952/2026",
-      "anoCompra": 2026,
-      "sequencialCompra": 14952,
-      "dataAberturaProposta": "2026-11-03T08:00:00",
-      "dataEncerramentoProposta": "2026-11-06T08:00:00",
+      "srp": false,
       "dataPublicacaoPncp": "2026-11-02T11:55:42",
       "dataAtualizacaoGlobal": "2026-11-02T11:56:55",
       "unidadeOrgao": {
         "ufNome": "Rio de Janeiro",
         "ufSigla": "RJ",
         "municipioNome": "Niterói",
-        "nomeUnidade": "CENTRO DE HIDROGRAFIA DA MARINHA",
+        "codigoIbge": "3303302",
         "codigoUnidade": "751213",
-        "codigoIbge": "3303302"
+        "nomeUnidade": "CENTRO DE HIDROGRAFIA DA MARINHA"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -37738,6 +37623,15 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=75121306000362026",
       "linkProcessoEletronico": "https://licitacoescontratos.dadm.mb/admin/index",
       "justificativaPresencial": null,
+      "anoCompra": 2026,
+      "sequencialCompra": 14952,
+      "emendaParlamentar": null,
+      "numeroCompra": "36",
+      "processo": "63998.004009/2026-71",
+      "objetoCompra": "Aquisição de bens permanentes destinados ao atendimento das necessidades administrativas e operacionais do Centro de Hidrografia da Marinha (CHM), compreendendo cadeiras ergonômicas, equipamentos de alimentação ininterrupta de energia (nobreaks) e aparelhos de ar-condicionado, conforme quantitativos e especificações técnicas definidos nos documentos da contratação.\n\nOs itens deverão ser novos, de primeiro uso, não recondicionados, acompanhados dos respectivos manuais, acessórios e demais componentes necessários ao seu pleno funcionamento. Deverão atender integralmente aos requisitos técnicos, padrões de qualidade, segurança, desempenho e eficiência estabelecidos nas especificações de cada item, bem como às normas técnicas e regulamentações aplicáveis.\n\nA contratação tem por finalidade proporcionar melhores condições de trabalho, ergonomia e conforto aos usuários, assegurar maior proteção e continuidade da alimentação elétrica dos equipamentos eletrônicos e garantir condições adequadas de climatização dos ambientes de trabalho, contribuindo para a preservação dos equipamentos e para a continuidade das atividades institucionais do CHM.\n\nO fornecimento deverá ocorrer de acordo com as condições, os prazos, os quantitativos e os locais de entrega estabelecidos no Termo de Referência, incluindo todos os custos necessários ao perfeito cumprimento da obrigação.",
+      "informacaoComplementar": null,
+      "dataAberturaProposta": "2026-11-03T08:00:00",
+      "dataEncerramentoProposta": "2026-11-06T08:00:00",
       "valorTotalEstimado": 51165,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -43863,15 +43757,12 @@
       },
       "dataInclusao": "2026-10-31T15:30:48",
       "dataAtualizacao": "2026-10-31T15:30:48",
+      "sequencialCompra": 52,
       "emendaParlamentar": null,
       "numeroCompra": "1090",
       "processo": "26/2148-9001366-1",
       "objetoCompra": "AQUISIÇÃO DE BENS DA(S) FAMÍLIA(S):\n0035-EQUIPAMENTOS P/INFORMATICA;",
       "informacaoComplementar": "",
-      "srp": false,
-      "numeroControlePNCP": "05110425000177-1-000052/2026",
-      "anoCompra": 2026,
-      "sequencialCompra": 52,
       "dataAberturaProposta": "2026-11-02T09:00:00",
       "dataEncerramentoProposta": "2026-11-09T08:30:00",
       "dataPublicacaoPncp": "2026-10-31T15:30:48",
@@ -43880,9 +43771,9 @@
         "ufNome": "Rio Grande do Sul",
         "ufSigla": "RS",
         "municipioNome": "Porto Alegre",
-        "nomeUnidade": "FUNDAÇÃO DE PROTEÇÃO ESPECIAL DO RS",
+        "codigoIbge": "4314902",
         "codigoUnidade": "9487",
-        "codigoIbge": "4314902"
+        "nomeUnidade": "FUNDAÇÃO DE PROTEÇÃO ESPECIAL DO RS"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -43894,6 +43785,9 @@
       "linkSistemaOrigem": "https://www.compras.rs.gov.br/editais/1090_2026/358874",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "numeroControlePNCP": "05110425000177-1-000052/2026",
+      "anoCompra": 2026,
+      "srp": false,
       "valorTotalEstimado": 33322,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -72882,7 +72776,6 @@
       "usuarioNome": "Licitanet Licitações Eletrônicas LTDA"
     },
     {
-      "srp": true,
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "37318510000111",
@@ -72892,6 +72785,7 @@
       },
       "dataInclusao": "2026-11-02T14:19:20",
       "dataAtualizacao": "2026-11-02T14:19:20",
+      "numeroControlePNCP": "37318510000111-1-000050/2026",
       "anoCompra": 2026,
       "sequencialCompra": 50,
       "emendaParlamentar": null,
@@ -72903,13 +72797,14 @@
       "dataEncerramentoProposta": "2026-11-17T10:00:00",
       "dataPublicacaoPncp": "2026-11-02T14:19:20",
       "dataAtualizacaoGlobal": "2026-11-02T14:49:07",
+      "srp": true,
       "unidadeOrgao": {
         "ufNome": "Distrito Federal",
         "ufSigla": "DF",
         "municipioNome": "Brasília",
         "codigoIbge": "5300108",
-        "nomeUnidade": "EDF-AGENCIA BRASILEIRA APOIO A GESTÃO DO SUS",
-        "codigoUnidade": "932133"
+        "codigoUnidade": "932133",
+        "nomeUnidade": "EDF-AGENCIA BRASILEIRA APOIO A GESTÃO DO SUS"
       },
       "orgaoSubRogado": null,
       "unidadeSubRogada": null,
@@ -72921,8 +72816,6 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=93213305000352026",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "numeroControlePNCP": "37318510000111-1-000050/2026",
-      "usuarioNome": "Compras.gov.br",
       "valorTotalEstimado": 699183.5,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
@@ -72939,7 +72832,8 @@
         }
       ],
       "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP"
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Compras.gov.br"
     },
     {
       "valorTotalHomologado": null,
@@ -73055,6 +72949,66 @@
           "nome": "Estadual",
           "descricao": "Recurso orçamentário estadual disponível e devidamente vinculado à despesa que será realizada.",
           "dataInclusao": "2026-10-29T13:21:55"
+        }
+      ],
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Compras.gov.br"
+    },
+    {
+      "valorTotalHomologado": null,
+      "orgaoEntidade": {
+        "cnpj": "30051023000196",
+        "razaoSocial": "TRIBUNAL DE CONTAS DO ESTADO DO RIO DE JANEIRO",
+        "poderId": "L",
+        "esferaId": "E"
+      },
+      "dataAtualizacao": "2026-11-02T23:25:01",
+      "dataInclusao": "2026-11-02T23:25:01",
+      "anoCompra": 2026,
+      "sequencialCompra": 229,
+      "emendaParlamentar": null,
+      "numeroCompra": "484",
+      "processo": "301.548-7/2018",
+      "objetoCompra": "Prestação de serviços destinados à implantação de solução de segurança eletrônica, na qual devem ser integrados os sistemas de videomonitoramento (CFTV), controle de acesso e os sistemas de alarmes de incêndios com fornecimento de todos os equipamentos, materiais, hardwares, softwares e as respectivas licenças necessárias a instalação, montagem, manutenção e suporte técnico abrangentes ao treinamento e a operação, pelo prazo de 60 (sessenta) meses.",
+      "informacaoComplementar": "-",
+      "dataAberturaProposta": "2026-11-03T09:00:00",
+      "dataEncerramentoProposta": "2026-11-17T11:00:00",
+      "dataPublicacaoPncp": "2026-11-02T23:25:01",
+      "dataAtualizacaoGlobal": "2026-11-02T23:26:07",
+      "unidadeOrgao": {
+        "ufNome": "Rio de Janeiro",
+        "ufSigla": "RJ",
+        "municipioNome": "Rio de Janeiro",
+        "codigoUnidade": "925464",
+        "codigoIbge": "3304557",
+        "nomeUnidade": "TRIBUNAL DE CONTAS DO ESTADO DO R. DE JANEIRO"
+      },
+      "orgaoSubRogado": null,
+      "unidadeSubRogada": null,
+      "amparoLegal": {
+        "nome": "Lei 14.133/2021, Art. 28, I",
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "codigo": 1
+      },
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=92546405004842026",
+      "linkProcessoEletronico": "https://www.tcerj.tc.br/consulta-processo/Processo",
+      "justificativaPresencial": null,
+      "numeroControlePNCP": "30051023000196-1-000229/2026",
+      "srp": false,
+      "valorTotalEstimado": 0,
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "fontesOrcamentarias": [
+        {
+          "codigo": 3,
+          "nome": "Estadual",
+          "descricao": "Recurso orçamentário estadual disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-02T23:25:07"
         }
       ],
       "situacaoCompraId": 1,
