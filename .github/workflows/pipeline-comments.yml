@@ -1,0 +1,54 @@
+name: Pipeline comments integration
+on:
+  pull_request:
+    paths:
+      - 'src/app/pipeline/**'
+      - 'src/lib/pipeline/**'
+      - 'supabase/**'
+      - 'scripts/setup-pipeline-comment-test.ts'
+      - 'tests/e2e/pipeline-comments.spec.ts'
+      - '.github/workflows/pipeline-comments.yml'
+permissions:
+  contents: read
+jobs:
+  comments-isolation-and-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PIPELINE_TEST_API_URL: http://127.0.0.1:54321
+      PIPELINE_TEST_DB_URL: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+      PIPELINE_TEST_DISPOSABLE: 'true'
+      PIPELINE_TEST_WORKDIR: /tmp/edital-certo-comments-ci
+      PIPELINE_TEST_FIXTURE: /tmp/edital-certo-comments-fixture.json
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.121.0
+      - name: Initialize disposable local stack
+        run: |
+          supabase --version
+          supabase init --help
+          supabase start --help
+          mkdir -p "$PIPELINE_TEST_WORKDIR"
+          supabase init --workdir "$PIPELINE_TEST_WORKDIR"
+          cp -r supabase/migrations "$PIPELINE_TEST_WORKDIR/supabase/"
+          supabase start --workdir "$PIPELINE_TEST_WORKDIR" -x studio,imgproxy,edge-runtime,logflare,vector,supavisor
+      - name: Verify isolation, moderation, immutable authorship and audit with rollback
+        run: psql "$PIPELINE_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -f supabase/tests/pipeline-comments.sql
+      - name: Create synthetic local accounts and verify REST permissions
+        run: node --import=tsx scripts/setup-pipeline-comment-test.ts
+      - run: npx playwright install --with-deps chromium
+      - name: Verify authenticated browser flows
+        run: npm run test:e2e -- tests/e2e/pipeline-comments.spec.ts
+      - name: Verify browser operations reached the audit trail
+        run: |
+          psql "$PIPELINE_TEST_DB_URL" -X -v ON_ERROR_STOP=1 -c "DO \$\$ BEGIN IF (SELECT count(*) FROM public.audit_logs WHERE action='pipeline.comment_created')<>24 OR (SELECT count(*) FROM public.audit_logs WHERE action='pipeline.comment_deleted')<>1 THEN RAISE EXCEPTION 'BROWSER_AUDIT_MISSING'; END IF; END \$\$;"
+      - name: Stop disposable services
+        if: always()
+        run: supabase stop --no-backup --workdir "$PIPELINE_TEST_WORKDIR"
