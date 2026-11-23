@@ -1,7 +1,7 @@
 {
-  "atualizadoEm": "2026-11-22T19:03:28.074Z",
+  "atualizadoEm": "2026-11-23T01:24:19.279Z",
   "status": "ok",
-  "mensagem": "Coleta concluída: 2 novas, 1935 mantidas (1937 no total), 0 removidas por prazo encerrado e 629 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
+  "mensagem": "Coleta concluída: 2 novas, 1937 mantidas (1939 no total), 0 removidas por prazo encerrado e 139 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
   "parametros": {
     "endpoint": "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
     "criterio": "Contratações publicadas nos últimos 3 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.",
@@ -28,15 +28,15 @@
     "paginasPendentesRetentativa": [],
     "contagens": {
       "novas": 2,
-      "mantidas": 1935,
+      "mantidas": 1937,
       "removidasPorPrazoEncerrado": 0,
-      "ignoradasPeloFiltro": 629,
-      "totalFinal": 1937,
+      "ignoradasPeloFiltro": 139,
+      "totalFinal": 1939,
       "paginasPendentesRetentativa": 0,
       "paginasPendentesExpiradas": 0
     }
   },
-  "total": 1937,
+  "total": 1939,
   "registros": [
     {
       "numeroControlePNCP": "14105191000160-1-000085/2026",
@@ -60160,24 +60160,24 @@
       "linkSistemaOrigem": "sai.io.org.br/site/PublicadoPncp/173958?localConsulta=2&title=2&cod=1849",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "emendaParlamentar": null,
       "processo": "289/2026",
       "orgaoSubRogado": null,
       "informacaoComplementar": null,
       "dataAtualizacaoGlobal": "2026-11-20T15:16:13",
       "dataPublicacaoPncp": "2026-11-20T15:16:12",
+      "emendaParlamentar": null,
       "numeroControlePNCP": "13810833000160-1-000136/2026",
+      "fontesOrcamentarias": [],
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP",
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "valorTotalEstimado": 65472.65,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
-      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
-      "fontesOrcamentarias": [],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP"
+      "tipoInstrumentoConvocatorioCodigo": 2
     },
     {
       "orgaoEntidade": {
@@ -60213,24 +60213,24 @@
       "linkSistemaOrigem": "sai.io.org.br/site/PublicadoPncp/173960?localConsulta=2&title=2&cod=1849",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
-      "emendaParlamentar": null,
       "processo": "289/2026",
       "orgaoSubRogado": null,
       "informacaoComplementar": null,
       "dataAtualizacaoGlobal": "2026-11-20T15:16:48",
       "dataPublicacaoPncp": "2026-11-20T15:16:48",
+      "emendaParlamentar": null,
       "numeroControlePNCP": "13810833000160-1-000137/2026",
+      "fontesOrcamentarias": [],
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP",
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
       "valorTotalEstimado": 65472.65,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
       "modoDisputaId": 4,
       "modoDisputaNome": "Dispensa Com Disputa",
-      "tipoInstrumentoConvocatorioCodigo": 2,
-      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
-      "fontesOrcamentarias": [],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP"
+      "tipoInstrumentoConvocatorioCodigo": 2
     },
     {
       "orgaoEntidade": {
@@ -62453,9 +62453,9 @@
     {
       "orgaoEntidade": {
         "cnpj": "00394502000144",
+        "esferaId": "F",
         "razaoSocial": "COMANDO DA MARINHA",
-        "poderId": "E",
-        "esferaId": "F"
+        "poderId": "E"
       },
       "valorTotalHomologado": null,
       "dataInclusao": "2026-11-22T12:14:46",
@@ -62504,6 +62504,126 @@
           "nome": "Federal",
           "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
           "dataInclusao": "2026-11-22T12:14:47"
+        }
+      ],
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Compras.gov.br"
+    },
+    {
+      "orgaoEntidade": {
+        "cnpj": "00394502000144",
+        "esferaId": "F",
+        "razaoSocial": "COMANDO DA MARINHA",
+        "poderId": "E"
+      },
+      "valorTotalHomologado": null,
+      "dataInclusao": "2026-11-22T17:47:30",
+      "dataAtualizacao": "2026-11-22T17:47:30",
+      "anoCompra": 2026,
+      "srp": false,
+      "sequencialCompra": 17135,
+      "numeroCompra": "9",
+      "objetoCompra": "O objeto do presente procedimento é a necessidade de Aquisição de computadores para apoio à realização de cursos do Ensino Profissional Marítimo na Capitania dos Portos de Pernambuco.",
+      "dataAberturaProposta": "2026-11-23T08:00:00",
+      "dataEncerramentoProposta": "2026-11-26T08:00:00",
+      "unidadeOrgao": {
+        "ufNome": "Pernambuco",
+        "ufSigla": "PE",
+        "municipioNome": "Recife",
+        "codigoUnidade": "783340",
+        "nomeUnidade": "CAPITANIA DOS PORTOS NO ESTADO DE PERNAMBUCO",
+        "codigoIbge": "2611606"
+      },
+      "unidadeSubRogada": null,
+      "amparoLegal": {
+        "nome": "Lei 14.133/2021, Art. 75, II",
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "codigo": 19
+      },
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=78334006000092026",
+      "linkProcessoEletronico": "https://prod.sigad.mar.mil.br/apps/processo/1048999/visualizar/capa",
+      "justificativaPresencial": null,
+      "emendaParlamentar": null,
+      "processo": "63038.003112/2026-52",
+      "orgaoSubRogado": null,
+      "informacaoComplementar": null,
+      "dataAtualizacaoGlobal": "2026-11-22T18:26:50",
+      "dataPublicacaoPncp": "2026-11-22T17:47:30",
+      "numeroControlePNCP": "00394502000144-1-017135/2026",
+      "valorTotalEstimado": 44996.2,
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "fontesOrcamentarias": [
+        {
+          "codigo": 4,
+          "nome": "Federal",
+          "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-22T17:47:34"
+        }
+      ],
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Compras.gov.br"
+    },
+    {
+      "orgaoEntidade": {
+        "cnpj": "00394502000144",
+        "esferaId": "F",
+        "razaoSocial": "COMANDO DA MARINHA",
+        "poderId": "E"
+      },
+      "valorTotalHomologado": null,
+      "dataInclusao": "2026-11-22T20:54:04",
+      "dataAtualizacao": "2026-11-22T20:54:04",
+      "anoCompra": 2026,
+      "srp": false,
+      "sequencialCompra": 17137,
+      "numeroCompra": "98",
+      "objetoCompra": "Aquisição de de materiais de Tecnologia de Informação e Comunicação (TIC) - Desktops, Notebooks, Impressoras e Nobreak",
+      "dataAberturaProposta": "2026-11-23T08:00:00",
+      "dataEncerramentoProposta": "2026-11-26T08:00:00",
+      "unidadeOrgao": {
+        "ufNome": "Santa Catarina",
+        "ufSigla": "SC",
+        "municipioNome": "Laguna",
+        "codigoUnidade": "785341",
+        "nomeUnidade": "DELEG.CAPITANIA PORTOS DO EST.SC EM LAGUNA",
+        "codigoIbge": "4209409"
+      },
+      "unidadeSubRogada": null,
+      "amparoLegal": {
+        "nome": "Lei 14.133/2021, Art. 75, II",
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "codigo": 19
+      },
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=78534106000982026",
+      "linkProcessoEletronico": "https://www.marinha.mil.br/dellaguna/",
+      "justificativaPresencial": null,
+      "emendaParlamentar": null,
+      "processo": "63340.001578/2026-90",
+      "orgaoSubRogado": null,
+      "informacaoComplementar": null,
+      "dataAtualizacaoGlobal": "2026-11-22T20:55:09",
+      "dataPublicacaoPncp": "2026-11-22T20:54:04",
+      "numeroControlePNCP": "00394502000144-1-017137/2026",
+      "valorTotalEstimado": 46357,
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "fontesOrcamentarias": [
+        {
+          "codigo": 4,
+          "nome": "Federal",
+          "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-22T20:54:05"
         }
       ],
       "situacaoCompraId": 1,
@@ -63216,19 +63336,20 @@
     {
       "orgaoEntidade": {
         "cnpj": "00348003000110",
-        "razaoSocial": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUARIA",
         "poderId": "E",
-        "esferaId": "F"
+        "esferaId": "F",
+        "razaoSocial": "EMPRESA BRASILEIRA DE PESQUISA AGROPECUARIA"
       },
       "valorTotalHomologado": null,
-      "dataAtualizacao": "2026-11-21T16:36:38",
       "dataInclusao": "2026-11-21T16:36:38",
+      "dataAtualizacao": "2026-11-21T16:36:38",
       "emendaParlamentar": null,
       "processo": "21173.000496/2026-57",
       "orgaoSubRogado": null,
       "informacaoComplementar": null,
       "dataAtualizacaoGlobal": "2026-11-21T16:37:49",
       "dataPublicacaoPncp": "2026-11-21T16:36:38",
+      "numeroControlePNCP": "00348003000110-1-001796/2026",
       "anoCompra": 2026,
       "srp": false,
       "sequencialCompra": 1796,
@@ -63240,9 +63361,9 @@
         "ufNome": "Alagoas",
         "ufSigla": "AL",
         "municipioNome": "Maceió",
+        "nomeUnidade": "EMBRAPA ALIMENTOS E TERRITORIOS/MACEIO/AL",
         "codigoIbge": "2704302",
-        "codigoUnidade": "130240",
-        "nomeUnidade": "EMBRAPA ALIMENTOS E TERRITORIOS/MACEIO/AL"
+        "codigoUnidade": "130240"
       },
       "unidadeSubRogada": null,
       "amparoLegal": {
@@ -63253,7 +63374,6 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=13024006000512026",
       "linkProcessoEletronico": "https://sei.sede.embrapa.br/sei/controlador.php?acao=procedimento_trabalhar&id_procedimento=14659129",
       "justificativaPresencial": null,
-      "numeroControlePNCP": "00348003000110-1-001796/2026",
       "valorTotalEstimado": 22609.01,
       "modalidadeId": 8,
       "modalidadeNome": "Dispensa",
@@ -67804,9 +67924,9 @@
     {
       "orgaoEntidade": {
         "cnpj": "00394502000144",
+        "esferaId": "F",
         "razaoSocial": "COMANDO DA MARINHA",
-        "poderId": "E",
-        "esferaId": "F"
+        "poderId": "E"
       },
       "valorTotalHomologado": 0,
       "dataInclusao": "2026-11-20T17:30:09",
@@ -67823,8 +67943,8 @@
         "ufSigla": "RS",
         "municipioNome": "Uruguaiana",
         "codigoUnidade": "785332",
-        "codigoIbge": "4322400",
-        "nomeUnidade": "DELEGACIA CAP.PORTOS EST RGS EM URUGUAIANA/RS"
+        "nomeUnidade": "DELEGACIA CAP.PORTOS EST RGS EM URUGUAIANA/RS",
+        "codigoIbge": "4322400"
       },
       "unidadeSubRogada": null,
       "amparoLegal": {
@@ -67832,15 +67952,15 @@
         "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
         "codigo": 19
       },
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=78533206000352026",
+      "linkProcessoEletronico": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-artefatos-web/artefatos/view/6268619?tipo=TR",
+      "justificativaPresencial": null,
       "emendaParlamentar": null,
       "processo": "DE35-2025 63155.001102/2026-46",
       "orgaoSubRogado": null,
       "informacaoComplementar": "aquisição de computadores, nobreaks e webcams para apoio as atividades do EPM em formato de grupo.",
       "dataAtualizacaoGlobal": "2026-11-20T17:38:14",
       "dataPublicacaoPncp": "2026-11-20T17:30:09",
-      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=78533206000352026",
-      "linkProcessoEletronico": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-artefatos-web/artefatos/view/6268619?tipo=TR",
-      "justificativaPresencial": null,
       "numeroControlePNCP": "00394502000144-1-017111/2026",
       "valorTotalEstimado": 30233.52,
       "modalidadeId": 8,
@@ -67864,9 +67984,9 @@
     {
       "orgaoEntidade": {
         "cnpj": "10735145000194",
+        "esferaId": "F",
         "razaoSocial": "INSTITUTO FEDERAL DE EDUCACAO, CIENCIA E TECNOLOGIA DO MARANHAO",
-        "poderId": "E",
-        "esferaId": "F"
+        "poderId": "E"
       },
       "valorTotalHomologado": null,
       "dataInclusao": "2026-11-22T14:38:04",
@@ -98292,14 +98412,8 @@
         "esferaId": "M"
       },
       "valorTotalHomologado": null,
-      "dataAtualizacao": "2026-11-20T15:03:24",
       "dataInclusao": "2026-11-20T15:03:24",
-      "emendaParlamentar": null,
-      "processo": "287/2026",
-      "orgaoSubRogado": null,
-      "informacaoComplementar": null,
-      "dataAtualizacaoGlobal": "2026-11-20T15:03:25",
-      "dataPublicacaoPncp": "2026-11-20T15:03:24",
+      "dataAtualizacao": "2026-11-20T15:03:24",
       "anoCompra": 2026,
       "srp": true,
       "sequencialCompra": 134,
@@ -98311,9 +98425,9 @@
         "ufNome": "Bahia",
         "ufSigla": "BA",
         "municipioNome": "Ruy Barbosa",
-        "codigoIbge": "2927200",
         "codigoUnidade": "1849",
-        "nomeUnidade": "Prefeitura Municipal de Ruy Barbosa"
+        "nomeUnidade": "Prefeitura Municipal de Ruy Barbosa",
+        "codigoIbge": "2927200"
       },
       "unidadeSubRogada": null,
       "amparoLegal": {
@@ -98324,18 +98438,24 @@
       "linkSistemaOrigem": "sai.io.org.br/site/PublicadoPncp/173956?localConsulta=2&cod=1849",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "processo": "287/2026",
+      "orgaoSubRogado": null,
+      "informacaoComplementar": null,
+      "dataAtualizacaoGlobal": "2026-11-20T15:03:25",
+      "dataPublicacaoPncp": "2026-11-20T15:03:24",
+      "emendaParlamentar": null,
       "numeroControlePNCP": "13810833000160-1-000134/2026",
+      "fontesOrcamentarias": [],
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP",
+      "tipoInstrumentoConvocatorioNome": "Edital",
       "valorTotalEstimado": 127213.8,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
       "modoDisputaId": 3,
       "modoDisputaNome": "Aberto-Fechado",
-      "tipoInstrumentoConvocatorioCodigo": 1,
-      "tipoInstrumentoConvocatorioNome": "Edital",
-      "fontesOrcamentarias": [],
-      "situacaoCompraId": 1,
-      "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP"
+      "tipoInstrumentoConvocatorioCodigo": 1
     },
     {
       "orgaoEntidade": {
@@ -100057,14 +100177,8 @@
         "esferaId": "F"
       },
       "valorTotalHomologado": null,
-      "dataAtualizacao": "2026-11-20T13:13:14",
       "dataInclusao": "2026-11-20T13:13:14",
-      "emendaParlamentar": null,
-      "processo": "21195.003119/2026-11",
-      "orgaoSubRogado": null,
-      "informacaoComplementar": null,
-      "dataAtualizacaoGlobal": "2026-11-20T13:14:20",
-      "dataPublicacaoPncp": "2026-11-20T13:13:14",
+      "dataAtualizacao": "2026-11-20T13:13:14",
       "anoCompra": 2026,
       "srp": true,
       "sequencialCompra": 1790,
@@ -100076,9 +100190,9 @@
         "ufNome": "Distrito Federal",
         "ufSigla": "DF",
         "municipioNome": "Brasília",
-        "codigoIbge": "5300108",
         "codigoUnidade": "135038",
-        "nomeUnidade": "EMBRAPA RECURSOS GENETICOS/BRASILIA/DF"
+        "nomeUnidade": "EMBRAPA RECURSOS GENETICOS/BRASILIA/DF",
+        "codigoIbge": "5300108"
       },
       "unidadeSubRogada": null,
       "amparoLegal": {
@@ -100089,14 +100203,13 @@
       "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=13503805000912026",
       "linkProcessoEletronico": "https://sei.sede.embrapa.br/sei/",
       "justificativaPresencial": null,
+      "processo": "21195.003119/2026-11",
+      "orgaoSubRogado": null,
+      "informacaoComplementar": null,
+      "dataAtualizacaoGlobal": "2026-11-20T13:14:20",
+      "dataPublicacaoPncp": "2026-11-20T13:13:14",
+      "emendaParlamentar": null,
       "numeroControlePNCP": "00348003000110-1-001790/2026",
-      "valorTotalEstimado": 0,
-      "modalidadeId": 6,
-      "modalidadeNome": "Pregão - Eletrônico",
-      "modoDisputaId": 3,
-      "modoDisputaNome": "Aberto-Fechado",
-      "tipoInstrumentoConvocatorioCodigo": 1,
-      "tipoInstrumentoConvocatorioNome": "Edital",
       "fontesOrcamentarias": [
         {
           "codigo": 4,
@@ -100107,7 +100220,14 @@
       ],
       "situacaoCompraId": 1,
       "situacaoCompraNome": "Divulgada no PNCP",
-      "usuarioNome": "Compras.gov.br"
+      "usuarioNome": "Compras.gov.br",
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "valorTotalEstimado": 0,
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "tipoInstrumentoConvocatorioCodigo": 1
     },
     {
       "orgaoEntidade": {
@@ -106303,11 +106423,6 @@
       "valorTotalHomologado": null,
       "dataInclusao": "2026-11-19T23:39:38",
       "dataAtualizacao": "2026-11-19T23:39:38",
-      "numeroControlePNCP": "17935396000161-1-000201/2026",
-      "anoCompra": 2026,
-      "srp": true,
-      "sequencialCompra": 201,
-      "numeroCompra": "390",
       "objetoCompra": "Aquisição de suprimento de informática.",
       "dataAberturaProposta": "2026-11-23T08:00:00",
       "dataEncerramentoProposta": "2026-12-10T00:00:00",
@@ -106328,17 +106443,22 @@
       "linkSistemaOrigem": "https://comprasbr.com.br/pregao-eletronico-detalhe/?idlicitacao=49913",
       "linkProcessoEletronico": null,
       "justificativaPresencial": null,
+      "numeroControlePNCP": "17935396000161-1-000201/2026",
       "emendaParlamentar": null,
       "processo": "390/2026",
       "orgaoSubRogado": null,
       "informacaoComplementar": null,
       "dataAtualizacaoGlobal": "2026-11-19T23:40:37",
       "dataPublicacaoPncp": "2026-11-19T23:39:38",
+      "anoCompra": 2026,
+      "srp": true,
+      "sequencialCompra": 201,
+      "numeroCompra": "390",
+      "modoDisputaNome": "Aberto",
       "valorTotalEstimado": 124315.68,
       "modalidadeId": 6,
       "modalidadeNome": "Pregão - Eletrônico",
       "modoDisputaId": 1,
-      "modoDisputaNome": "Aberto",
       "tipoInstrumentoConvocatorioCodigo": 1,
       "tipoInstrumentoConvocatorioNome": "Edital",
       "fontesOrcamentarias": [],
