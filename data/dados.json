@@ -1,7 +1,7 @@
 {
-  "atualizadoEm": "2026-11-27T16:10:52.252Z",
+  "atualizadoEm": "2026-11-28T01:06:37.289Z",
   "status": "ok",
-  "mensagem": "Coleta concluída: 108 novas, 1898 mantidas (2006 no total), 4 removidas por prazo encerrado e 6520 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
+  "mensagem": "Coleta concluída: 24 novas, 2006 mantidas (2030 no total), 0 removidas por prazo encerrado e 5607 ignoradas pelo filtro de TI. 0 pendência(s) expirada(s) foram removidas da fila.",
   "parametros": {
     "endpoint": "https://pncp.gov.br/api/consulta/v1/contratacoes/publicacao",
     "criterio": "Contratações publicadas nos últimos 3 dias, com prazo de proposta ainda aberto e modalidade entre os códigos 4, 6 e 8.",
@@ -15,8 +15,8 @@
     ],
     "paginasPorModalidade": {
       "4": 17,
-      "6": 111,
-      "8": 195
+      "6": 116,
+      "8": 206
     },
     "tentativasPorChamada": 3,
     "timeoutSegundos": 30,
@@ -27,16 +27,16 @@
     "paginasPendentesExpiradas": 0,
     "paginasPendentesRetentativa": [],
     "contagens": {
-      "novas": 108,
-      "mantidas": 1898,
-      "removidasPorPrazoEncerrado": 4,
-      "ignoradasPeloFiltro": 6520,
-      "totalFinal": 2006,
+      "novas": 24,
+      "mantidas": 2006,
+      "removidasPorPrazoEncerrado": 0,
+      "ignoradasPeloFiltro": 5607,
+      "totalFinal": 2030,
       "paginasPendentesRetentativa": 0,
       "paginasPendentesExpiradas": 0
     }
   },
-  "total": 2006,
+  "total": 2030,
   "registros": [
     {
       "valorTotalHomologado": null,
@@ -62892,6 +62892,59 @@
       "valorTotalHomologado": null
     },
     {
+      "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T08:00:00",
+      "dataAtualizacao": "2026-11-27T10:47:09",
+      "dataAtualizacaoGlobal": "2026-11-27T10:47:09",
+      "dataEncerramentoProposta": "2026-12-01T23:59:00",
+      "dataInclusao": "2026-11-27T10:47:09",
+      "dataPublicacaoPncp": "2026-11-27T10:47:09",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "sai.io.org.br/site/PublicadoPncp/174249?localConsulta=2&title=2&cod=1775",
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "146",
+      "numeroControlePNCP": "13805528000180-1-000262/2026",
+      "objetoCompra": "CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA PRESTAÇÃO DE SERVIÇOS NA CRIAÇÃO/DESENVOLVIMENTO IMPLANTAÇÃO E MANUTENÇÃO DO NOVO WEB SITE OFICIAL DO MUNICÍPIO DE MATA DE SÃO JOÃO, PERSONALIZADO E RESPONSIVO COM IMPLANTAÇÃO E LICENCIAMENTO DE SOFTWARE QUE PERMITA A VEICULAÇÃO E O GERENCIAMENTO ONLINE DOS ATOS ADMINISTRATIVOS, FINANCEIROS, FISCAIS E LINK ESPECÍFICO DO MUNICÍPIO DE MATA DE SÃO JOÃO, COM FUNÇÕES DE EDIÇÃO, DIAGRAMAÇÃO E ARTE-FINALIZAÇÃO COM DISPONIBILIZAÇÃONA INTERNET DO ARQUIVO DIGITAL COM MONITORAMENTO EM TEMPO REAL DE TODAS AS EDIÇÕES E PUBLICAÇÕES DO MUNICÍPIO, INCLUINDOTREINAMENTO E HOSPEDAGEM DE DADOS OFICIAIS E DIVERSOS, COMPOSTO AINDA DE PORTAL DA TRANSPARÊNCIA, DIÁRIO OFICIAL E PORTAL DE ACESSO À INFORMAÇÃO, EM ATENDIMENTO A LEI COMPLEMENTAR FEDERAL Nº131/2009 (LEI DA TRANSPARÊNCIA), LEI FEDERAL Nº 12.527, DE 18 DE NOVEMBRO DE 2011-LEI DE ACESSO À\r\nINFORMAÇÃO (LAI), LEI COMPLEMENTAR Nº 101, DE 04 DE MAIO DE 2000- LEI DE RESPONSABILIDADE FISCAL (LRF), LEI NO 10.098, DE 19 DE DEZEMBRO DE 2000, LEI Nº 13.146, DE 06 DE JULHO DE 2015, DECRETO FEDERAL Nº 10.540/2020 (SIAFIC), LEI FEDERAL Nº 12.965 DE 23 DE ABRIL DE 2014 – MARCO CIVIL DA INTERNET, LEI FEDERAL Nº 13.709, DE 14 DE AGOSTO DE 2018 – LEI GERAL DE PROTEÇÃO DE DADOS PESSOAIS, DECRETO MUNICIPAL Nº 645 DE 4 DE MAIO DE 2021 – OPERAÇÃO EIMPLANTAÇÃO PROGRESSIVA DO SIAFIC, RESOLUÇÃO Nº 1426 DE 22 DEABRIL DE 2021 – DO TRIBUNAL DE CONTAS DOS MUNICÍPIOS DO ESTADO DA BAHIA (TCM) E LEI MUNICIPAL Nº 800 DE 2 DE JANEIRO DE 2021 PARA\r\nATENDIMENTO DAS NECESSIDADES DA PREFEITURA MUNICIPAL DE MATA DE SÃO JOÃO/BA.",
+      "orgaoEntidade": {
+        "cnpj": "13805528000180",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE MATA DE SAO JOAO"
+      },
+      "orgaoSubRogado": null,
+      "processo": "25294/2026",
+      "sequencialCompra": 262,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "2921005",
+        "codigoUnidade": "1775",
+        "municipioNome": "Mata de São João",
+        "nomeUnidade": "Prefeitura Municipal de Mata de São João",
+        "ufNome": "Bahia",
+        "ufSigla": "BA"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Instituto Municipal de Administração Pública - IMAP",
+      "valorTotalEstimado": 0,
+      "valorTotalHomologado": null
+    },
+    {
       "orgaoEntidade": {
         "cnpj": "04709778000125",
         "razaoSocial": "DEPARTAMENTO DA AGUA E ESGOTO SANITARIO",
@@ -69823,6 +69876,59 @@
       "valorTotalHomologado": null
     },
     {
+      "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T09:50:49",
+      "dataAtualizacaoGlobal": "2026-11-27T10:36:32",
+      "dataEncerramentoProposta": "2026-12-02T17:00:00",
+      "dataInclusao": "2026-11-27T09:50:49",
+      "dataPublicacaoPncp": "2026-11-27T09:50:49",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://camarasilvania.megasofttransparencia.com.br/contratos-convenios-e-licitacoes/dispensas-inexigibilidades?codigoDaLicitacao=396",
+      "linkSistemaOrigem": null,
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "(396) | 21-0",
+      "numeroControlePNCP": "03797149000131-1-000033/2026",
+      "objetoCompra": "Aquisição de material permanente de informática.",
+      "orgaoEntidade": {
+        "cnpj": "03797149000131",
+        "esferaId": "M",
+        "poderId": "L",
+        "razaoSocial": "SILVANIA CAMARA MUNICIPAL"
+      },
+      "orgaoSubRogado": null,
+      "processo": "687/2026",
+      "sequencialCompra": 33,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "5220603",
+        "codigoUnidade": "1",
+        "municipioNome": "Silvânia",
+        "nomeUnidade": "CAMARA MUNICIPAL DE SILVANIA",
+        "ufNome": "Goiás",
+        "ufSigla": "GO"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Megasoft Informática",
+      "valorTotalEstimado": 41614.87,
+      "valorTotalHomologado": null
+    },
+    {
       "orgaoEntidade": {
         "cnpj": "50804079000181",
         "razaoSocial": "CAMARA MUNICIPAL DA ESTANCIA TURISTICA DE SAO ROQUE",
@@ -71021,6 +71127,66 @@
       "unidadeSubRogada": null,
       "usuarioNome": "Compras.gov.br",
       "valorTotalEstimado": 58807.65,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T11:30:00",
+      "dataAtualizacao": "2026-11-27T10:47:47",
+      "dataAtualizacaoGlobal": "2026-11-27T10:48:50",
+      "dataEncerramentoProposta": "2026-12-03T08:00:00",
+      "dataInclusao": "2026-11-27T10:47:47",
+      "dataPublicacaoPncp": "2026-11-27T10:47:47",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 4,
+          "nome": "Federal",
+          "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T10:47:47"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://medioparaiba.sei.rj.gov.br/sei/controlador.php?acao=procedimento_trabalhar&acao_origem=procedimento_controlar&acao_retorno=procedimento_controlar&id_procedimento=2848293&infra_sistema=100000100&infra_unidade_atual=110002148&infra_hash=a887f199bbb2cdec8fe32734a0335000bded584c4a13dc038f74d36d14a55b5d",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=92795606000392026",
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "39",
+      "numeroControlePNCP": "11934211000118-1-000039/2026",
+      "objetoCompra": "Aquisição de suprimentos de impressão originais do fabricante (OEM), compreendendo cartuchos de toner e unidades de cilindro fotocondutor, distribuídos em 09 (nove) itens individualizados por part number, destinados a suprir a demanda operacional do parque de impressoras a laser.",
+      "orgaoEntidade": {
+        "cnpj": "11934211000118",
+        "esferaId": "M",
+        "poderId": "E",
+        "razaoSocial": "FUNDO MUNICIPAL DE SAUDE - VALENCA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "VLC-020508/003038/2026",
+      "sequencialCompra": 39,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "3306107",
+        "codigoUnidade": "927956",
+        "municipioNome": "Valença",
+        "nomeUnidade": "FUNDO MUNICIPAL DE SAUDE DE VALENCA - RJ",
+        "ufNome": "Rio de Janeiro",
+        "ufSigla": "RJ"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 34292.2,
       "valorTotalHomologado": null
     },
     {
@@ -78489,6 +78655,59 @@
       "valorTotalHomologado": null
     },
     {
+      "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:30:00",
+      "dataAtualizacao": "2026-11-27T10:19:47",
+      "dataAtualizacaoGlobal": "2026-11-27T10:21:33",
+      "dataEncerramentoProposta": "2026-12-04T08:29:00",
+      "dataInclusao": "2026-11-27T10:19:47",
+      "dataPublicacaoPncp": "2026-11-27T10:19:47",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": null,
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "19 - 7",
+      "numeroControlePNCP": "03155934000190-1-000158/2026",
+      "objetoCompra": "AQUISIÇÃO DE COMPONENTES DE INFORMÁTICA - MEMÓRIAS RAM E UNIDADES SSD - PARA MANUTENÇÃO CORRETIVA, RECUPERAÇÃO FUNCIONAL E MELHORIA DE DESEMPENHO DE EQUIPAMENTOS MUNICIPAIS QUE AGUARDAM MANUTENÇÃO PELO NÚCLEO DE INFORMÁTICA, DESTINADOS AO ATENDIMENTO DA GERÊNCIA DE ADMINISTRAÇÃO DE NAVIRAÍ/MS. PD 16243/2026",
+      "orgaoEntidade": {
+        "cnpj": "03155934000190",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE NAVIRAI"
+      },
+      "orgaoSubRogado": null,
+      "processo": "177",
+      "sequencialCompra": 158,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "5005707",
+        "codigoUnidade": "03155934000190",
+        "municipioNome": "Naviraí",
+        "nomeUnidade": "Prefeitura Municial de Naviraí",
+        "ufNome": "Mato Grosso do Sul",
+        "ufSigla": "MS"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Elotech Gestão Pública Ltda",
+      "valorTotalEstimado": 19251.4,
+      "valorTotalHomologado": null
+    },
+    {
       "orgaoEntidade": {
         "cnpj": "01612269000191",
         "razaoSocial": "MUNICIPIO DE ESPERANCA NOVA",
@@ -82726,6 +82945,59 @@
     },
     {
       "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T10:32:22",
+      "dataAtualizacaoGlobal": "2026-11-27T10:32:22",
+      "dataEncerramentoProposta": "2026-12-07T08:00:00",
+      "dataInclusao": "2026-11-27T10:32:22",
+      "dataPublicacaoPncp": "2026-11-27T10:32:22",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "http://189.20.141.242:8079/comprasedital",
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "4",
+      "numeroControlePNCP": "71989685000199-1-000043/2026",
+      "objetoCompra": "Aquisição de equipamentos do tipo notebook, destinados ao atendimento das demandas administrativas e operacionais dos diversos Departamentos e respectivas unidades da Administração Pública Municipal. FLOWDOCS 2214/2026",
+      "orgaoEntidade": {
+        "cnpj": "71989685000199",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE TABATINGA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "4",
+      "sequencialCompra": 43,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "3552700",
+        "codigoUnidade": "1",
+        "municipioNome": "Tabatinga",
+        "nomeUnidade": "PREFEITURA MUNICIPAL DE TABATINGA",
+        "ufNome": "São Paulo",
+        "ufSigla": "SP"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Fiorilli Software",
+      "valorTotalEstimado": 37993.7,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
         "codigo": 1,
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
         "nome": "Lei 14.133/2021, Art. 28, I"
@@ -84912,6 +85184,66 @@
       "unidadeSubRogada": null,
       "usuarioNome": "Compras.gov.br",
       "valorTotalEstimado": 3844604.72,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T09:57:25",
+      "dataAtualizacaoGlobal": "2026-11-27T10:19:26",
+      "dataEncerramentoProposta": "2026-12-07T09:00:00",
+      "dataInclusao": "2026-11-27T09:57:25",
+      "dataPublicacaoPncp": "2026-11-27T09:57:25",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 4,
+          "nome": "Federal",
+          "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T09:57:25"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://sei.ibama.gov.br/processo_acesso_externo_consulta.php?id_acesso_externo=2707953&infra_hash=04a08f1bacf87a049a26560d1d06f600",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=19318306000182026",
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "18",
+      "numeroControlePNCP": "03659166002156-1-000189/2026",
+      "objetoCompra": "O presente processo tem como objetivo a contratação de empresa especializada na prestação de serviços de outsourcing de impressão, com fornecimento de equipamentos, suprimentos, manutenção preventiva e corretiva, bem como suporte técnico, visando atender às demandas administrativas e operacionais da SUPES/BAMA/TO e UT Araguaína/TO. A medida busca garantir maior eficiência na gestão documental, redução de custos operacionais, controle de impressões e alinhamento com práticas sustentáveis.",
+      "orgaoEntidade": {
+        "cnpj": "03659166002156",
+        "esferaId": "F",
+        "poderId": "E",
+        "razaoSocial": "INSTITUTO BRASILEIRO DO MEIO AMBIENTE E DOS RECURSOS NATURAIS RENOVAVEIS-IBAMA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "02029.001835/2026-31",
+      "sequencialCompra": 189,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "1721000",
+        "codigoUnidade": "193183",
+        "municipioNome": "Palmas",
+        "nomeUnidade": "IBAMA - GERÊNCIA EXECUTIVA I - TOCANTINS",
+        "ufNome": "Tocantins",
+        "ufSigla": "TO"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 27099.84,
       "valorTotalHomologado": null
     },
     {
@@ -87493,6 +87825,66 @@
     },
     {
       "amparoLegal": {
+        "codigo": 19,
+        "descricao": "Dispensa de Licitação: para contratação que envolva valores inferiores a R$ 50.000,00 (cinquenta mil reais), no caso de outros serviços e compras",
+        "nome": "Lei 14.133/2021, Art. 75, II"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-12-02T08:00:00",
+      "dataAtualizacao": "2026-11-27T10:10:27",
+      "dataAtualizacaoGlobal": "2026-11-27T10:11:28",
+      "dataEncerramentoProposta": "2026-12-08T08:00:00",
+      "dataInclusao": "2026-11-27T10:10:27",
+      "dataPublicacaoPncp": "2026-11-27T10:10:27",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 2,
+          "nome": "Municipal",
+          "descricao": "Recurso orçamentário municipal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T10:10:27"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://supe.maceio.al.gov.br/siimm-semge/pages/prot/anexoProcesso.faces",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=93230606000082026",
+      "modalidadeId": 8,
+      "modalidadeNome": "Dispensa",
+      "modoDisputaId": 4,
+      "modoDisputaNome": "Dispensa Com Disputa",
+      "numeroCompra": "8",
+      "numeroControlePNCP": "00734571000150-1-000005/2026",
+      "objetoCompra": "Contratação de empresa especializada na prestação de serviços de manutenção\npreventiva e corretiva de equipamentos – Nobreak SMS Sinus Double Black e Módulo\nExterno de Baterias, bem como o fornecimento, substituição e instalação das baterias\nexternas do Nobreak VIPMASTER, para atender às necessidades da Autarquia Municipal\nde Iluminação Pública – ILUMINA. ",
+      "orgaoEntidade": {
+        "cnpj": "00734571000150",
+        "esferaId": "M",
+        "poderId": "E",
+        "razaoSocial": "SUP MUNICIPAL DE ENERG E ILUMINACAO PUBL DE MACEIO SIMA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "1130.112453.2026",
+      "sequencialCompra": 5,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 2,
+      "tipoInstrumentoConvocatorioNome": "Aviso de Contratação Direta",
+      "unidadeOrgao": {
+        "codigoIbge": "2704302",
+        "codigoUnidade": "932306",
+        "municipioNome": "Maceió",
+        "nomeUnidade": "CAL-AUTARQUIA MUNICIP. DE ILUMINAÇAO PÚBLICA",
+        "ufNome": "Alagoas",
+        "ufSigla": "AL"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 15360,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
         "codigo": 1,
         "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
         "nome": "Lei 14.133/2021, Art. 28, I"
@@ -88807,7 +89199,7 @@
       "anoCompra": 2026,
       "dataAberturaProposta": "2026-11-26T00:00:00",
       "dataAtualizacao": "2026-11-25T16:25:07",
-      "dataAtualizacaoGlobal": "2026-11-25T16:25:23",
+      "dataAtualizacaoGlobal": "2026-11-27T10:59:08",
       "dataEncerramentoProposta": "2026-12-08T08:59:00",
       "dataInclusao": "2026-11-25T16:25:07",
       "dataPublicacaoPncp": "2026-11-25T16:25:07",
@@ -92038,6 +92430,59 @@
       "unidadeSubRogada": null,
       "usuarioNome": "Compras.gov.br",
       "valorTotalEstimado": 133125,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-28T08:00:00",
+      "dataAtualizacao": "2026-11-27T09:58:05",
+      "dataAtualizacaoGlobal": "2026-11-27T09:59:07",
+      "dataEncerramentoProposta": "2026-12-09T08:00:00",
+      "dataInclusao": "2026-11-27T09:58:05",
+      "dataPublicacaoPncp": "2026-11-27T09:58:05",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://comprasbr.com.br/pregao-eletronico-detalhe/?idlicitacao=50091",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "056",
+      "numeroControlePNCP": "25209149000106-1-000130/2026",
+      "objetoCompra": "Futura e eventual aquisições de Equipamentos de Informática.",
+      "orgaoEntidade": {
+        "cnpj": "25209149000106",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE JAIBA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "132/2026",
+      "sequencialCompra": 130,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "3135050",
+        "codigoUnidade": "182",
+        "municipioNome": "Jaíba",
+        "nomeUnidade": "Prefeitura Municipal de Jaiba - MG",
+        "ufNome": "Minas Gerais",
+        "ufSigla": "MG"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "AZ INFORMATICA LTDA",
+      "valorTotalEstimado": 2257591.83,
       "valorTotalHomologado": null
     },
     {
@@ -96424,6 +96869,59 @@
         "nome": "Lei 14.133/2021, Art. 28, I"
       },
       "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T14:00:00",
+      "dataAtualizacao": "2026-11-27T09:57:13",
+      "dataAtualizacaoGlobal": "2026-11-27T09:57:13",
+      "dataEncerramentoProposta": "2026-12-09T14:00:00",
+      "dataInclusao": "2026-11-27T09:56:33",
+      "dataPublicacaoPncp": "2026-11-27T09:56:33",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": "",
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/RN/Prefeitura-Municipal-de-Brejinho-1150/RPE-PE-29-2026-2026-528438",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "PE 29",
+      "numeroControlePNCP": "08161614000167-1-000035/2026",
+      "objetoCompra": "[Portal de Compras Públicas] - REGISTRO DE PREÇO VISANDO A CONTRATAÇÃO DE EMPRESA ESPECIALIZADA NO FORNECIMENTO DE EQUIPAMENTOS E MATERIAIS DE INFORMÁTICA",
+      "orgaoEntidade": {
+        "cnpj": "08161614000167",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE BREJINHO"
+      },
+      "orgaoSubRogado": null,
+      "processo": "PE 29/2026",
+      "sequencialCompra": 35,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "2401800",
+        "codigoUnidade": "0203",
+        "municipioNome": "Brejinho",
+        "nomeUnidade": "Secretaria Municipal de Administração",
+        "ufNome": "Rio Grande do Norte",
+        "ufSigla": "RN"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "ECustomize Consultoria em Software S.A",
+      "valorTotalEstimado": 0,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
       "dataAberturaProposta": "2026-11-24T15:45:00",
       "dataAtualizacao": "2026-11-24T15:36:42",
       "dataAtualizacaoGlobal": "2026-11-24T15:36:42",
@@ -100438,6 +100936,59 @@
       "valorTotalHomologado": null
     },
     {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T09:00:00",
+      "dataAtualizacao": "2026-11-27T10:13:35",
+      "dataAtualizacaoGlobal": "2026-11-27T10:13:35",
+      "dataEncerramentoProposta": "2026-12-10T09:00:00",
+      "dataInclusao": "2026-11-27T10:13:33",
+      "dataPublicacaoPncp": "2026-11-27T10:13:33",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": "",
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://www.portaldecompraspublicas.com.br/processos/ES/Prefeitura-Municipal-de-Cariacica-2582/RPE-62-2026-2026-527903",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "numeroCompra": "62",
+      "numeroControlePNCP": "27150549000119-1-000248/2026",
+      "objetoCompra": "[Portal de Compras Públicas] - Registro de Preços para provável aquisição de solução integrada de alta performance para data center, destinada à expansão da infraestrutura hiperconvergente existente e ao fornecimento de infraestrutura física inteligente, climatizada e protegida para acondicionamento de ativos de TIC, contemplando o fornecimento de equipamentos, softwares embarcados, licenças, serviços técnicos especializados, suporte, treinamento, operação assistida, instalação e demais componentes.",
+      "orgaoEntidade": {
+        "cnpj": "27150549000119",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE CARIACICA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "31.930/2026",
+      "sequencialCompra": 248,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "3201308",
+        "codigoUnidade": "4714",
+        "municipioNome": "Cariacica",
+        "nomeUnidade": "Prefeitura Municipal de Cariacica",
+        "ufNome": "Espírito Santo",
+        "ufSigla": "ES"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "ECustomize Consultoria em Software S.A",
+      "valorTotalEstimado": 12593014.24,
+      "valorTotalHomologado": null
+    },
+    {
       "orgaoEntidade": {
         "cnpj": "24380651000112",
         "razaoSocial": "MUNICIPIO DE SAO GONCALO DO RIO ABAIXO",
@@ -101792,6 +102343,66 @@
       "valorTotalHomologado": null
     },
     {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T14:00:00",
+      "dataAtualizacao": "2026-11-27T10:35:07",
+      "dataAtualizacaoGlobal": "2026-11-27T10:36:10",
+      "dataEncerramentoProposta": "2026-12-10T10:00:00",
+      "dataInclusao": "2026-11-27T10:35:07",
+      "dataPublicacaoPncp": "2026-11-27T10:35:07",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 2,
+          "nome": "Municipal",
+          "descricao": "Recurso orçamentário municipal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T10:35:07"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://www.aguasdejoinville.com.br/",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=92637705000892026",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "89",
+      "numeroControlePNCP": "07226794000155-1-000175/2026",
+      "objetoCompra": " AQUISIÇÃO DE COMPUTADORES, WORKSTATIONS, NOTEBOOKS E MONITORES",
+      "orgaoEntidade": {
+        "cnpj": "07226794000155",
+        "esferaId": "N",
+        "poderId": "N",
+        "razaoSocial": "COMPANHIA AGUAS DE JOINVILLE"
+      },
+      "orgaoSubRogado": null,
+      "processo": "26.1.011637-8",
+      "sequencialCompra": 175,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "4209102",
+        "codigoUnidade": "926377",
+        "municipioNome": "Joinville",
+        "nomeUnidade": "COMPANHIA AGUAS DE JOINVILE - SC",
+        "ufNome": "Santa Catarina",
+        "ufSigla": "SC"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 0,
+      "valorTotalHomologado": null
+    },
+    {
       "valorTotalHomologado": null,
       "orgaoEntidade": {
         "cnpj": "00399857000126",
@@ -102453,6 +103064,72 @@
       "unidadeSubRogada": null,
       "usuarioNome": "ECustomize Consultoria em Software S.A",
       "valorTotalEstimado": 92477,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T09:58:51",
+      "dataAtualizacaoGlobal": "2026-11-27T09:59:20",
+      "dataEncerramentoProposta": "2026-12-11T07:59:00",
+      "dataInclusao": "2026-11-27T09:58:51",
+      "dataPublicacaoPncp": "2026-11-27T09:58:51",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 2,
+          "nome": "Municipal",
+          "descricao": "Recurso orçamentário municipal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T09:58:51"
+        },
+        {
+          "codigo": 4,
+          "nome": "Federal",
+          "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T09:58:51"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://bllcompras.com/Process/ProcessView?param1=[gkz]orangr//LSARvWavAm3SDTaPmdQPoDge0YogkxMwDjlLqtD4Ip_ZMyYXhxco7S_FtZSCSu45IYnrGzSpvyZbmMGNLY0Onfsg9hG1gf99AhU=",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "FS000104/26",
+      "numeroControlePNCP": "59754648000104-1-000094/2026",
+      "objetoCompra": "Aquisição de equipamentos de informática (computadores, gabinetes, notebooks, tablets e projetor multimídia), com entrega imediata, e conforme condições, quantidades e exigências estabelecidas no edital e seus anexos.",
+      "orgaoEntidade": {
+        "cnpj": "59754648000104",
+        "esferaId": "M",
+        "poderId": "E",
+        "razaoSocial": "MUNICIPIO DE ILHA SOLTEIRA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "176/2026",
+      "sequencialCompra": 94,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "3520442",
+        "codigoUnidade": "4",
+        "municipioNome": "Ilha Solteira",
+        "nomeUnidade": "MUNICIPIO DE ILHA SOLTEIRA",
+        "ufNome": "São Paulo",
+        "ufSigla": "SP"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "BLL Compras",
+      "valorTotalEstimado": 518456.02,
       "valorTotalHomologado": null
     },
     {
@@ -104483,6 +105160,112 @@
       "unidadeSubRogada": null,
       "usuarioNome": "AZ INFORMATICA LTDA",
       "valorTotalEstimado": 816064,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T09:47:27",
+      "dataAtualizacao": "2026-11-27T09:47:32",
+      "dataAtualizacaoGlobal": "2026-11-27T09:47:33",
+      "dataEncerramentoProposta": "2026-12-11T09:00:00",
+      "dataInclusao": "2026-11-27T09:47:32",
+      "dataPublicacaoPncp": "2026-11-27T09:47:32",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": "",
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://licitanet.com.br/sessao/209462",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "087",
+      "numeroControlePNCP": "01614225000109-1-000365/2026",
+      "objetoCompra": "[LICITANET] - FUTURA E EVENTUAL CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA PRESTAÇÃO CONTINUADA DE SERVIÇOS DE OUTSOURCING DE IMPRESSÃO, CÓPIA E DIGITALIZAÇÃO DE DOCUMENTOS, COMPREENDENDO A DISPONIBILIZAÇÃO, INSTALAÇÃO, CONFIGURAÇÃO E LOCAÇÃO DE EQUIPAMENTOS NOVOS, FORNECIMENTO DE TODOS OS SUPRIMENTOS E CONSUMÍVEIS NECESSÁRIOS, EXCETO PAPEL, MANUTENÇÃO PREVENTIVA E CORRETIVA, SUPORTE TÉCNICO, SISTEMA DE GERENCIAMENTO E BILHETAGEM, TREINAMENTO, MONITORAMENTO E DEMAIS SERVIÇOS NECESSÁRIOS AO PLENO FUNCIONAMENTO DA SOLUÇÃO, em atendimento às secretarias do município de Sapezal - MT.",
+      "orgaoEntidade": {
+        "cnpj": "01614225000109",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE SAPEZAL"
+      },
+      "orgaoSubRogado": null,
+      "processo": "087",
+      "sequencialCompra": 365,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "5107875",
+        "codigoUnidade": "934",
+        "municipioNome": "Sapezal",
+        "nomeUnidade": "MUNICÍPIO DE SAPEZAL/MT",
+        "ufNome": "Mato Grosso",
+        "ufSigla": "MT"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Licitanet Licitações Eletrônicas LTDA",
+      "valorTotalEstimado": 2108515.2,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T09:00:00",
+      "dataAtualizacao": "2026-11-27T10:59:06",
+      "dataAtualizacaoGlobal": "2026-11-27T10:59:06",
+      "dataEncerramentoProposta": "2026-12-11T09:00:00",
+      "dataInclusao": "2026-11-27T10:59:06",
+      "dataPublicacaoPncp": "2026-11-27T10:59:06",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://bllcompras.com/Process/ProcessView?param1=[gkz]uFHWEFk1ghXzDWi2ZRn9Dg_WgzQMZbM7yhiM/OYjozS6NWzRjX3B7egU2McmKUZdVDtooa5m_ci40aZa7VuaxUp/9SmPJuudA_jTAJXhTKA=",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "numeroCompra": "010PE",
+      "numeroControlePNCP": "04287990000141-1-000017/2026",
+      "objetoCompra": "CONTRATAÇÃO DE EMPRESA ESPECIALIZADA PARA PRESTAÇÃO DE SERVIÇOS CONTÍNUOS DE\r\nTECNOLOGIA DA INFORMAÇÃO PARA LICENCIAMENTO DE USO DE SOLUÇÃO INTEGRADA DE\r\nGESTÃO DA INFORMAÇÃO LEGISLATIVA, ADMINISTRATIVA, TRANSPARÊNCIA PÚBLICA E PAINEL\r\nELETRÔNICO DE VOTAÇÃO PLENÁRIA",
+      "orgaoEntidade": {
+        "cnpj": "04287990000141",
+        "esferaId": "M",
+        "poderId": "L",
+        "razaoSocial": "CAMARA MUNICIPAL DE LAURO DE FREITAS"
+      },
+      "orgaoSubRogado": null,
+      "processo": "064/2026",
+      "sequencialCompra": 17,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "2919207",
+        "codigoUnidade": "04287990000141",
+        "municipioNome": "Lauro de Freitas",
+        "nomeUnidade": "CAMARA MUNICIPAL DE LAURO DE FREITAS",
+        "ufNome": "Bahia",
+        "ufSigla": "BA"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "BLL Compras",
+      "valorTotalEstimado": 193880.52,
       "valorTotalHomologado": null
     },
     {
@@ -107321,6 +108104,59 @@
         "nome": "Lei 14.133/2021, Art. 28, I"
       },
       "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T10:21:03",
+      "dataAtualizacao": "2026-11-27T10:21:08",
+      "dataAtualizacaoGlobal": "2026-11-27T10:21:08",
+      "dataEncerramentoProposta": "2026-12-14T09:00:00",
+      "dataInclusao": "2026-11-27T10:21:08",
+      "dataPublicacaoPncp": "2026-11-27T10:21:08",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": "",
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://licitanet.com.br/sessao/209470",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "018",
+      "numeroControlePNCP": "13808217000174-1-000020/2026",
+      "objetoCompra": "[LICITANET] - Contratação de solução de tecnologia da informação e comunicação de sistema único e Integrados de Gestão Pública (SIAFIC), Contabilidade Pública, Lei Orçamentária Anual, Contratos, Plano Plurianual, Lei de Diretrizes Orçamentária e Portal da Transparência e Implantação e Migração.",
+      "orgaoEntidade": {
+        "cnpj": "13808217000174",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE ANTAS"
+      },
+      "orgaoSubRogado": null,
+      "processo": "018",
+      "sequencialCompra": 20,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "2901601",
+        "codigoUnidade": "674",
+        "municipioNome": "Antas",
+        "nomeUnidade": "MUNICÍPIO DE ANTAS/BA",
+        "ufNome": "Bahia",
+        "ufSigla": "BA"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Licitanet Licitações Eletrônicas LTDA",
+      "valorTotalEstimado": 116552.21,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
       "dataAberturaProposta": "2026-11-23T08:00:00",
       "dataAtualizacao": "2026-11-23T04:00:14",
       "dataAtualizacaoGlobal": "2026-11-23T04:01:10",
@@ -107432,6 +108268,59 @@
       "unidadeSubRogada": null,
       "usuarioNome": "Compras.gov.br",
       "valorTotalEstimado": 47111785.94,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T00:00:00",
+      "dataAtualizacao": "2026-11-27T10:32:33",
+      "dataAtualizacaoGlobal": "2026-11-27T10:32:38",
+      "dataEncerramentoProposta": "2026-12-14T09:59:00",
+      "dataInclusao": "2026-11-27T10:32:33",
+      "dataPublicacaoPncp": "2026-11-27T10:32:33",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "http://precodereferencia.m2atecnologia.com.br/c/xUKh-LP4RIGKVrE6pLjAKQ.FsVe-XP4I_N_/",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "numeroCompra": "PE 004.2026-CMA",
+      "numeroControlePNCP": "06579478000102-1-000028/2026",
+      "objetoCompra": "Contratação de empresa especializada para implantação de infraestrutura de rede lógica e física do tipo convergente, abrangendo desde o ponto de rede (cabeamento estruturado, patch panels, switches, roteadores) até a integração com servidores, aplicações, telefonia IP, sistemas de videoconferência e monitoramento, garantindo conectividade, desempenho, segurança e disponibilidade de interesse da Câmara Municipal de Aracati.",
+      "orgaoEntidade": {
+        "cnpj": "06579478000102",
+        "esferaId": "M",
+        "poderId": "L",
+        "razaoSocial": "MUNICIPIO DE ARACATI - CAMARA MUNICIPAL"
+      },
+      "orgaoSubRogado": null,
+      "processo": "PE 004.2026-CMA",
+      "sequencialCompra": 28,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "2301109",
+        "codigoUnidade": "202599",
+        "municipioNome": "Aracati",
+        "nomeUnidade": "CAMARA MUNICIPAL DE ARACATI",
+        "ufNome": "Ceará",
+        "ufSigla": "CE"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "M2A tecnologia",
+      "valorTotalEstimado": 264185.75,
       "valorTotalHomologado": null
     },
     {
@@ -108895,6 +109784,66 @@
         "nome": "Lei 14.133/2021, Art. 28, I"
       },
       "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T10:17:04",
+      "dataAtualizacaoGlobal": "2026-11-27T10:17:04",
+      "dataEncerramentoProposta": "2026-12-15T09:00:00",
+      "dataInclusao": "2026-11-27T10:08:11",
+      "dataPublicacaoPncp": "2026-11-27T10:08:11",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 3,
+          "nome": "Estadual",
+          "descricao": "Recurso orçamentário estadual disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T10:08:11"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://sei.sp.gov.br/sei/controlador.php?acao=procedimento_trabalhar&id_procedimento=136879858",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=10216705000402026",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "40",
+      "numeroControlePNCP": "63025530000104-1-004803/2026",
+      "objetoCompra": "SERVICO DE LOCACAO EQUIPAMENTO DE GERACAO/TRANSFORMACAO DE ENERGIA - EQUIPAMENTOS DE NOBREAK",
+      "orgaoEntidade": {
+        "cnpj": "63025530000104",
+        "esferaId": "E",
+        "poderId": "E",
+        "razaoSocial": "UNIVERSIDADE DE SAO PAULO"
+      },
+      "orgaoSubRogado": null,
+      "processo": "154.00012873/2026-77",
+      "sequencialCompra": 4803,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "3550308",
+        "codigoUnidade": "102167",
+        "municipioNome": "São Paulo",
+        "nomeUnidade": "ESP-SUPERINTENDÊNCIA TEC. DA INFORMAÇÃO-USP",
+        "ufNome": "São Paulo",
+        "ufSigla": "SP"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 408000,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
       "dataAberturaProposta": "2026-11-26T10:00:00",
       "dataAtualizacao": "2026-11-25T11:40:02",
       "dataAtualizacaoGlobal": "2026-11-25T11:41:03",
@@ -109187,6 +110136,66 @@
         "nome": "Lei 14.133/2021, Art. 28, I"
       },
       "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T10:53:17",
+      "dataAtualizacaoGlobal": "2026-11-27T10:54:19",
+      "dataEncerramentoProposta": "2026-12-15T10:00:00",
+      "dataInclusao": "2026-11-27T10:53:17",
+      "dataPublicacaoPncp": "2026-11-27T10:53:17",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 4,
+          "nome": "Federal",
+          "descricao": "Recurso orçamentário federal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T10:53:18"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://sei.coffito.gov.br/sei/controlador.php?acao=procedimento_trabalhar&id_procedimento=407534",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=92800005000822026",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "82",
+      "numeroControlePNCP": "90601147000120-1-000047/2026",
+      "objetoCompra": "Contratação de empresa especializada para o fornecimento contínuo de Solução Integrada de Telefonia Virtual IP (PABX em Nuvem), sob a modalidade de Software as a Service (SaaS), locação de aparelhos de telefonia e Plano de Telefonia VoIP, incluindo, mas não se limitando a: implementação de Unidade de Resposta Audível (URA) personalizada, gravação de chamadas, painel de administração e de dados via interface web, além dos serviços de implantação, configuração, suporte técnico e treinamento, visan",
+      "orgaoEntidade": {
+        "cnpj": "90601147000120",
+        "esferaId": "F",
+        "poderId": "E",
+        "razaoSocial": "CONSELHO REG DE FISIOTERAPIA E TERAPIA OCUPACIONAL 5 RE"
+      },
+      "orgaoSubRogado": null,
+      "processo": "05.0524.000003/2026-50",
+      "sequencialCompra": 47,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "4314902",
+        "codigoUnidade": "928000",
+        "municipioNome": "Porto Alegre",
+        "nomeUnidade": "CONSELHO REG. DE FIS. E TERAPIA OCUPACIONAL",
+        "ufNome": "Rio Grande do Sul",
+        "ufSigla": "RS"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 67052.16,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
       "dataAberturaProposta": "2026-11-26T08:00:00",
       "dataAtualizacao": "2026-11-26T13:33:50",
       "dataAtualizacaoGlobal": "2026-11-26T13:34:52",
@@ -109418,6 +110427,59 @@
       "unidadeSubRogada": null,
       "usuarioNome": "Compras.gov.br",
       "valorTotalEstimado": 98363.46,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-12-01T18:00:00",
+      "dataAtualizacao": "2026-11-27T10:56:18",
+      "dataAtualizacaoGlobal": "2026-11-27T10:56:18",
+      "dataEncerramentoProposta": "2026-12-15T13:30:00",
+      "dataInclusao": "2026-11-27T10:56:18",
+      "dataPublicacaoPncp": "2026-11-27T10:56:18",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "https://bnccompras.com/Process/ProcessView?param1=[gkz]axnKk7SX6nmjRiXAd5tD7tBnhjI_dPn3twM2bF3DW7Pb14_q_JNyNH494H3nse9jUI3Mfk0X8MKdSX2gvN5VDuDrknJQ0ZO6DEIMEAwbjE4=",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "numeroCompra": "90020",
+      "numeroControlePNCP": "12333746000104-1-000051/2026",
+      "objetoCompra": "REGISTRO DE PREÇOS PARA EVENTUAL AQUISIÇÃO DE ITENS DE INFORMÁTICA PARA ATENDER AS NECESSIDADES DAS SECRETARIAS MUNICIPAIS DE VIÇOSA - AL",
+      "orgaoEntidade": {
+        "cnpj": "12333746000104",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE VICOSA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "07010071/2026",
+      "sequencialCompra": 51,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "2709400",
+        "codigoUnidade": "1",
+        "municipioNome": "Viçosa",
+        "nomeUnidade": "MUNICIPIO DE VICOSA",
+        "ufNome": "Alagoas",
+        "ufSigla": "AL"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Bolsa Nacional De Compras - BNC",
+      "valorTotalEstimado": 4269533.92,
       "valorTotalHomologado": null
     },
     {
@@ -109697,6 +110759,59 @@
       "unidadeSubRogada": null,
       "usuarioNome": "Bolsa Nacional De Compras - BNC",
       "valorTotalEstimado": 252320,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T12:59:00",
+      "dataAtualizacao": "2026-11-27T09:58:41",
+      "dataAtualizacaoGlobal": "2026-11-27T09:58:46",
+      "dataEncerramentoProposta": "2026-12-16T07:30:00",
+      "dataInclusao": "2026-11-27T09:58:41",
+      "dataPublicacaoPncp": "2026-11-27T09:58:41",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": "",
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "PE 93",
+      "numeroControlePNCP": "82939406000107-1-000240/2026",
+      "objetoCompra": "Outsourcing de impressão, incluindo locação de impressoras e multifuncionais, fornecimento de insumos (exceto papel), software de gerenciamento, manutenção e suporte técnico.",
+      "orgaoEntidade": {
+        "cnpj": "82939406000107",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE CAPINZAL"
+      },
+      "orgaoSubRogado": null,
+      "processo": "268/2026",
+      "sequencialCompra": 240,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "4203907",
+        "codigoUnidade": "10987",
+        "municipioNome": "Capinzal",
+        "nomeUnidade": "Prefeitura de Capinzal",
+        "ufNome": "Santa Catarina",
+        "ufSigla": "SC"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Betha Sistemas",
+      "valorTotalEstimado": 329395,
       "valorTotalHomologado": null
     },
     {
@@ -110596,6 +111711,119 @@
         "nome": "Lei 14.133/2021, Art. 28, I"
       },
       "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T10:00:00",
+      "dataAtualizacao": "2026-11-27T09:42:24",
+      "dataAtualizacaoGlobal": "2026-11-27T09:43:37",
+      "dataEncerramentoProposta": "2026-12-17T08:59:00",
+      "dataInclusao": "2026-11-27T09:42:24",
+      "dataPublicacaoPncp": "2026-11-27T09:42:24",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 2,
+          "nome": "Municipal",
+          "descricao": "Recurso orçamentário municipal disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T09:42:24"
+        }
+      ],
+      "informacaoComplementar": "Em caso de divergência entre as especificações do objeto descritas no sistema Compras Governamentais e aquelas constantes neste Edital, prevalecerão as especificações estabelecidas neste Edital.",
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://novaesperanca.oxy.elotech.com.br/portaltransparencia/1/licitacoes/detalhes?entidade=1&exercicio=2026&tipoLicitacao=6&licitacao=153",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=98772105000882026",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "numeroCompra": "88",
+      "numeroControlePNCP": "75730994000109-1-000452/2026",
+      "objetoCompra": "Registro de Preços para futura e eventual contratação de pessoa jurídica para o fornecimento de suprimentos de informática — cartuchos de toner, cilindros e tambores de imagem, refis e garrafas de tinta",
+      "orgaoEntidade": {
+        "cnpj": "75730994000109",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE NOVA ESPERANCA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "279",
+      "sequencialCompra": 452,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "4116901",
+        "codigoUnidade": "987721",
+        "municipioNome": "Nova Esperança",
+        "nomeUnidade": "MPR-PREFEITURA MUNICIPAL DE NOVA ESPERANÇA",
+        "ufNome": "Paraná",
+        "ufSigla": "PR"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 76711.2,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-27T10:00:00",
+      "dataAtualizacao": "2026-11-27T10:32:56",
+      "dataAtualizacaoGlobal": "2026-11-27T10:32:57",
+      "dataEncerramentoProposta": "2026-12-17T08:59:00",
+      "dataInclusao": "2026-11-27T10:32:56",
+      "dataPublicacaoPncp": "2026-11-27T10:32:56",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [],
+      "informacaoComplementar": "",
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": null,
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 3,
+      "modoDisputaNome": "Aberto-Fechado",
+      "numeroCompra": "153",
+      "numeroControlePNCP": "75730994000109-1-000454/2026",
+      "objetoCompra": "Registro de Preços para futura e eventual contratação de pessoa jurídica para o fornecimento de suprimentos de informática — cartuchos de toner, cilindros e tambores de imagem, refis e garrafas de tinta",
+      "orgaoEntidade": {
+        "cnpj": "75730994000109",
+        "esferaId": "M",
+        "poderId": "N",
+        "razaoSocial": "MUNICIPIO DE NOVA ESPERANCA"
+      },
+      "orgaoSubRogado": null,
+      "processo": "279",
+      "sequencialCompra": 454,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": true,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "4116901",
+        "codigoUnidade": "75730994000109",
+        "municipioNome": "Nova Esperança",
+        "nomeUnidade": "Unidade administrativa",
+        "ufNome": "Paraná",
+        "ufSigla": "PR"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Elotech Gestão Pública Ltda",
+      "valorTotalEstimado": 76711.2,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
       "dataAberturaProposta": "2026-11-25T10:35:52",
       "dataAtualizacao": "2026-11-25T10:35:52",
       "dataAtualizacaoGlobal": "2026-11-25T10:35:53",
@@ -111205,6 +112433,126 @@
       "unidadeSubRogada": null,
       "usuarioNome": "AZ INFORMATICA LTDA",
       "valorTotalEstimado": 4416415.87,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T10:30:03",
+      "dataAtualizacaoGlobal": "2026-11-27T10:31:07",
+      "dataEncerramentoProposta": "2026-12-18T09:00:00",
+      "dataInclusao": "2026-11-27T10:30:03",
+      "dataPublicacaoPncp": "2026-11-27T10:30:03",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 3,
+          "nome": "Estadual",
+          "descricao": "Recurso orçamentário estadual disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T10:30:03"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": "https://pae-consulta-publica.sistemas.pa.gov.br/",
+      "linkSistemaOrigem": "https://cnetmobile.estaleiro.serpro.gov.br/comprasnet-web/public/compras/acompanhamento-compra?compra=92544905000492026",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "49",
+      "numeroControlePNCP": "22980973000177-1-000239/2026",
+      "objetoCompra": "Contratação de empresa especializada em serviços técnicos de Tecnologia da Informação e \nComunicação (TIC), contendo a manutenção, mentoria e operação assistida de sistemas, e \nsustentação em nuvem (Cloud), além de treinamento e da implantação complementar de um \nSistema de Gestão Hospitalar (SGH) da plataforma SOUL MV na Fundação Pública Estadual \nHospital de Clínicas Gaspar Vianna (FPEHCGV). ",
+      "orgaoEntidade": {
+        "cnpj": "22980973000177",
+        "esferaId": "E",
+        "poderId": "E",
+        "razaoSocial": "FUNDACAO PUBLICA ESTADUAL HOSPITAL DE CLNICAS GASPAR VIANNA - FHCGV"
+      },
+      "orgaoSubRogado": null,
+      "processo": "2026/2233824",
+      "sequencialCompra": 239,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "1501402",
+        "codigoUnidade": "925449",
+        "municipioNome": "Belém",
+        "nomeUnidade": "FUND.PUBL.EST.HOSP.DE CLÍNICAS GASPAR VIANNA",
+        "ufNome": "Pará",
+        "ufSigla": "PA"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras.gov.br",
+      "valorTotalEstimado": 3274920.68,
+      "valorTotalHomologado": null
+    },
+    {
+      "amparoLegal": {
+        "codigo": 1,
+        "descricao": "pregão: modalidade de licitação obrigatória para aquisição de bens e serviços comuns",
+        "nome": "Lei 14.133/2021, Art. 28, I"
+      },
+      "anoCompra": 2026,
+      "dataAberturaProposta": "2026-11-30T08:00:00",
+      "dataAtualizacao": "2026-11-27T11:00:13",
+      "dataAtualizacaoGlobal": "2026-11-27T11:03:01",
+      "dataEncerramentoProposta": "2026-12-18T09:00:00",
+      "dataInclusao": "2026-11-27T11:00:09",
+      "dataPublicacaoPncp": "2026-11-27T11:00:09",
+      "emendaParlamentar": null,
+      "fontesOrcamentarias": [
+        {
+          "codigo": 3,
+          "nome": "Estadual",
+          "descricao": "Recurso orçamentário estadual disponível e devidamente vinculado à despesa que será realizada.",
+          "dataInclusao": "2026-11-27T11:00:13"
+        }
+      ],
+      "informacaoComplementar": null,
+      "justificativaPresencial": null,
+      "linkProcessoEletronico": null,
+      "linkSistemaOrigem": "",
+      "modalidadeId": 6,
+      "modalidadeNome": "Pregão - Eletrônico",
+      "modoDisputaId": 1,
+      "modoDisputaNome": "Aberto",
+      "numeroCompra": "49/90041",
+      "numeroControlePNCP": "22980973000177-1-000240/2026",
+      "objetoCompra": "Contratação de empresa especializada em serviços técnicos de Tecnologia da Informação e Comunicação (TIC), contendo a manutenção, mentoria e operação assistida de sistemas, e sustentação em nuvem (Cloud), além de treinamento e da implantação complementar de um Sistema de Gestão Hospitalar (SGH) da plataforma SOUL MV na Fundação Pública Estadual Hospital de Clínicas Gaspar Vianna (FPEHCGV).",
+      "orgaoEntidade": {
+        "cnpj": "22980973000177",
+        "esferaId": "E",
+        "poderId": "E",
+        "razaoSocial": "FUNDACAO PUBLICA ESTADUAL HOSPITAL DE CLNICAS GASPAR VIANNA - FHCGV"
+      },
+      "orgaoSubRogado": null,
+      "processo": "2026/2233824",
+      "sequencialCompra": 240,
+      "situacaoCompraId": 1,
+      "situacaoCompraNome": "Divulgada no PNCP",
+      "srp": false,
+      "tipoInstrumentoConvocatorioCodigo": 1,
+      "tipoInstrumentoConvocatorioNome": "Edital",
+      "unidadeOrgao": {
+        "codigoIbge": "1501402",
+        "codigoUnidade": "79",
+        "municipioNome": "Belém",
+        "nomeUnidade": "FHCGV",
+        "ufNome": "Pará",
+        "ufSigla": "PA"
+      },
+      "unidadeSubRogada": null,
+      "usuarioNome": "Compras Pará",
+      "valorTotalEstimado": 3274920.68,
       "valorTotalHomologado": null
     },
     {
